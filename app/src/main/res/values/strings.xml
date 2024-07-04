@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SamsungClockClone</string>
+
+    <string name="alarm">Alarm</string>
+    <string name="stopwatch">Stopwatch</string>
+    <string name="timer">Timer</string>
+    <string name="add_alarm">Add alarm</string>
+</resources>
