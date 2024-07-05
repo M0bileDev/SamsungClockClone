@@ -6,12 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -49,9 +50,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         bottomBar = {
-                            BottomNavigation {
+                            NavigationBar {
                                 navBottomItems.forEach { screen ->
-                                    BottomNavigationItem(
+                                    NavigationBarItem(
                                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                         onClick = {
                                             navController.navigate(screen.route) {
@@ -80,13 +81,19 @@ class MainActivity : ComponentActivity() {
                             startDestination = navBottomItems.first().route
                         ) {
 
-                            val addAlarmViewModel: AddAlarmViewModel by viewModels()
                             composable(Screens.AddAlarm.route) {
-                                AddAlarmScreen()
+                                val addAlarmViewModel: AddAlarmViewModel by viewModels()
+                                val uiState by addAlarmViewModel.uiState.collectAsState()
+
+                                AddAlarmScreen(
+                                    modifier = Modifier.fillMaxSize(),
+                                    uiState = uiState,
+                                    onSelectedDaysOfWeek = {}
+                                )
                             }
 
-                            val alarmViewModel: AlarmViewModel by viewModels()
                             composable(Screens.Alarm.route) {
+                                val alarmViewModel: AlarmViewModel by viewModels()
                                 AlarmScreen(
                                     onAddAlarm = {},
                                     onEdit = {},
