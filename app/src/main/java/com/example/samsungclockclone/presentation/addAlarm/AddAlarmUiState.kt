@@ -4,7 +4,7 @@ import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.standardWeek
 
 data class AddAlarmUiState(
-    val alarmScheduleInfo: String = "",
+    val scheduleInfo: String = "",
     //May change, depend of the settings configuration
     val daysOfWeek: List<DayOfWeek> = standardWeek(),
     val selectedDaysOfWeek: List<DayOfWeek> = emptyList(),
@@ -19,7 +19,7 @@ data class AddAlarmUiState(
 ) {
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
-            alarmScheduleInfo = "Tomorrow-Sat, 6 Jul",
+            scheduleInfo = "Tomorrow-Sat, 6 Jul",
             daysOfWeek = DayOfWeek.DayOfWeekHelper.standardWeek(),
             selectedDaysOfWeek = listOf(
                 DayOfWeek.Monday(),
