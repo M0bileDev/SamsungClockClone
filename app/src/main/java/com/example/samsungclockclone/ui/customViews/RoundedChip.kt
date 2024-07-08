@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.samsungclockclone.presentation.addAlarm.ShortName
+import com.example.samsungclockclone.presentation.addAlarm.model.ShortName
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 
 @Composable
