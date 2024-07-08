@@ -88,7 +88,12 @@ class MainActivity : ComponentActivity() {
                                 AddAlarmScreen(
                                     modifier = Modifier.fillMaxSize(),
                                     uiState = uiState,
-                                    onSelectedDaysOfWeek = {}
+                                    onSelectedFromCalendar = {},
+                                    onSelectedDaysOfWeek = {},
+                                    onChangedAlarmName = {},
+                                    onChangedAlarmEnabled = {},
+                                    onCancel = {},
+                                    onSave = {}
                                 )
                             }
 
