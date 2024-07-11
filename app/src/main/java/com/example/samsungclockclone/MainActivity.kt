@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             modifier = Modifier.padding(padding),
                             navController = navController,
-                            startDestination = navBottomItems.first().route
+                            startDestination = Screens.AddAlarm.route
                         ) {
 
                             composable(Screens.AddAlarm.route) {
@@ -88,12 +88,13 @@ class MainActivity : ComponentActivity() {
                                 AddAlarmScreen(
                                     modifier = Modifier.fillMaxSize(),
                                     uiState = uiState,
-                                    onSelectedFromCalendar = {},
-                                    onSelectedDaysOfWeek = {},
-                                    onChangedAlarmName = {},
-                                    onChangedAlarmEnabled = {},
-                                    onCancel = {},
-                                    onSave = {}
+                                    onHourChanged = addAlarmViewModel::hourChanged,
+                                    onMinuteChanged = addAlarmViewModel::minuteChanged,
+                                    onCalendarChanged = {},
+                                    onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
+                                    onNameChanged = addAlarmViewModel::nameChanged,
+                                    onCancel = navController::navigateUp,
+                                    onSave = addAlarmViewModel::onSave
                                 )
                             }
 
