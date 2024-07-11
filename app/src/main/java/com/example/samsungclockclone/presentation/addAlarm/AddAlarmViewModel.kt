@@ -5,14 +5,17 @@ import com.example.samsungclockclone.presentation.addAlarm.model.AlarmMode
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.differenceBetweenDays
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Calendar
+import javax.inject.Inject
 
-class AddAlarmViewModel : ViewModel() {
+@HiltViewModel
+class AddAlarmViewModel @Inject constructor() : ViewModel() {
 
     private val addAlarmUiState = MutableStateFlow(AddAlarmUiState())
     val uiState = addAlarmUiState.asStateFlow()
