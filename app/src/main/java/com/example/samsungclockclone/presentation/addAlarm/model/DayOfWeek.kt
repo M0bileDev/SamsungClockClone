@@ -2,6 +2,7 @@ package com.example.samsungclockclone.presentation.addAlarm.model
 
 import androidx.annotation.StringRes
 import com.example.samsungclockclone.ui.utils.strings
+import kotlin.math.abs
 
 sealed class DayOfWeek(
     val dayOrder: Int,
@@ -48,5 +49,22 @@ sealed class DayOfWeek(
                 Wednesday(6),
                 Thursday(7)
             )
+
+        fun differenceBetweenDays(startDay: DayOfWeek, endDay: DayOfWeek): Int {
+            return abs(startDay.dayOrder - endDay.dayOrder)
+        }
+
+        fun convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek: Int): DayOfWeek {
+            return when (calendarDayOfWeek) {
+                2 -> DayOfWeek.Monday()
+                3 -> DayOfWeek.Tuesday()
+                4 -> DayOfWeek.Wednesday()
+                5 -> DayOfWeek.Thursday()
+                6 -> DayOfWeek.Friday()
+                7 -> DayOfWeek.Saturday()
+                1 -> DayOfWeek.Sunday()
+                else -> throw IllegalStateException()
+            }
+        }
     }
 }
