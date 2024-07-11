@@ -42,13 +42,15 @@ import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 fun AddAlarmScreen(
     modifier: Modifier = Modifier,
     uiState: AddAlarmUiState,
-    onSelectedFromCalendar: (Int) -> Unit,
-    onSelectedDaysOfWeek: (DayOfWeek) -> Unit,
-    onChangedAlarmName: (String) -> Unit,
-    onChangedAlarmEnabled: (Boolean) -> Unit,
+    onHourChanged: (Int) -> Unit,
+    onMinuteChanged: (Int) -> Unit,
+    onCalendarChanged: (Long) -> Unit,
+    onDayOfWeekChanged: (DayOfWeek) -> Unit,
+    onNameChanged: (String) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit
 ) = with(uiState) {
+
     Scaffold(modifier = modifier,
         bottomBar = {
             Row(Modifier.fillMaxWidth()) {
@@ -80,10 +82,11 @@ fun AddAlarmScreen(
                     modifier = Modifier
                         .weight(1f)
                         .wrapContentWidth(Alignment.CenterHorizontally),
-                    timeFormat = TimeFormat.Hours
-                ) {
-
-                }
+                    timeFormat = TimeFormat.Hours,
+                    onValueChanged = { hour ->
+                        onHourChanged(hour)
+                    }
+                )
                 Text(
                     modifier = Modifier
                         .width(1.dp)
@@ -96,10 +99,11 @@ fun AddAlarmScreen(
                     modifier = Modifier
                         .weight(1f)
                         .wrapContentWidth(Alignment.CenterHorizontally),
-                    timeFormat = TimeFormat.Minutes
-                ) {
-
-                }
+                    timeFormat = TimeFormat.Minutes,
+                    onValueChanged = { minute ->
+                        onMinuteChanged(minute)
+                    }
+                )
             }
             Card {
                 Column(
@@ -109,13 +113,13 @@ fun AddAlarmScreen(
                 ) {
                     AlarmScheduleInfoCalendar(
                         scheduleInfo = scheduleInfo,
-                        onSelectedFromCalendar = onSelectedFromCalendar
+                        onSelectedFromCalendar = onCalendarChanged
                     )
                     HorizontalChipGroup(
                         modifier = Modifier.fillMaxWidth(),
                         items = daysOfWeek,
                         selectedItems = selectedDaysOfWeek,
-                        onSelected = onSelectedDaysOfWeek
+                        onSelected = onDayOfWeekChanged
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextField(
@@ -125,10 +129,10 @@ fun AddAlarmScreen(
                         },
                         value = alarmName,
                         singleLine = true,
-                        onValueChange = onChangedAlarmName,
+                        onValueChange = onNameChanged,
                         trailingIcon = {
                             if (alarmName.isNotEmpty()) {
-                                IconButton(onClick = { onChangedAlarmName("") }) {
+                                IconButton(onClick = { onNameChanged("") }) {
                                     Icon(
                                         Icons.Default.Clear,
                                         "Clear alarm name text input"
@@ -142,21 +146,21 @@ fun AddAlarmScreen(
                         header = "Alarm sound",
                         body = soundName,
                         checked = soundEnabled,
-                        onCheckedChange = onChangedAlarmEnabled
+                        onCheckedChange = {}
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                     SectionSwitch(
                         header = "Vibration",
                         body = vibrationName,
                         checked = vibrationEnabled,
-                        onCheckedChange = onChangedAlarmEnabled
+                        onCheckedChange = {}
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                     SectionSwitch(
                         header = "Snooze",
                         body = "$snoozeIntervalName, $snoozeRepeatName",
                         checked = soundEnabled,
-                        onCheckedChange = onChangedAlarmEnabled
+                        onCheckedChange = {}
                     )
                 }
             }
@@ -168,7 +172,7 @@ fun AddAlarmScreen(
 @Composable
 private fun AlarmScheduleInfoCalendar(
     scheduleInfo: String,
-    onSelectedFromCalendar: (Int) -> Unit
+    onSelectedFromCalendar: (Long) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -203,10 +207,11 @@ private fun AddAlarmPreview() {
         AddAlarmScreen(
             modifier = Modifier.fillMaxSize(),
             uiState = alarmUiStatePreview,
-            onSelectedFromCalendar = {},
-            onSelectedDaysOfWeek = {},
-            onChangedAlarmName = {},
-            onChangedAlarmEnabled = {},
+            onHourChanged = {},
+            onMinuteChanged = {},
+            onCalendarChanged = {},
+            onDayOfWeekChanged = {},
+            onNameChanged = {},
             onCancel = {},
             onSave = {}
         )
