@@ -1,4 +1,4 @@
-package com.example.samsungclockclone
+package com.example.samsungclockclone.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,9 +26,10 @@ import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.alarm.AlarmScreen
-import com.example.samsungclockclone.presentation.alarm.AlarmViewModel
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +100,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(Screens.Alarm.route) {
-                                val alarmViewModel: AlarmViewModel by viewModels()
+//                                val alarmViewModel: AlarmViewModel by viewModels()
                                 AlarmScreen(
                                     onAddAlarm = {},
                                     onEdit = {},
