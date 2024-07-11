@@ -11,7 +11,7 @@ composeBom = "2024.06.00"
 androidNavigation = "2.7.7"
 truth = "1.4.3"
 androidHilt = "2.51"
-hiltNavigationCompose = "1.0.0"
+hiltNavigationCompose = "1.2.0"
 
 [libraries]
 
