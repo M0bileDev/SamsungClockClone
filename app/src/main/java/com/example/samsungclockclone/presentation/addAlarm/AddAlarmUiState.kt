@@ -20,7 +20,7 @@ data class AddAlarmUiState(
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
             scheduleInfo = "Tomorrow-Sat, 6 Jul",
-            daysOfWeek = DayOfWeek.DayOfWeekHelper.standardWeek(),
+            daysOfWeek = standardWeek(),
             selectedDaysOfWeek = listOf(
                 DayOfWeek.Monday(),
                 DayOfWeek.Saturday(),
