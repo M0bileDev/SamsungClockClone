@@ -56,13 +56,13 @@ sealed class DayOfWeek(
 
         fun convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek: Int): DayOfWeek {
             return when (calendarDayOfWeek) {
-                2 -> DayOfWeek.Monday()
-                3 -> DayOfWeek.Tuesday()
-                4 -> DayOfWeek.Wednesday()
-                5 -> DayOfWeek.Thursday()
-                6 -> DayOfWeek.Friday()
-                7 -> DayOfWeek.Saturday()
-                1 -> DayOfWeek.Sunday()
+                2 -> Monday()
+                3 -> Tuesday()
+                4 -> Wednesday()
+                5 -> Thursday()
+                6 -> Friday()
+                7 -> Saturday()
+                1 -> Sunday()
                 else -> throw IllegalStateException()
             }
         }
