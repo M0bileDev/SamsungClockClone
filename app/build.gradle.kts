@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.android.ksp)
     alias(libs.plugins.android.hilt)
 }
 
@@ -61,8 +61,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
     implementation(libs.hilt)
-    kapt(libs.hilt.compliler)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.room)
+
+    ksp(libs.hilt.compliler)
+    ksp(libs.room.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.google.truth)
@@ -74,9 +77,4 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }
