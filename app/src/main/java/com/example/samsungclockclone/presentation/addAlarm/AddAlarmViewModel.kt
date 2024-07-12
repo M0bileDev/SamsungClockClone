@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.presentation.addAlarm
 
+import android.app.AlarmManager
 import androidx.lifecycle.ViewModel
 import com.example.samsungclockclone.presentation.addAlarm.model.AlarmMode
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
@@ -15,7 +16,9 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
-class AddAlarmViewModel @Inject constructor() : ViewModel() {
+class AddAlarmViewModel @Inject constructor(
+    private val alarmManager: AlarmManager
+) : ViewModel() {
 
     private val addAlarmUiState = MutableStateFlow(AddAlarmUiState())
     val uiState = addAlarmUiState.asStateFlow()
@@ -26,19 +29,19 @@ class AddAlarmViewModel @Inject constructor() : ViewModel() {
     private var alarmMinute = 0
     private var alarmMode = AlarmMode.OnlyTime
 
-    init {
-        calculateDefaultNextDayAlarm()
-    }
-
-    private fun calculateDefaultNextDayAlarm() {
-        val actualHour = actualDateTime.hour
-        val actualMinute = actualDateTime.minute
-
-        val minutesLeftToNextDay =
-            ((((23 + alarmHour) - actualHour) * 60) + ((60 + alarmMinute) - actualMinute)).toLong()
-        val nextDayTime = actualDateTime.plusMinutes(minutesLeftToNextDay)
-        alarmMilliseconds = nextDayTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    }
+//    init {
+//        calculateDefaultNextDayAlarm()
+//    }
+//
+//    private fun calculateDefaultNextDayAlarm() {
+//        val actualHour = actualDateTime.hour
+//        val actualMinute = actualDateTime.minute
+//
+//        val minutesLeftToNextDay =
+//            ((((23 + alarmHour) - actualHour) * 60) + ((60 + alarmMinute) - actualMinute)).toLong()
+//        val nextDayTime = actualDateTime.plusMinutes(minutesLeftToNextDay)
+//        alarmMilliseconds = nextDayTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+//    }
 
     fun hourChanged(hour: Int) {
         alarmHour = hour
@@ -79,7 +82,9 @@ class AddAlarmViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onSave() {
-        val alarmMillisecondsList = createMilliseconds()
+        val alarmMillisecondsList = createAlarmMilliseconds()
+
+
 
         alarmMillisecondsList.forEach { alarmMilliseconds ->
             //create alarms with alarm manager
@@ -88,7 +93,7 @@ class AddAlarmViewModel @Inject constructor() : ViewModel() {
 
     }
 
-    private fun createMilliseconds(): List<Long> {
+    private fun createAlarmMilliseconds(): List<Long> {
 
         val actualDateTime = LocalDateTime.now()
 
@@ -144,7 +149,7 @@ class AddAlarmViewModel @Inject constructor() : ViewModel() {
             }
 
             AlarmMode.CalendarDateAndTime -> {
-                emptyList<Long>()
+                emptyList()
             }
         }
     }
