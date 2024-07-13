@@ -16,9 +16,9 @@ import androidx.room.PrimaryKey
     ]
 )
 data class AlarmManagerEntity(
-    @PrimaryKey
-    val uniqueId: Long,
+    @PrimaryKey(autoGenerate = true)
+    val uniqueId: Long = 0L,
     val parentId: Long,
     val fireTime: Long,
-    val repeatTime: Long
+    val repeat: String
 )
