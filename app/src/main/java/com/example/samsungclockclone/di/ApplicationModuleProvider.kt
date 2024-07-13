@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.db.AlarmDatabase
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @[Module InstallIn(SingletonComponent::class)]
-object ApplicationModule {
+object ApplicationModuleProvider {
 
     @[Provides Singleton]
     fun provideAlarmManager(
