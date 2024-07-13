@@ -25,7 +25,7 @@ interface AlarmDao {
     fun getNearestAlarmManager(): Flow<AlarmManagerEntity>
 
     @Insert
-    suspend fun insertAlarm(alarm: AlarmEntity)
+    suspend fun insertAlarm(alarm: AlarmEntity): Long
 
     @Update
     suspend fun updateAlarm(alarm: AlarmEntity)
@@ -34,7 +34,7 @@ interface AlarmDao {
     suspend fun deleteAlarm(alarmEntity: AlarmEntity)
 
     @Insert
-    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity)
+    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity) : Long
 
     @Delete
     suspend fun deleteAlarmManager(alarmManagerEntity: AlarmManagerEntity)
