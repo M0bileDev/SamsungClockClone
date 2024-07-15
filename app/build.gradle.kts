@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.hilt)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.room)
+    implementation(libs.room.ktx)
 
     ksp(libs.hilt.compliler)
     ksp(libs.room.compiler)
