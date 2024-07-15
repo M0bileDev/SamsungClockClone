@@ -1,6 +1,8 @@
 package com.example.samsungclockclone.presentation
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,9 +14,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -28,6 +34,7 @@ import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.alarm.AlarmScreen
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -85,6 +92,29 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.AddAlarm.route) {
                                 val addAlarmViewModel: AddAlarmViewModel by viewModels()
                                 val uiState by addAlarmViewModel.uiState.collectAsState()
+                                val lifecycle = LocalLifecycleOwner.current
+
+                                LaunchedEffect(key1 = lifecycle) {
+                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                        addAlarmViewModel.actions.collectLatest { action ->
+                                            when (action) {
+                                                AddAlarmViewModel.AddAlarmAction.ScheduleCompleted -> {
+                                                    navController.navigateUp()
+                                                }
+
+                                                AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
+                                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                                        startActivity(
+                                                            Intent(
+                                                                ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
 
                                 AddAlarmScreen(
                                     modifier = Modifier.fillMaxSize(),
@@ -95,7 +125,9 @@ class MainActivity : ComponentActivity() {
                                     onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
                                     onNameChanged = addAlarmViewModel::nameChanged,
                                     onCancel = navController::navigateUp,
-                                    onSave = addAlarmViewModel::onSave
+                                    onSave = addAlarmViewModel::onSave,
+                                    onDismissRequest = addAlarmViewModel::dismissSchedulePermission,
+                                    onRequestSchedulePermission = addAlarmViewModel::onRequestSchedulePermission
                                 )
                             }
 
