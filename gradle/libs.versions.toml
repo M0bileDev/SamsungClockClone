@@ -36,6 +36,7 @@ androidx-navigation = { group = "androidx.navigation", name = "navigation-compos
 
 #Room
 room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 #Hilt
