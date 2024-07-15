@@ -3,6 +3,7 @@ package com.example.samsungclockclone.presentation.addAlarm
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.standardWeek
 
+// TODO: Addd Immutable or Stable annotation, test performance
 data class AddAlarmUiState(
     val scheduleInfo: String = "",
     //May change, depend of the settings configuration
@@ -15,7 +16,8 @@ data class AddAlarmUiState(
     val vibrationEnabled: Boolean = false,
     val snoozeIntervalName: String = "",
     val snoozeRepeatName: String = "",
-    val snoozeEnabled: Boolean = false
+    val snoozeEnabled: Boolean = false,
+    val displayPermissionRequire: Boolean = false
 ) {
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
