@@ -3,8 +3,6 @@ package com.example.samsungclockclone.presentation.addAlarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.model.AlarmEntity
-import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
 import com.example.samsungclockclone.presentation.addAlarm.model.AlarmMode
 import com.example.samsungclockclone.presentation.addAlarm.model.AlarmRepeat
@@ -12,8 +10,10 @@ import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.differenceBetweenDays
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -26,6 +26,14 @@ class AddAlarmViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val alarmDao: AlarmDao
 ) : ViewModel() {
+
+    sealed interface AddAlarmAction {
+        data object ScheduleCompleted : AddAlarmAction
+        data object RequestSchedulePermission : AddAlarmAction
+    }
+
+    private val addAlarmActions = Channel<AddAlarmAction>()
+    val actions = addAlarmActions.receiveAsFlow()
 
     private val addAlarmUiState = MutableStateFlow(AddAlarmUiState())
     val uiState = addAlarmUiState.asStateFlow()
@@ -100,27 +108,58 @@ class AddAlarmViewModel @Inject constructor(
 
         //save alarm information inside database
         viewModelScope.launch {
-            val alarmName = addAlarmUiState.value.alarmName
-            val alarmEntity = AlarmEntity(name = alarmName, enable = true)
-            val alarmId = alarmDao.insertAlarm(alarmEntity)
+//            val alarmName = addAlarmUiState.value.alarmName
+//            val alarmEntity = AlarmEntity(name = alarmName, enable = true)
+//            val alarmId = alarmDao.insertAlarm(alarmEntity)
+//
+//            val alarmRepeat = createAlarmRepeat()
+//            val alarms: List<Pair<AlarmId, AlarmMilliseconds>> =
+//                alarmMillisecondsList.map { alarmMilliseconds ->
+//                    val alarmManagerEntity = AlarmManagerEntity(
+//                        parentId = alarmId,
+//                        fireTime = alarmMilliseconds,
+//                        repeat = alarmRepeat.name
+//                    )
+//                    alarmDao.insertAlarmManager(alarmManagerEntity) to alarmMilliseconds
+//                }
 
-            val alarmRepeat = createAlarmRepeat()
-            val alarms = alarmMillisecondsList.map { alarmMilliseconds ->
-                val alarmManagerEntity = AlarmManagerEntity(
-                    parentId = alarmId,
-                    fireTime = alarmMilliseconds,
-                    repeat = alarmRepeat.name
-                )
-                alarmMilliseconds to alarmDao.insertAlarmManager(alarmManagerEntity)
-            }
-
-            //save alarms via AlarmManager
-            alarms.forEach { alarm ->
-                alarmScheduler.schedule(alarm.first, alarm.second)
-            }
+            //schedule alarms via alarm manager
+            alarmScheduler.schedule(
+                emptyList(),
+                onScheduleCompleted = ::onScheduleCompleted,
+                onScheduleDenied = ::onScheduleDenied
+            )
         }
 
     }
+
+    private fun onScheduleCompleted() {
+        viewModelScope.launch {
+            addAlarmActions.send(AddAlarmAction.ScheduleCompleted)
+        }
+    }
+
+    private fun onScheduleDenied() {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayPermissionRequire = true)
+        }
+    }
+
+    fun onRequestSchedulePermission() {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayPermissionRequire = false)
+        }
+        viewModelScope.launch {
+            addAlarmActions.send(AddAlarmAction.RequestSchedulePermission)
+        }
+    }
+
+    fun dismissSchedulePermission() {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayPermissionRequire = false)
+        }
+    }
+
 
     private fun createAlarmMilliseconds(): List<Long> {
 
