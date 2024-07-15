@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -48,9 +50,10 @@ fun AddAlarmScreen(
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
     onNameChanged: (String) -> Unit,
     onCancel: () -> Unit,
-    onSave: () -> Unit
+    onSave: () -> Unit,
+    onDismissRequest: () -> Unit,
+    onRequestSchedulePermission: () -> Unit
 ) = with(uiState) {
-
     Scaffold(modifier = modifier,
         bottomBar = {
             Row(Modifier.fillMaxWidth()) {
@@ -165,6 +168,34 @@ fun AddAlarmScreen(
                 }
             }
         }
+        if (displayPermissionRequire) {
+            // TODO: extract strings
+            AlertDialog(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null
+                    )
+                },
+                title = {
+                    Text("Permission required")
+                },
+                text = {
+                    Text("You must confirm the \"Alarms & reminders\" special permission.")
+                },
+                onDismissRequest = onDismissRequest,
+                dismissButton = {
+                    TextButton(onClick = onDismissRequest) {
+                        Text(text = "Dismiss")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = onRequestSchedulePermission) {
+                        Text(text = "Settings")
+                    }
+                }
+            )
+        }
 
     }
 }
@@ -213,7 +244,9 @@ private fun AddAlarmPreview() {
             onDayOfWeekChanged = {},
             onNameChanged = {},
             onCancel = {},
-            onSave = {}
+            onSave = {},
+            onDismissRequest = {},
+            onRequestSchedulePermission = {}
         )
     }
 }
