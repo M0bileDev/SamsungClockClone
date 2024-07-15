@@ -14,21 +14,35 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager: AlarmManager
 ) : AlarmScheduler {
 
-    override fun schedule(id: Long, triggerAtMillis: Long) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(ALARM_ID_KEY, id)
-        }
-        val broadcastReceiver = PendingIntent.getBroadcast(
-            context,
-            id.toInt(),
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    override fun schedule(
+        alarms: List<Pair<AlarmId, AlarmMilliseconds>>,
+        onScheduleCompleted: () -> Unit,
+        onScheduleDenied: () -> Unit
+    ) {
+        checkPermission(
+            onPermissionGranted = {
+                alarms.forEach { alarm ->
+                    val intent = Intent(context, AlarmReceiver::class.java).apply {
+                        putExtra(ALARM_ID_KEY, alarm.first)
+                    }
+                    val broadcastReceiver = PendingIntent.getBroadcast(
+                        context,
+                        alarm.first.toInt(),
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        alarm.second,
+                        broadcastReceiver
+                    )
+                }.run {
+                    onScheduleCompleted()
+                }
+            },
+            onPermissionDenied = onScheduleDenied
         )
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            triggerAtMillis,
-            broadcastReceiver
-        )
+
     }
 
     override fun cancel(id: Long) {
@@ -44,4 +58,14 @@ class AlarmSchedulerImpl @Inject constructor(
         )
     }
 
+    private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val result = alarmManager.canScheduleExactAlarms()
+            if (result) {
+                onPermissionGranted()
+            } else {
+                onPermissionDenied()
+            }
+        }
+    }
 }
