@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.samsungclockclone.presentation
 
 import android.content.Intent
@@ -8,15 +10,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -35,6 +42,8 @@ import com.example.samsungclockclone.presentation.alarm.AlarmScreen
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -92,6 +101,30 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.AddAlarm.route) {
                                 val addAlarmViewModel: AddAlarmViewModel by viewModels()
                                 val uiState by addAlarmViewModel.uiState.collectAsState()
+                                val localDate by remember {
+                                    mutableStateOf(LocalDateTime.now())
+                                }
+                                val datePickerState = rememberDatePickerState(
+                                    yearRange = IntRange(
+                                        localDate.year,
+                                        localDate.year + 1
+                                    ),
+                                    initialSelectedDateMillis = localDate
+                                        .plusDays(1)
+                                        .atZone(ZoneId.systemDefault())
+                                        .toInstant()
+                                        .toEpochMilli(),
+                                    selectableDates = object : SelectableDates {
+                                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                            return utcTimeMillis >= localDate
+                                                .plusDays(1)
+                                                .withHour(0)
+                                                .withMinute(0)
+                                                .atZone(ZoneId.systemDefault())
+                                                .toInstant()
+                                                .toEpochMilli()
+                                        }
+                                    })
                                 val lifecycle = LocalLifecycleOwner.current
 
                                 LaunchedEffect(key1 = lifecycle) {
@@ -119,15 +152,18 @@ class MainActivity : ComponentActivity() {
                                 AddAlarmScreen(
                                     modifier = Modifier.fillMaxSize(),
                                     uiState = uiState,
+                                    datePickerState = datePickerState,
                                     onHourChanged = addAlarmViewModel::hourChanged,
                                     onMinuteChanged = addAlarmViewModel::minuteChanged,
-                                    onCalendarChanged = {},
+                                    onDateChanged = addAlarmViewModel::onDateChanged,
                                     onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
                                     onNameChanged = addAlarmViewModel::nameChanged,
                                     onCancel = navController::navigateUp,
                                     onSave = addAlarmViewModel::onSave,
                                     onDismissRequest = addAlarmViewModel::dismissSchedulePermission,
-                                    onRequestSchedulePermission = addAlarmViewModel::onRequestSchedulePermission
+                                    onRequestSchedulePermission = addAlarmViewModel::onRequestSchedulePermission,
+                                    onDisplayDatePicker = addAlarmViewModel::onDisplayDatePicker,
+                                    onDismissDatePicker = addAlarmViewModel::onDismissDatePicker
                                 )
                             }
 
