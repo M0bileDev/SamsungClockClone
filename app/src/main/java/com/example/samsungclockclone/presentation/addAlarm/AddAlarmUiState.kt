@@ -17,7 +17,8 @@ data class AddAlarmUiState(
     val snoozeIntervalName: String = "",
     val snoozeRepeatName: String = "",
     val snoozeEnabled: Boolean = false,
-    val displayPermissionRequire: Boolean = false
+    val displayPermissionRequire: Boolean = false,
+    val displayDatePicker: Boolean = false
 ) {
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
