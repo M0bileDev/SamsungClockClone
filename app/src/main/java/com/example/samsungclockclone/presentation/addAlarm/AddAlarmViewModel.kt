@@ -13,11 +13,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -39,10 +42,49 @@ class AddAlarmViewModel @Inject constructor(
     val uiState = addAlarmUiState.asStateFlow()
 
     // TODO: Consider chnging primitive types to MutableState 
-    private var alarmHour = 0
-    private var alarmMinute = 0
-    private var calendarDateMilliseconds = 0L
-    private var alarmMode = AlarmMode.OnlyTime
+    private var alarmHour = MutableStateFlow(0)
+    private var alarmMinute = MutableStateFlow(0)
+    private var calendarDateMilliseconds = MutableStateFlow(0L)
+    private var alarmMode = MutableStateFlow(AlarmMode.OnlyTime)
+
+    val info = combine(
+        alarmHour,
+        alarmMinute,
+        calendarDateMilliseconds,
+        alarmMode
+    ) { alarmHour, alarmMinute, calendarDateMilliseconds, alarmMode ->
+
+        val actualDateTime = LocalDateTime.now()
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM")
+
+        val date = when (alarmMode) {
+            AlarmMode.OnlyTime -> {
+                if (alarmHour <= actualDateTime.hour && alarmMinute <= actualDateTime.minute){
+                    val tomorrowDate = actualDateTime.plusDays(1)
+                    val date = tomorrowDate.format(dateTimeFormatter)
+                    "Tomorrow-$date"
+                } else {
+                    val date = actualDateTime.format(dateTimeFormatter)
+                    "Today-$date"
+                }
+            }
+
+            AlarmMode.DayOfWeekAndTime -> ""
+            AlarmMode.CalendarDateAndTime -> ""
+        }
+        println("LOGS $date")
+        date
+    }
+
+    init {
+        viewModelScope.launch {
+            info.collectLatest { info ->
+                addAlarmUiState.update { previousState ->
+                    previousState.copy(scheduleInfo = info)
+                }
+            }
+        }
+    }
 
 //    init {
 //        calculateDefaultNextDayAlarm()
@@ -59,11 +101,11 @@ class AddAlarmViewModel @Inject constructor(
 //    }
 
     fun hourChanged(hour: Int) {
-        alarmHour = hour
+        alarmHour.value = hour
     }
 
     fun minuteChanged(minute: Int) {
-        alarmMinute = minute
+        alarmMinute.value = minute
     }
 
     fun dayOfWeekChanged(dayOfWeek: DayOfWeek) {
@@ -81,11 +123,12 @@ class AddAlarmViewModel @Inject constructor(
             )
         }
 
-        alarmMode = if (selectedDaysOfWeek.isNotEmpty()) {
+        alarmMode.value = if (selectedDaysOfWeek.isNotEmpty()) {
             AlarmMode.DayOfWeekAndTime
         } else {
             AlarmMode.OnlyTime
         }
+
     }
 
     fun nameChanged(name: String) {
@@ -97,7 +140,7 @@ class AddAlarmViewModel @Inject constructor(
     }
 
     private fun createAlarmRepeat(): AlarmRepeat {
-        return when (alarmMode) {
+        return when (alarmMode.value) {
             AlarmMode.OnlyTime -> AlarmRepeat.EveryDay
             AlarmMode.DayOfWeekAndTime -> AlarmRepeat.EveryWeek
             AlarmMode.CalendarDateAndTime -> AlarmRepeat.EveryDay
@@ -106,6 +149,8 @@ class AddAlarmViewModel @Inject constructor(
 
 
     fun onSave() {
+
+        // TODO: add security to check if alarm time is not past time
         val alarmMillisecondsList = createAlarmMilliseconds()
 
         //save alarm information inside database
@@ -178,23 +223,24 @@ class AddAlarmViewModel @Inject constructor(
         addAlarmUiState.update { previousState ->
             previousState.copy(displayDatePicker = false)
         }
-        alarmMode = AlarmMode.CalendarDateAndTime
-        calendarDateMilliseconds = selectedDateMillis
+        alarmMode.value = AlarmMode.CalendarDateAndTime
+        calendarDateMilliseconds.value = selectedDateMillis
     }
 
 
     private fun createAlarmMilliseconds(): List<Long> {
 
         val actualDateTime = LocalDateTime.now()
+        val calendar = Calendar.getInstance()
 
-        return when (alarmMode) {
+        return when (alarmMode.value) {
             AlarmMode.OnlyTime -> {
                 // actual time: 12:00, 11:59 -> next day,  12:00 -> next day, 00:00 -> next day, 12:01 -> same day,  23:59 -> same day
-                if (alarmHour <= actualDateTime.hour || alarmHour == 0) {
+                if (alarmHour.value <= actualDateTime.hour && alarmMinute.value <= actualDateTime.minute) {
                     //alarm next day
                     val alarmMilliseconds = actualDateTime
-                        .withHour(alarmHour)
-                        .withMinute(alarmMinute)
+                        .withHour(alarmHour.value)
+                        .withMinute(alarmMinute.value)
                         .plusDays(1)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
@@ -204,8 +250,8 @@ class AddAlarmViewModel @Inject constructor(
                 } else {
                     //alarm same day
                     val alarmMilliseconds = actualDateTime
-                        .withHour(alarmHour)
-                        .withMinute(alarmMinute)
+                        .withHour(alarmHour.value)
+                        .withMinute(alarmMinute.value)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli()
@@ -215,10 +261,10 @@ class AddAlarmViewModel @Inject constructor(
             }
 
             AlarmMode.DayOfWeekAndTime -> {
-                val calendar = Calendar.getInstance().apply {
+                val tmpCalendar = calendar.apply {
                     timeInMillis = System.currentTimeMillis()
                 }
-                val calendarDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
                 val dayOfWeek = convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek)
                 val alarmMillisecondsList = uiState.value.selectedDaysOfWeek.map { alarmDay ->
                     val daysDifference = differenceBetweenDays(
@@ -227,8 +273,8 @@ class AddAlarmViewModel @Inject constructor(
                     ).toLong()
 
                     actualDateTime
-                        .withHour(alarmHour)
-                        .withMinute(alarmMinute)
+                        .withHour(alarmHour.value)
+                        .withMinute(alarmMinute.value)
                         .plusDays(daysDifference)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
@@ -239,7 +285,18 @@ class AddAlarmViewModel @Inject constructor(
             }
 
             AlarmMode.CalendarDateAndTime -> {
-                emptyList()
+                val tmpCalendar = calendar
+                    .apply {
+                        timeInMillis = calendarDateMilliseconds.value
+                        set(Calendar.HOUR, alarmHour.value)
+                        set(Calendar.MINUTE, alarmMinute.value)
+                    }
+
+                val alarmMilliseconds = tmpCalendar
+                    .toInstant()
+                    .toEpochMilli()
+
+                listOf(alarmMilliseconds)
             }
         }
     }
