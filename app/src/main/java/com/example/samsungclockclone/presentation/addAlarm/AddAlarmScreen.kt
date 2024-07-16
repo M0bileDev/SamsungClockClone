@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.samsungclockclone.presentation.addAlarm
 
 import androidx.compose.foundation.layout.Column
@@ -17,7 +19,12 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.Card
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,15 +51,18 @@ import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 fun AddAlarmScreen(
     modifier: Modifier = Modifier,
     uiState: AddAlarmUiState,
+    datePickerState: DatePickerState,
     onHourChanged: (Int) -> Unit,
     onMinuteChanged: (Int) -> Unit,
-    onCalendarChanged: (Long) -> Unit,
+    onDateChanged: (Long) -> Unit,
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
     onNameChanged: (String) -> Unit,
     onCancel: () -> Unit,
     onSave: () -> Unit,
     onDismissRequest: () -> Unit,
-    onRequestSchedulePermission: () -> Unit
+    onRequestSchedulePermission: () -> Unit,
+    onDisplayDatePicker: () -> Unit,
+    onDismissDatePicker: () -> Unit,
 ) = with(uiState) {
     Scaffold(modifier = modifier,
         bottomBar = {
@@ -116,7 +126,7 @@ fun AddAlarmScreen(
                 ) {
                     AlarmScheduleInfoCalendar(
                         scheduleInfo = scheduleInfo,
-                        onSelectedFromCalendar = onCalendarChanged
+                        onDisplayDatePicker = onDisplayDatePicker
                     )
                     HorizontalChipGroup(
                         modifier = Modifier.fillMaxWidth(),
@@ -196,6 +206,27 @@ fun AddAlarmScreen(
                 }
             )
         }
+        if (displayDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = onDismissDatePicker,
+                dismissButton = {
+                    TextButton(onClick = onDismissDatePicker) {
+                        Text(text = "Dismiss")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onDateChanged(
+                            datePickerState.selectedDateMillis ?: throw IllegalStateException()
+                        )
+                    }) {
+                        Text(text = "OK")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
 
     }
 }
@@ -203,7 +234,7 @@ fun AddAlarmScreen(
 @Composable
 private fun AlarmScheduleInfoCalendar(
     scheduleInfo: String,
-    onSelectedFromCalendar: (Long) -> Unit
+    onDisplayDatePicker: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -219,10 +250,8 @@ private fun AlarmScheduleInfoCalendar(
             modifier = Modifier
                 .weight(1f)
                 .wrapContentWidth(Alignment.End),
-            onClick = {
-                // TODO: Add choose from calendar
-                onSelectedFromCalendar(0)
-            }) {
+            onClick = onDisplayDatePicker
+        ) {
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = "Select date from calendar"
@@ -238,15 +267,18 @@ private fun AddAlarmPreview() {
         AddAlarmScreen(
             modifier = Modifier.fillMaxSize(),
             uiState = alarmUiStatePreview,
+            datePickerState = DatePickerState(CalendarLocale.ROOT),
             onHourChanged = {},
             onMinuteChanged = {},
-            onCalendarChanged = {},
+            onDateChanged = {},
             onDayOfWeekChanged = {},
             onNameChanged = {},
             onCancel = {},
             onSave = {},
             onDismissRequest = {},
-            onRequestSchedulePermission = {}
+            onRequestSchedulePermission = {},
+            onDisplayDatePicker = {},
+            onDismissDatePicker = {},
         )
     }
 }
