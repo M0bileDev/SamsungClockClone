@@ -38,8 +38,10 @@ class AddAlarmViewModel @Inject constructor(
     private val addAlarmUiState = MutableStateFlow(AddAlarmUiState())
     val uiState = addAlarmUiState.asStateFlow()
 
+    // TODO: Consider chnging primitive types to MutableState 
     private var alarmHour = 0
     private var alarmMinute = 0
+    private var calendarDateMilliseconds = 0L
     private var alarmMode = AlarmMode.OnlyTime
 
 //    init {
@@ -158,6 +160,26 @@ class AddAlarmViewModel @Inject constructor(
         addAlarmUiState.update { previousState ->
             previousState.copy(displayPermissionRequire = false)
         }
+    }
+
+    fun onDisplayDatePicker() {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayDatePicker = true)
+        }
+    }
+
+    fun onDismissDatePicker() {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayDatePicker = false)
+        }
+    }
+
+    fun onDateChanged(selectedDateMillis: Long) {
+        addAlarmUiState.update { previousState ->
+            previousState.copy(displayDatePicker = false)
+        }
+        alarmMode = AlarmMode.CalendarDateAndTime
+        calendarDateMilliseconds = selectedDateMillis
     }
 
 
