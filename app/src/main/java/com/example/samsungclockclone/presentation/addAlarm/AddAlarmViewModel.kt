@@ -4,20 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
+import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStrings
+import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
 import com.example.samsungclockclone.presentation.addAlarm.model.AlarmMode
-import com.example.samsungclockclone.presentation.addAlarm.model.AlarmRepeat
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.differenceBetweenDays
+import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -38,53 +39,134 @@ class AddAlarmViewModel @Inject constructor(
     private val addAlarmActions = Channel<AddAlarmAction>()
     val actions = addAlarmActions.receiveAsFlow()
 
-    private val addAlarmUiState = MutableStateFlow(AddAlarmUiState())
-    val uiState = addAlarmUiState.asStateFlow()
 
-    // TODO: Consider chnging primitive types to MutableState 
-    private var alarmHour = MutableStateFlow(0)
-    private var alarmMinute = MutableStateFlow(0)
-    private var calendarDateMilliseconds = MutableStateFlow(0L)
-    private var alarmMode = MutableStateFlow(AlarmMode.OnlyTime)
+    private val alarmHour = MutableStateFlow(0)
+    private val alarmMinute = MutableStateFlow(0)
+    private val calendarDateMilliseconds = MutableStateFlow(0L)
+    private val selectedDaysOfWeek: MutableStateFlow<List<DayOfWeek>> =
+        MutableStateFlow(emptyList())
+    private val alarmMode = MutableStateFlow(AlarmMode.OnlyTime)
+    private val alarmName = MutableStateFlow("")
+    private val displayPermissionRequire = MutableStateFlow(false)
+    private val displayDatePicker = MutableStateFlow(false)
 
-    val info = combine(
-        alarmHour,
-        alarmMinute,
-        calendarDateMilliseconds,
-        alarmMode
-    ) { alarmHour, alarmMinute, calendarDateMilliseconds, alarmMode ->
+    val uiState = combine(
+        combine(alarmHour, alarmMinute, ::Pair),
+        combine(calendarDateMilliseconds, selectedDaysOfWeek, ::Pair),
+        combine(alarmMode, alarmName, ::Pair),
+        combine(displayPermissionRequire, displayDatePicker, ::Pair)
+    ) { hourAndMinute, calendarAndDays, modeAndName, permissionAndDatePicker ->
+
+        val (hour, minute) = hourAndMinute
+        val (calendarDateMilliseconds, selectedDaysOfWeek) = calendarAndDays
+        val (alarmMode, alarmName) = modeAndName
+        val (displayPermissionRequire, displayDatePicker) = permissionAndDatePicker
 
         val actualDateTime = LocalDateTime.now()
         val dateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM")
 
-        val date = when (alarmMode) {
+        val scheduleInfo = when (alarmMode) {
             AlarmMode.OnlyTime -> {
-                if (alarmHour <= actualDateTime.hour && alarmMinute <= actualDateTime.minute){
+                if (hour <= actualDateTime.hour && minute <= actualDateTime.minute) {
                     val tomorrowDate = actualDateTime.plusDays(1)
                     val date = tomorrowDate.format(dateTimeFormatter)
-                    "Tomorrow-$date"
+                    listOf(AddAlarmStringsValues(AddAlarmStrings.TomorrowX, listOf(date)))
                 } else {
                     val date = actualDateTime.format(dateTimeFormatter)
-                    "Today-$date"
+                    listOf(AddAlarmStringsValues(AddAlarmStrings.TodayX, listOf(date)))
                 }
             }
 
-            AlarmMode.DayOfWeekAndTime -> ""
-            AlarmMode.CalendarDateAndTime -> ""
-        }
-        println("LOGS $date")
-        date
-    }
-
-    init {
-        viewModelScope.launch {
-            info.collectLatest { info ->
-                addAlarmUiState.update { previousState ->
-                    previousState.copy(scheduleInfo = info)
+            AlarmMode.DayOfWeekAndTime -> {
+                if (selectedDaysOfWeek.size == DayOfWeek.entries.size) {
+                    listOf(AddAlarmStringsValues(AddAlarmStrings.Everyday))
+                } else {
+                    selectedDaysOfWeek.map { AddAlarmStringsValues(it) }
                 }
             }
+
+            AlarmMode.CalendarDateAndTime -> {
+                val calendarTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(calendarDateMilliseconds),
+                    ZoneId.systemDefault()
+                )
+                val date = calendarTime.format(dateTimeFormatter)
+                listOf(AddAlarmStringsValues(values = listOf(date)))
+            }
         }
-    }
+
+        AddAlarmUiState(
+            scheduleInfo = scheduleInfo,
+            selectedDaysOfWeek = selectedDaysOfWeek,
+            alarmName = alarmName,
+            displayPermissionRequire = displayPermissionRequire,
+            displayDatePicker = displayDatePicker
+        )
+
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = AddAlarmUiState()
+    )
+
+//    val addAlarmUiState = combine(
+//        combine(alarmHour,
+//            alarmMinute,
+//            calendarDateMilliseconds,
+//            selectedDaysOfWeek,
+//            alarmMode),
+//        combine(alarmName,
+//            displayPermissionRequire,
+//            displayDatePicker)
+//    ) { alarmHour,
+//        alarmMinute,
+//        calendarDateMilliseconds,
+//        selectedDaysOfWeek,
+//        alarmMode,
+//        alarmName,
+//        displayPermissionRequire,
+//        displayDatePicker ->
+//
+//        val actualDateTime = LocalDateTime.now()
+//        val dateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM")
+//
+//        val date = when (alarmMode) {
+//            AlarmMode.OnlyTime -> {
+//                if (alarmHour <= actualDateTime.hour && alarmMinute <= actualDateTime.minute) {
+//                    val tomorrowDate = actualDateTime.plusDays(1)
+//                    val date = tomorrowDate.format(dateTimeFormatter)
+//                    "Tomorrow-$date"
+//                } else {
+//                    val date = actualDateTime.format(dateTimeFormatter)
+//                    "Today-$date"
+//                }
+//            }
+//
+//            AlarmMode.DayOfWeekAndTime -> {
+//                if (selectedDaysOfWeek.size == DayOfWeek.entries.size) {
+//                    "Every day"
+//                } else {
+//                    selectedDaysOfWeek.map { it.name }.reduce { acc, dayOfWeek -> acc + dayOfWeek }
+//                        .dropLast(1)
+//                }
+//
+//            }
+//
+//            AlarmMode.CalendarDateAndTime -> ""
+//        }
+//        println("LOGS $date")
+//        date
+//    }
+
+//    init {
+//        viewModelScope.launch {
+//            info.collectLatest { info ->
+//                addAlarmUiState.update { previousState ->
+//                    previousState.copy(scheduleInfo = info)
+//                }
+//            }
+//        }
+//    }
 
 //    init {
 //        calculateDefaultNextDayAlarm()
@@ -109,21 +191,19 @@ class AddAlarmViewModel @Inject constructor(
     }
 
     fun dayOfWeekChanged(dayOfWeek: DayOfWeek) {
-        val selectedDaysOfWeek = uiState.value.selectedDaysOfWeek.toMutableList()
+        val copySelectedDaysOfWeek = selectedDaysOfWeek.value.toMutableList()
 
-        if (selectedDaysOfWeek.contains(dayOfWeek)) {
-            selectedDaysOfWeek.remove(dayOfWeek)
+        if (copySelectedDaysOfWeek.contains(dayOfWeek)) {
+            copySelectedDaysOfWeek.remove(dayOfWeek)
         } else {
-            selectedDaysOfWeek.add(dayOfWeek)
+            copySelectedDaysOfWeek.add(dayOfWeek)
         }
+        //Sort days
+        copySelectedDaysOfWeek.sortBy { it.ordinal }
 
-        addAlarmUiState.update { previousState ->
-            previousState.copy(
-                selectedDaysOfWeek = selectedDaysOfWeek
-            )
-        }
+        selectedDaysOfWeek.value = copySelectedDaysOfWeek
 
-        alarmMode.value = if (selectedDaysOfWeek.isNotEmpty()) {
+        alarmMode.value = if (copySelectedDaysOfWeek.isNotEmpty()) {
             AlarmMode.DayOfWeekAndTime
         } else {
             AlarmMode.OnlyTime
@@ -132,20 +212,16 @@ class AddAlarmViewModel @Inject constructor(
     }
 
     fun nameChanged(name: String) {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(
-                alarmName = name
-            )
-        }
+        alarmName.value = name
     }
 
-    private fun createAlarmRepeat(): AlarmRepeat {
-        return when (alarmMode.value) {
-            AlarmMode.OnlyTime -> AlarmRepeat.EveryDay
-            AlarmMode.DayOfWeekAndTime -> AlarmRepeat.EveryWeek
-            AlarmMode.CalendarDateAndTime -> AlarmRepeat.EveryDay
-        }
-    }
+//    private fun createAlarmRepeat(): AlarmRepeat {
+//        return when (alarmMode.value) {
+//            AlarmMode.OnlyTime -> AlarmRepeat.EveryDay
+//            AlarmMode.DayOfWeekAndTime -> AlarmRepeat.EveryWeek
+//            AlarmMode.CalendarDateAndTime -> AlarmRepeat.EveryDay
+//        }
+//    }
 
 
     fun onSave() {
@@ -187,42 +263,31 @@ class AddAlarmViewModel @Inject constructor(
     }
 
     private fun onScheduleDenied() {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayPermissionRequire = true)
-        }
+        displayPermissionRequire.value = true
     }
 
     fun onRequestSchedulePermission() {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayPermissionRequire = false)
-        }
+        displayPermissionRequire.value = false
         viewModelScope.launch {
             addAlarmActions.send(AddAlarmAction.RequestSchedulePermission)
         }
     }
 
     fun dismissSchedulePermission() {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayPermissionRequire = false)
-        }
+        displayPermissionRequire.value = false
     }
 
     fun onDisplayDatePicker() {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayDatePicker = true)
-        }
+        displayDatePicker.value = true
     }
 
     fun onDismissDatePicker() {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayDatePicker = false)
-        }
+        displayDatePicker.value = false
+
     }
 
     fun onDateChanged(selectedDateMillis: Long) {
-        addAlarmUiState.update { previousState ->
-            previousState.copy(displayDatePicker = false)
-        }
+        displayDatePicker.value = false
         alarmMode.value = AlarmMode.CalendarDateAndTime
         calendarDateMilliseconds.value = selectedDateMillis
     }
@@ -265,11 +330,11 @@ class AddAlarmViewModel @Inject constructor(
                     timeInMillis = System.currentTimeMillis()
                 }
                 val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
-                val dayOfWeek = convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek)
-                val alarmMillisecondsList = uiState.value.selectedDaysOfWeek.map { alarmDay ->
-                    val daysDifference = differenceBetweenDays(
-                        startDay = dayOfWeek,
-                        endDay = alarmDay
+                val presentDay = convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek)
+                val alarmMillisecondsList = selectedDaysOfWeek.value.map { alarmDay ->
+                    val daysDifference = differenceBetweenPresentAndAlarmDay(
+                        presentDay = presentDay,
+                        alarmDay = alarmDay
                     ).toLong()
 
                     actualDateTime
