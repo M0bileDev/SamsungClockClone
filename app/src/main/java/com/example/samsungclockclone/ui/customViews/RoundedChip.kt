@@ -20,11 +20,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.samsungclockclone.presentation.addAlarm.model.ShortName
+import com.example.samsungclockclone.presentation.addAlarm.model.NameResource
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 
 @Composable
-fun <T : ShortName> RoundedChip(
+fun <T : NameResource> RoundedChip(
     value: T,
     selected: Boolean,
     size: Dp = 40.dp,
@@ -86,7 +86,7 @@ fun <T : ShortName> RoundedChip(
 private fun RoundedChipPreview() {
     SamsungClockCloneTheme {
         RoundedChip(
-            value = object : ShortName {
+            value = object : NameResource {
                 override val nameResourceValue: Int
                     get() = android.R.string.unknownName
 
