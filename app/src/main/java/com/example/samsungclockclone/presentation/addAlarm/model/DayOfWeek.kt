@@ -2,69 +2,69 @@ package com.example.samsungclockclone.presentation.addAlarm.model
 
 import androidx.annotation.StringRes
 import com.example.samsungclockclone.ui.utils.strings
-import kotlin.math.abs
 
-sealed class DayOfWeek(
-    val dayOrder: Int,
-    @StringRes override val nameResourceValue: Int,
-) : ShortName {
-    data class Monday(val order: Int = 1) : DayOfWeek(order, strings.monday)
-    data class Tuesday(val order: Int = 2) :
-        DayOfWeek(order, strings.tuesday)
-
-    data class Wednesday(val order: Int = 3) :
-        DayOfWeek(order, strings.wednesday)
-
-    data class Thursday(val order: Int = 4) :
-        DayOfWeek(order, strings.thursday)
-
-    data class Friday(val order: Int = 5) : DayOfWeek(order, strings.friday)
-    data class Saturday(val order: Int = 6) :
-        DayOfWeek(order, strings.saturday)
-
-    data class Sunday(val order: Int = 7) : DayOfWeek(order, strings.sunday)
+enum class DayOfWeek(@StringRes override val nameResourceValue: Int) : NameResource {
+    Monday(strings.monday),
+    Tuesday(strings.tuesday),
+    Wednesday(strings.wednesday),
+    Thursday(strings.thursday),
+    Friday(strings.friday),
+    Saturday(strings.saturday),
+    Sunday(strings.sunday);
 
     object DayOfWeekHelper {
         fun standardWeek() =
-            listOf(Monday(), Tuesday(), Wednesday(), Thursday(), Friday(), Saturday(), Sunday())
+            listOf(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
 
         fun sundayFirstWeek() =
             listOf(
-                Sunday(1),
-                Monday(2),
-                Wednesday(3),
-                Tuesday(4),
-                Wednesday(5),
-                Thursday(6),
-                Saturday(7)
+                Sunday,
+                Monday,
+                Wednesday,
+                Tuesday,
+                Wednesday,
+                Thursday,
+                Saturday
             )
 
         fun saturdayFirstWeek() =
             listOf(
-                Saturday(1),
-                Sunday(2),
-                Monday(3),
-                Wednesday(4),
-                Tuesday(5),
-                Wednesday(6),
-                Thursday(7)
+                Saturday,
+                Sunday,
+                Monday,
+                Wednesday,
+                Tuesday,
+                Wednesday,
+                Thursday
             )
 
-        fun differenceBetweenDays(startDay: DayOfWeek, endDay: DayOfWeek): Int {
-            return abs(startDay.dayOrder - endDay.dayOrder)
+        fun differenceBetweenPresentAndAlarmDay(presentDay: DayOfWeek, alarmDay: DayOfWeek): Int {
+            return when {
+                alarmDay < presentDay -> {
+                    (7 - presentDay.ordinal) + 1
+                }
+
+                alarmDay > presentDay -> {
+                    alarmDay.ordinal - presentDay.ordinal
+                }
+                // presentDay == alarmDay
+                else -> 7
+            }
         }
 
         fun convertCalendarDayOfWeekToDayOfWeek(calendarDayOfWeek: Int): DayOfWeek {
             return when (calendarDayOfWeek) {
-                2 -> Monday()
-                3 -> Tuesday()
-                4 -> Wednesday()
-                5 -> Thursday()
-                6 -> Friday()
-                7 -> Saturday()
-                1 -> Sunday()
+                2 -> Monday
+                3 -> Tuesday
+                4 -> Wednesday
+                5 -> Thursday
+                6 -> Friday
+                7 -> Saturday
+                1 -> Sunday
                 else -> throw IllegalStateException()
             }
         }
+
+
     }
 }
