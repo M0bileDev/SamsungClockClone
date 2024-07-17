@@ -1,11 +1,13 @@
 package com.example.samsungclockclone.presentation.addAlarm
 
+import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStrings
+import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.standardWeek
 
 // TODO: Addd Immutable or Stable annotation, test performance
 data class AddAlarmUiState(
-    val scheduleInfo: String = "",
+    val scheduleInfo: List<AddAlarmStringsValues> = emptyList(),
     //May change, depend of the settings configuration
     val daysOfWeek: List<DayOfWeek> = standardWeek(),
     val selectedDaysOfWeek: List<DayOfWeek> = emptyList(),
@@ -22,12 +24,12 @@ data class AddAlarmUiState(
 ) {
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
-            scheduleInfo = "Tomorrow-Sat, 6 Jul",
+            scheduleInfo = emptyList(),
             daysOfWeek = standardWeek(),
             selectedDaysOfWeek = listOf(
-                DayOfWeek.Monday(),
-                DayOfWeek.Saturday(),
-                DayOfWeek.Sunday()
+                DayOfWeek.Monday,
+                DayOfWeek.Saturday,
+                DayOfWeek.Sunday
             ),
             alarmName = "Alarm 1",
             soundName = "Default",
