@@ -13,4 +13,9 @@
     <string name="friday">friday</string>
     <string name="saturday">saturday</string>
     <string name="sunday">sunday</string>
+
+    <string name="today_x">Today-%1$s</string>
+    <string name="tomorrow_x">Tomorrow-%1$s</string>
+    <string name="everyday">Everyday</string>
+    <string name="empty_x">%1$s</string>
 </resources>
