@@ -33,6 +33,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.samsungclockclone.data.utils.TimeFormat
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.alarmUiStatePreview
+import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
 import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
 import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
 import com.example.samsungclockclone.ui.customViews.SectionSwitch
@@ -64,6 +68,13 @@ fun AddAlarmScreen(
     onDisplayDatePicker: () -> Unit,
     onDismissDatePicker: () -> Unit,
 ) = with(uiState) {
+
+    val convertedScheduleInfo by remember(scheduleInfo) {
+        derivedStateOf {
+            convertScheduleInfo(scheduleInfo)
+        }
+    }
+
     Scaffold(modifier = modifier,
         bottomBar = {
             Row(Modifier.fillMaxWidth()) {
@@ -125,7 +136,7 @@ fun AddAlarmScreen(
                         .padding(8.dp)
                 ) {
                     AlarmScheduleInfoCalendar(
-                        scheduleInfo = scheduleInfo,
+                        scheduleInfo = convertedScheduleInfo,
                         onDisplayDatePicker = onDisplayDatePicker
                     )
                     HorizontalChipGroup(
@@ -229,6 +240,11 @@ fun AddAlarmScreen(
         }
 
     }
+}
+
+fun convertScheduleInfo(scheduleInfo: List<AddAlarmStringsValues>): String {
+    // TODO: add logic to convert list of types to string
+    return ""
 }
 
 @Composable
