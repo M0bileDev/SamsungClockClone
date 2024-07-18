@@ -6,16 +6,17 @@
     <string name="timer">Timer</string>
     <string name="add_alarm">Add alarm</string>
 
-    <string name="monday">monday</string>
-    <string name="tuesday">tuesday</string>
-    <string name="wednesday">wednesday</string>
-    <string name="thursday">thursday</string>
-    <string name="friday">friday</string>
-    <string name="saturday">saturday</string>
-    <string name="sunday">sunday</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
 
     <string name="today_x">Today-%1$s</string>
     <string name="tomorrow_x">Tomorrow-%1$s</string>
+    <string name="every_x">Every %1$s</string>
     <string name="everyday">Everyday</string>
-    <string name="empty_x">%1$s</string>
+    <string name="value_only_x">%1$s</string>
 </resources>
