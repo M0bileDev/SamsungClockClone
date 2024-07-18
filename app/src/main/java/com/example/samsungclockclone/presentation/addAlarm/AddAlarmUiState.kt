@@ -1,13 +1,13 @@
 package com.example.samsungclockclone.presentation.addAlarm
 
-import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStrings
-import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.standardWeek
+import com.example.samsungclockclone.domain.model.AddAlarmString
+import com.example.samsungclockclone.domain.model.AddAlarmStringType
+import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek.DayOfWeekHelper.standardWeek
 
 // TODO: Addd Immutable or Stable annotation, test performance
 data class AddAlarmUiState(
-    val scheduleInfo: List<AddAlarmStringsValues> = emptyList(),
+    val addAlarmString: AddAlarmString = AddAlarmString(),
     //May change, depend of the settings configuration
     val daysOfWeek: List<DayOfWeek> = standardWeek(),
     val selectedDaysOfWeek: List<DayOfWeek> = emptyList(),
@@ -24,7 +24,7 @@ data class AddAlarmUiState(
 ) {
     companion object AddAlarmUiStateHelper {
         val alarmUiStatePreview = AddAlarmUiState(
-            scheduleInfo = emptyList(),
+            addAlarmString = AddAlarmString(type = AddAlarmStringType.Everyday),
             daysOfWeek = standardWeek(),
             selectedDaysOfWeek = listOf(
                 DayOfWeek.Monday,
