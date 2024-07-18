@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.samsungclockclone.presentation.addAlarm.model.NameResource
+import com.example.samsungclockclone.domain.model.NameResource
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 
 @Composable
@@ -20,7 +20,7 @@ fun <T : NameResource> HorizontalChipGroup(
         items.forEach { item ->
             RoundedChip(
                 value = item,
-                selected = selectedItems.contains(item),
+                selected = selectedItems.any { it.nameResourceValue == item.nameResourceValue },
                 onSelected = onSelected
             )
         }
@@ -39,13 +39,16 @@ private fun HorizontalChipGroupPreview() {
     SamsungClockCloneTheme {
         HorizontalChipGroup(
             modifier = Modifier.fillMaxWidth(),
-            items = listOf(object : NameResource {
-                override val nameResourceValue: Int
-                    get() = android.R.string.unknownName
-            }, selected, object : NameResource {
-                override val nameResourceValue: Int
-                    get() = android.R.string.unknownName
-            }),
+            items = listOf(
+                object : NameResource {
+                    override val nameResourceValue: Int
+                        get() = android.R.string.unknownName
+                },
+                selected,
+                object : NameResource {
+                    override val nameResourceValue: Int
+                        get() = android.R.string.unknownName
+                }),
 
             selectedItems = listOf(selected),
             onSelected = {})
