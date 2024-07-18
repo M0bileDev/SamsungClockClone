@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
-import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStrings
-import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
-import com.example.samsungclockclone.presentation.addAlarm.model.AlarmMode
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
+import com.example.samsungclockclone.domain.model.AddAlarmStringType
+import com.example.samsungclockclone.domain.model.AddAlarmString
+import com.example.samsungclockclone.domain.model.AlarmMode
+import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,18 +70,21 @@ class AddAlarmViewModel @Inject constructor(
                 if (hour <= actualDateTime.hour && minute <= actualDateTime.minute) {
                     val tomorrowDate = actualDateTime.plusDays(1)
                     val date = tomorrowDate.format(dateTimeFormatter)
-                    listOf(AddAlarmStringsValues(AddAlarmStrings.TomorrowX, listOf(date)))
+                    AddAlarmString(AddAlarmStringType.TomorrowX, date)
                 } else {
                     val date = actualDateTime.format(dateTimeFormatter)
-                    listOf(AddAlarmStringsValues(AddAlarmStrings.TodayX, listOf(date)))
+                    AddAlarmString(AddAlarmStringType.TodayX, date)
                 }
             }
 
             AlarmMode.DayOfWeekAndTime -> {
                 if (selectedDaysOfWeek.size == DayOfWeek.entries.size) {
-                    listOf(AddAlarmStringsValues(AddAlarmStrings.Everyday))
+                    AddAlarmString(AddAlarmStringType.Everyday)
                 } else {
-                    selectedDaysOfWeek.map { AddAlarmStringsValues(it) }
+                    AddAlarmString(
+                        AddAlarmStringType.EveryX,
+                        daysOfWeek = selectedDaysOfWeek
+                    )
                 }
             }
 
@@ -91,12 +94,12 @@ class AddAlarmViewModel @Inject constructor(
                     ZoneId.systemDefault()
                 )
                 val date = calendarTime.format(dateTimeFormatter)
-                listOf(AddAlarmStringsValues(values = listOf(date)))
+                AddAlarmString(AddAlarmStringType.ValueOnly, date)
             }
         }
 
         AddAlarmUiState(
-            scheduleInfo = scheduleInfo,
+            addAlarmString = scheduleInfo,
             selectedDaysOfWeek = selectedDaysOfWeek,
             alarmName = alarmName,
             displayPermissionRequire = displayPermissionRequire,
