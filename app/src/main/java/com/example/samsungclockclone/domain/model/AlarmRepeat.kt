@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.addAlarm.model
+package com.example.samsungclockclone.domain.model
 
 enum class AlarmRepeat {
     EveryWeek,

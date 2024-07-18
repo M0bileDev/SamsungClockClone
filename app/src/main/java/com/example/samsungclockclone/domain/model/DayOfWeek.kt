@@ -1,16 +1,13 @@
-package com.example.samsungclockclone.presentation.addAlarm.model
+package com.example.samsungclockclone.domain.model
 
-import androidx.annotation.StringRes
-import com.example.samsungclockclone.ui.utils.strings
-
-enum class DayOfWeek(@StringRes override val nameResourceValue: Int) : NameResource {
-    Monday(strings.monday),
-    Tuesday(strings.tuesday),
-    Wednesday(strings.wednesday),
-    Thursday(strings.thursday),
-    Friday(strings.friday),
-    Saturday(strings.saturday),
-    Sunday(strings.sunday);
+enum class DayOfWeek {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday;
 
     object DayOfWeekHelper {
         fun standardWeek() =
@@ -64,7 +61,6 @@ enum class DayOfWeek(@StringRes override val nameResourceValue: Int) : NameResou
                 else -> throw IllegalStateException()
             }
         }
-
 
     }
 }
