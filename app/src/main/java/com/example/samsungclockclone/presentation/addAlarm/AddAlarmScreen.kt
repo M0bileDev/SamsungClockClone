@@ -33,18 +33,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.samsungclockclone.data.utils.TimeFormat
+import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.alarmUiStatePreview
-import com.example.samsungclockclone.presentation.addAlarm.model.AddAlarmStringsValues
-import com.example.samsungclockclone.presentation.addAlarm.model.DayOfWeek
+import com.example.samsungclockclone.presentation.addAlarm.utils.toDayOfWeek
+import com.example.samsungclockclone.presentation.addAlarm.utils.toNameResourceList
+import com.example.samsungclockclone.presentation.addAlarm.utils.toStringResource
 import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
 import com.example.samsungclockclone.ui.customViews.SectionSwitch
 import com.example.samsungclockclone.ui.customViews.SwipeableClock
@@ -68,13 +67,6 @@ fun AddAlarmScreen(
     onDisplayDatePicker: () -> Unit,
     onDismissDatePicker: () -> Unit,
 ) = with(uiState) {
-
-    val convertedScheduleInfo by remember(scheduleInfo) {
-        derivedStateOf {
-            convertScheduleInfo(scheduleInfo)
-        }
-    }
-
     Scaffold(modifier = modifier,
         bottomBar = {
             Row(Modifier.fillMaxWidth()) {
@@ -136,14 +128,18 @@ fun AddAlarmScreen(
                         .padding(8.dp)
                 ) {
                     AlarmScheduleInfoCalendar(
-                        scheduleInfo = convertedScheduleInfo,
+                        scheduleInfo = addAlarmString.toStringResource(),
                         onDisplayDatePicker = onDisplayDatePicker
                     )
                     HorizontalChipGroup(
                         modifier = Modifier.fillMaxWidth(),
-                        items = daysOfWeek,
-                        selectedItems = selectedDaysOfWeek,
-                        onSelected = onDayOfWeekChanged
+                        // TODO: Think about optimize solution
+                        items = daysOfWeek.toNameResourceList(),
+                        selectedItems = selectedDaysOfWeek.toNameResourceList(),
+                        onSelected = { resource ->
+                            val dayOfWeek = resource.nameResourceValue.toDayOfWeek()
+                            onDayOfWeekChanged(dayOfWeek)
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     TextField(
@@ -242,11 +238,6 @@ fun AddAlarmScreen(
     }
 }
 
-fun convertScheduleInfo(scheduleInfo: List<AddAlarmStringsValues>): String {
-    // TODO: add logic to convert list of types to string
-    return ""
-}
-
 @Composable
 private fun AlarmScheduleInfoCalendar(
     scheduleInfo: String,
@@ -264,7 +255,6 @@ private fun AlarmScheduleInfoCalendar(
         )
         IconButton(
             modifier = Modifier
-                .weight(1f)
                 .wrapContentWidth(Alignment.End),
             onClick = onDisplayDatePicker
         ) {
