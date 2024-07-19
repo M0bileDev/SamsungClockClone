@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.domain.model
+package com.example.samsungclockclone.presentation.addAlarm.utils
 
 enum class AddAlarmStringType {
     TodayX,
