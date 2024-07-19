@@ -26,8 +26,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -39,6 +41,7 @@ import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.alarm.AlarmScreen
+import com.example.samsungclockclone.ui.customModifier.drawUnderline
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -67,10 +70,15 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         bottomBar = {
+
+                            if (hideNavigationBar(currentDestination)) return@Scaffold
+
                             NavigationBar {
                                 navBottomItems.forEach { screen ->
+                                    val selected =
+                                        currentDestination?.hierarchy?.any { it.route == screen.route } == true
                                     NavigationBarItem(
-                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                        selected = selected,
                                         onClick = {
                                             navController.navigate(screen.route) {
                                                 popUpTo(
@@ -82,9 +90,16 @@ class MainActivity : ComponentActivity() {
                                                 restoreState = true
                                             }
                                         },
-                                        icon = {},
-                                        label = {
-                                            Text(text = resources.getString(screen.name))
+                                        icon = {
+                                            val color = MaterialTheme.colorScheme.onSurface
+                                            Text(
+                                                modifier = Modifier.drawUnderline(
+                                                    selected,
+                                                    color = color
+                                                ),
+                                                text = resources.getString(screen.name),
+                                                fontWeight = if (selected) FontWeight.Bold else null,
+                                            )
                                         }
                                     )
 
@@ -95,7 +110,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             modifier = Modifier.padding(padding),
                             navController = navController,
-                            startDestination = Screens.AddAlarm.route
+                            startDestination = Screens.Alarm.route
                         ) {
 
                             composable(Screens.AddAlarm.route) {
@@ -190,5 +205,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
+    return !navBottomItems.any { screen ->
+        currentDestination?.hierarchy?.any { destination -> screen.route == destination.route }
+            ?: false
     }
 }
