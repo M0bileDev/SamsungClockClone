@@ -35,7 +35,7 @@ import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
  */
 @Composable
 fun SwipeableClock(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     timeFormat: TimeFormat,
     clockCount: Int = 1000,
     clockStartPoint: Int = clockCount / 2,
