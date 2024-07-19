@@ -3,21 +3,21 @@ package com.example.samsungclockclone.presentation.addAlarm.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.samsungclockclone.domain.model.AddAlarmString
-import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.domain.model.NameResource
+import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
 fun AddAlarmString.toStringResource(): String = when (type) {
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.TodayX -> {
+    AddAlarmStringType.TodayX -> {
         stringResource(id = strings.today_x, stringValue)
     }
 
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.TomorrowX -> {
+    AddAlarmStringType.TomorrowX -> {
         stringResource(id = strings.tomorrow_x, stringValue)
     }
 
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.EveryX -> {
+    AddAlarmStringType.EveryX -> {
         val separator = ", "
         val days = StringBuffer()
         daysOfWeek.forEach { dayOfWeek ->
@@ -32,15 +32,15 @@ fun AddAlarmString.toStringResource(): String = when (type) {
         stringResource(id = strings.every_x, formattedDays)
     }
 
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.Everyday -> {
+    AddAlarmStringType.Everyday -> {
         stringResource(id = strings.everyday)
     }
 
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.ValueOnly -> {
+    AddAlarmStringType.ValueOnly -> {
         stringResource(id = strings.value_only_x, stringValue)
     }
 
-    com.example.samsungclockclone.domain.model.AddAlarmStringType.NotDefined -> {
+    AddAlarmStringType.NotDefined -> {
         throw IllegalStateException()
     }
 }
