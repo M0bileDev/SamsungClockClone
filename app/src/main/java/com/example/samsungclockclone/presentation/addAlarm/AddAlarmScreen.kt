@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.samsungclockclone.data.utils.TimeFormat
-import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.alarmUiStatePreview
 import com.example.samsungclockclone.presentation.addAlarm.utils.toDayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.utils.toNameResourceList
@@ -48,7 +48,6 @@ import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
 import com.example.samsungclockclone.ui.customViews.SectionSwitch
 import com.example.samsungclockclone.ui.customViews.SwipeableClock
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
-
 
 @Composable
 fun AddAlarmScreen(
