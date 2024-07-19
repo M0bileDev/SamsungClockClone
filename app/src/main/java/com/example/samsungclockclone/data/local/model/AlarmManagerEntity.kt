@@ -3,6 +3,7 @@ package com.example.samsungclockclone.data.local.model
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.samsungclockclone.domain.utils.AlarmRepeat
 
 @Entity(
     tableName = "alarm_manager_table",
@@ -20,5 +21,5 @@ data class AlarmManagerEntity(
     val uniqueId: Long = 0L,
     val parentId: Long,
     val fireTime: Long,
-    val repeat: String
+    val repeat: AlarmRepeat
 )
