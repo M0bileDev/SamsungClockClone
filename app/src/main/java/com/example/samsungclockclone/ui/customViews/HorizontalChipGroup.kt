@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.samsungclockclone.domain.model.NameResource
+import com.example.samsungclockclone.domain.model.addAlarm.NameResource
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 
 @Composable
