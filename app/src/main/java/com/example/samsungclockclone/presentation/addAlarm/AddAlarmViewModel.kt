@@ -8,7 +8,7 @@ import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.data.local.scheduler.AlarmMilliseconds
 import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
-import com.example.samsungclockclone.domain.model.AddAlarmString
+import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
