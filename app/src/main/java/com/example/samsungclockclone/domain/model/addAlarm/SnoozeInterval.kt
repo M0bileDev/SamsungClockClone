@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.domain.model
+package com.example.samsungclockclone.domain.model.addAlarm
 
 sealed class SnoozeInterval(
     val minutes: Int

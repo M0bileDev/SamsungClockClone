@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.domain.model
+package com.example.samsungclockclone.domain.model.addAlarm
 
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
