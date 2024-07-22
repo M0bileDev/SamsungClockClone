@@ -1,6 +1,6 @@
 package com.example.samsungclockclone.presentation.addAlarm
 
-import com.example.samsungclockclone.domain.model.AddAlarmString
+import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.standardWeek
 import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
