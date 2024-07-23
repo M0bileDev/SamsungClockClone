@@ -15,6 +15,7 @@ import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.conv
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
 import com.example.samsungclockclone.domain.utils.toAlarmRepeat
 import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
+import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,7 +68,7 @@ class AddAlarmViewModel @Inject constructor(
         val (displayPermissionRequire, displayDatePicker) = permissionAndDatePicker
 
         val actualDateTime = LocalDateTime.now()
-        val dateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM")
+        val dateTimeFormatter = DateTimeFormatter.ofPattern(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
 
         val scheduleInfo = when (alarmMode) {
             AlarmMode.OnlyTime -> {
