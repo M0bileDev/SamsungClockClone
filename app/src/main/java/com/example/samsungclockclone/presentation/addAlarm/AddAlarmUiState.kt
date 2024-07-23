@@ -23,7 +23,7 @@ data class AddAlarmUiState(
     val displayDatePicker: Boolean = false
 ) {
     companion object AddAlarmUiStateHelper {
-        val alarmUiStatePreview = AddAlarmUiState(
+        val addAlarmUiStatePreview = AddAlarmUiState(
             addAlarmString = AddAlarmString(type = AddAlarmStringType.Everyday),
             daysOfWeek = standardWeek(),
             selectedDaysOfWeek = listOf(
