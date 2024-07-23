@@ -7,4 +7,15 @@ data class AlarmUiState(
     val editAvailable: Boolean = false,
     val sortAvailable: Boolean = false,
     val editModeEnable: Boolean = false
-)
+) {
+    companion object {
+        val alarmUiStatePreview = AlarmUiState(
+            listOf(
+                AlarmItem.alarmItemPreview
+            ),
+            editAvailable = true,
+            sortAvailable = true,
+            editModeEnable = false
+        )
+    }
+}
