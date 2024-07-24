@@ -82,7 +82,7 @@ class AlarmViewModel @Inject constructor(
         }
     }
 
-    fun updateAlarm(alarmId: AlarmId) {
+    fun onAlarmChanged(alarmId: AlarmId) {
         viewModelScope.launch {
             val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
             val updatedAlarm = alarm.copy(enable = !alarm.enable)
