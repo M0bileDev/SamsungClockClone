@@ -14,9 +14,12 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmDao {
 
     @Query("SELECT * FROM alarm_table WHERE id =:alarmId")
-    fun getAlarmAndAlarmManagers(
+    fun getAlarmAndAlarmManagersById(
         alarmId: Long
     ): Flow<List<AlarmWithAlarmManagerEntity>>
+
+    @Query("SELECT * FROM alarm_table")
+    fun getAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
     @Query("SELECT * FROM alarm_table")
     fun getAllAlarms(): Flow<List<AlarmEntity>>

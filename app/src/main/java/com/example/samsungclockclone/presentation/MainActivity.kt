@@ -41,6 +41,7 @@ import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.alarm.AlarmScreen
+import com.example.samsungclockclone.presentation.alarm.AlarmViewModel
 import com.example.samsungclockclone.ui.customModifier.drawUnderline
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -183,8 +184,11 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(Screens.Alarm.route) {
-//                                val alarmViewModel: AlarmViewModel by viewModels()
+                                val alarmViewModel: AlarmViewModel by viewModels()
+                                val uiState by alarmViewModel.uiState.collectAsState()
+
                                 AlarmScreen(
+                                    uiState = uiState,
                                     onAddAlarm = {},
                                     onEdit = {},
                                     onSort = {},

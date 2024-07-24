@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.domain.model
+package com.example.samsungclockclone.domain.model.addAlarm
 
 import androidx.annotation.StringRes
 

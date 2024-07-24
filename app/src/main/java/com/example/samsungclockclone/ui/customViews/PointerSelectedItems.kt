@@ -2,26 +2,34 @@ package com.example.samsungclockclone.ui.customViews
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.samsungclockclone.domain.model.addAlarm.NameResource
+import com.example.samsungclockclone.ui.customModifier.drawPointerAbove
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 
 @Composable
-fun <T : NameResource> HorizontalChipGroup(
+fun <T : NameResource> PointerSelectedItems(
     modifier: Modifier = Modifier,
+    pointerColor: Color = MaterialTheme.colorScheme.primary,
+    textSelectedColor:Color = MaterialTheme.colorScheme.primary,
+    textColor:Color = MaterialTheme.colorScheme.onSurface,
+    pointerRadius: Float = 4f,
     items: List<T>,
     selectedItems: List<T>,
-    onSelected: (T) -> Unit
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
         items.forEach { item ->
-            RoundedChip(
-                value = item,
-                selected = selectedItems.any { it.nameResourceValue == item.nameResourceValue },
-                onSelected = onSelected
+            val visible = selectedItems.any { it.nameResourceValue == item.nameResourceValue }
+            Text(
+                color = if(visible) textSelectedColor else textColor,
+                modifier = Modifier.drawPointerAbove(visible, pointerRadius, pointerColor),
+                text = stringResource(id = item.nameResourceValue).take(1)
             )
         }
     }
@@ -29,7 +37,7 @@ fun <T : NameResource> HorizontalChipGroup(
 
 @Preview
 @Composable
-private fun HorizontalChipGroupPreview() {
+private fun PointerSelectedItemsPreview() {
 
     val selected = object : NameResource {
         override val nameResourceValue: Int
@@ -37,8 +45,7 @@ private fun HorizontalChipGroupPreview() {
     }
 
     SamsungClockCloneTheme {
-        HorizontalChipGroup(
-            modifier = Modifier.fillMaxWidth(),
+        PointerSelectedItems(
             items = listOf(
                 object : NameResource {
                     override val nameResourceValue: Int
@@ -51,6 +58,6 @@ private fun HorizontalChipGroupPreview() {
                 }),
 
             selectedItems = listOf(selected),
-            onSelected = {})
+        )
     }
 }

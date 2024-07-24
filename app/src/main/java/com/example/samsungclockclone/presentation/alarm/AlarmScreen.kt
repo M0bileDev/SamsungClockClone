@@ -2,9 +2,12 @@
 
 package com.example.samsungclockclone.presentation.alarm
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -24,18 +27,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
 fun AlarmScreen(
     modifier: Modifier = Modifier,
-//    uiState: AlarmUiState,
+    uiState: AlarmUiState,
     onAddAlarm: () -> Unit,
     onEdit: () -> Unit,
     onSort: () -> Unit,
     onSettings: () -> Unit
-) {
+) = with(uiState) {
 
     val resources = LocalContext.current.resources
     var expanded by remember {
@@ -70,22 +75,26 @@ fun AlarmScreen(
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "Edit"
-                                )
-                            },
-                            onClick = onEdit
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "Sort"
-                                )
-                            },
-                            onClick = onSort
-                        )
+                        if (editAvailable) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Edit"
+                                    )
+                                },
+                                onClick = onEdit
+                            )
+                        }
+                        if (sortAvailable) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Sort"
+                                    )
+                                },
+                                onClick = onSort
+                            )
+                        }
                         DropdownMenuItem(
                             text = {
                                 Text(
@@ -99,7 +108,16 @@ fun AlarmScreen(
             )
         }
     ) {
-        Box(modifier = Modifier.padding(it))
+        // TODO: Add no items handler
+        LazyColumn(
+            modifier = Modifier.padding(it),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(alarmItems) { item ->
+                AlarmItemCard(alarmItem = item, onChanged = {})
+            }
+        }
     }
 }
 
@@ -108,6 +126,7 @@ fun AlarmScreen(
 private fun AlarmScreenPreview() {
     SamsungClockCloneTheme {
         AlarmScreen(
+            uiState = AlarmUiState.alarmUiStatePreview,
             onAddAlarm = {},
             onEdit = {},
             onSort = {},
@@ -115,3 +134,4 @@ private fun AlarmScreenPreview() {
         )
     }
 }
+
