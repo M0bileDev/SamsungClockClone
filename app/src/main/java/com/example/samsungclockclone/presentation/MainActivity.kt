@@ -192,7 +192,8 @@ class MainActivity : ComponentActivity() {
                                     onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
                                     onEdit = {},
                                     onSort = {},
-                                    onSettings = {}
+                                    onSettings = {},
+                                    onAlarmChanged = alarmViewModel::onAlarmChanged
                                 )
                             }
 
