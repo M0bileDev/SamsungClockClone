@@ -34,9 +34,9 @@ import com.example.samsungclockclone.ui.utils.strings
 fun AlarmItemCard(
     modifier: Modifier = Modifier,
     alarmItem: AlarmItem,
-    onChanged: (AlarmId) -> Unit
+    onCheckedChange: (AlarmId) -> Unit
 ) = with(alarmItem) {
-    Card(Modifier.height(90.dp)) {
+    Card(modifier = modifier.height(90.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,7 +90,7 @@ fun AlarmItemCard(
                     }
                 }
                 Spacer(modifier = Modifier.size(8.dp))
-                Switch(checked = enable, onCheckedChange = { alarmId })
+                Switch(checked = enable, onCheckedChange = { onCheckedChange(alarmId) })
             }
         }
     }
@@ -102,7 +102,7 @@ private fun AlarmItemCardPreview() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview,
-            onChanged = {}
+            onCheckedChange = {}
         )
     }
 }
@@ -113,7 +113,7 @@ private fun AlarmItemCardPreview2() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview2,
-            onChanged = {}
+            onCheckedChange = {}
         )
     }
 }
@@ -124,7 +124,7 @@ private fun AlarmItemCardPreview3() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview3,
-            onChanged = {}
+            onCheckedChange = {}
         )
     }
 }
@@ -135,7 +135,7 @@ private fun AlarmItemCardPreview4() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview4,
-            onChanged = {}
+            onCheckedChange = {}
         )
     }
 }
