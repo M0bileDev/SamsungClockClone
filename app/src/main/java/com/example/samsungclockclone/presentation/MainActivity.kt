@@ -189,7 +189,7 @@ class MainActivity : ComponentActivity() {
 
                                 AlarmScreen(
                                     uiState = uiState,
-                                    onAddAlarm = {},
+                                    onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
                                     onEdit = {},
                                     onSort = {},
                                     onSettings = {}
