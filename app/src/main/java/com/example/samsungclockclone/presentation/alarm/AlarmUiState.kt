@@ -11,7 +11,10 @@ data class AlarmUiState(
     companion object {
         val alarmUiStatePreview = AlarmUiState(
             listOf(
-                AlarmItem.alarmItemPreview
+                AlarmItem.alarmItemPreview,
+                AlarmItem.alarmItemPreview2,
+                AlarmItem.alarmItemPreview3,
+                AlarmItem.alarmItemPreview4
             ),
             editAvailable = true,
             sortAvailable = true,
