@@ -13,19 +13,24 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlarmDao {
 
-    @Query("SELECT * FROM alarm_table WHERE id =:alarmId")
-    fun getAlarmAndAlarmManagersById(
+    @Query("SELECT * FROM alarm_table WHERE id =:alarmId LIMIT 1")
+    suspend fun getAlarmAndAlarmManagersById(
         alarmId: Long
-    ): Flow<List<AlarmWithAlarmManagerEntity>>
+    ): AlarmWithAlarmManagerEntity
+
+    @Query("SELECT * FROM alarm_table WHERE id =:alarmId LIMIT 1")
+    fun collectAlarmAndAlarmManagersById(
+        alarmId: Long
+    ): Flow<AlarmWithAlarmManagerEntity>
 
     @Query("SELECT * FROM alarm_table")
-    fun getAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
+    fun collectAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
     @Query("SELECT * FROM alarm_table")
-    fun getAllAlarms(): Flow<List<AlarmEntity>>
+    fun collectAllAlarms(): Flow<List<AlarmEntity>>
 
     @Query("SELECT * FROM alarm_manager_table ORDER BY fireTime ASC LIMIT 1")
-    fun getNearestAlarmManager(): Flow<AlarmManagerEntity>
+    fun collectNearestAlarmManager(): Flow<AlarmManagerEntity>
 
     @Insert
     suspend fun insertAlarm(alarm: AlarmEntity): Long

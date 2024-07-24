@@ -3,6 +3,8 @@ package com.example.samsungclockclone.presentation.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
+import com.example.samsungclockclone.data.local.scheduler.AlarmId
+import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
+    private val alarmScheduler: AlarmScheduler,
     private val alarmDao: AlarmDao
 ) : ViewModel() {
 
@@ -48,7 +51,7 @@ class AlarmViewModel @Inject constructor(
             // TODO: 1. synchronize to clock tick
             //       2. refresh each minute
             //       3. Extract logic to separate function
-            alarmDao.getAlarmAndAlarmManagers().collectLatest { alarms ->
+            alarmDao.collectAlarmAndAlarmManagers().collectLatest { alarms ->
                 alarmItems.value = alarms.map { alarmWithAlarmManager ->
                     val firstFireTime =
                         alarmWithAlarmManager.alarmMangerEntityList.minOf { it.fireTime }
@@ -76,6 +79,19 @@ class AlarmViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun onAlarmChanged(alarmId: AlarmId) {
+        viewModelScope.launch {
+            val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
+            val updatedAlarm = alarm.copy(enable = !alarm.enable)
+            alarmDao.updateAlarm(updatedAlarm)
+
+            // TODO: enable after database full implementation
+//            alarmManagers.forEach { alarmManager ->
+//                alarmScheduler.cancel(alarmManager.uniqueId)
+//            }
         }
     }
 

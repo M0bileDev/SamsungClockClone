@@ -174,6 +174,7 @@ class AddAlarmViewModel @Inject constructor(
                     alarmDao.insertAlarmManager(alarmManagerEntity) to alarmMilliseconds
                 }
 
+            // TODO: enable after database full implementation
             //schedule alarms via alarm manager
 //            alarmScheduler.schedule(
 //                alarms,
