@@ -32,6 +32,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.strings
@@ -43,7 +44,8 @@ fun AlarmScreen(
     onAddAlarm: () -> Unit,
     onEdit: () -> Unit,
     onSort: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onAlarmChanged: (AlarmId) -> Unit
 ) = with(uiState) {
 
     val topAppBarState = rememberTopAppBarState()
@@ -129,7 +131,10 @@ fun AlarmScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(alarmItems) { item ->
-                AlarmItemCard(alarmItem = item, onChanged = {})
+                AlarmItemCard(
+                    alarmItem = item,
+                    onCheckedChange = onAlarmChanged
+                )
             }
         }
     }
@@ -144,7 +149,8 @@ private fun AlarmScreenPreview() {
             onAddAlarm = {},
             onEdit = {},
             onSort = {},
-            onSettings = {}
+            onSettings = {},
+            onAlarmChanged = {}
         )
     }
 }
