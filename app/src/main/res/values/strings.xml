@@ -5,6 +5,7 @@
     <string name="stopwatch">Stopwatch</string>
     <string name="timer">Timer</string>
     <string name="add_alarm">Add alarm</string>
+    <string name="edit_alarm">Edit alarm</string>
 
     <string name="monday">Monday</string>
     <string name="tuesday">Tuesday</string>
