@@ -8,6 +8,7 @@ sealed class Screens(val route: String, @StringRes val name: Int) {
     data object Stopwatch : Screens("stopwatch", strings.stopwatch)
     data object Timer : Screens("timer", strings.timer)
     data object AddAlarm : Screens("alarm/add", strings.add_alarm)
+    data object EditAlarm : Screens("alarm/edit", strings.add_alarm)
 }
 
 object NavigationUtils {
