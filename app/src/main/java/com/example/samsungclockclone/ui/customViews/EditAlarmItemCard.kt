@@ -38,8 +38,7 @@ import com.example.samsungclockclone.ui.utils.strings
 fun EditAlarmItemCard(
     modifier: Modifier = Modifier,
     editAlarmItem: EditAlarmItem,
-    onSelectionChanged: (AlarmId) -> Unit,
-    onDragChanged: (AlarmId) -> Unit
+    onSelectionChanged: (AlarmId) -> Unit
 ) = with(editAlarmItem) {
     Card(
         modifier = modifier.height(90.dp),
@@ -123,8 +122,7 @@ private fun EditAlarmItemCardPreview() {
     SamsungClockCloneTheme {
         EditAlarmItemCard(
             editAlarmItem = EditAlarmItem.editAlarmItemPreview,
-            onSelectionChanged = {},
-            onDragChanged = {}
+            onSelectionChanged = {}
         )
     }
 }
@@ -136,7 +134,6 @@ private fun EditAlarmItemCardPreview2() {
         EditAlarmItemCard(
             editAlarmItem = EditAlarmItem.editAlarmItemPreview2,
             onSelectionChanged = {},
-            onDragChanged = {}
         )
     }
 }
