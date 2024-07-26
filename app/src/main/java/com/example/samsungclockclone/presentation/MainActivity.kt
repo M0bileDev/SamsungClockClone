@@ -42,6 +42,8 @@ import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.alarm.AlarmScreen
 import com.example.samsungclockclone.presentation.alarm.AlarmViewModel
+import com.example.samsungclockclone.presentation.editAlarm.EditAlarmScreen
+import com.example.samsungclockclone.presentation.editAlarm.EditAlarmViewModel
 import com.example.samsungclockclone.ui.customModifier.drawUnderline
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -197,6 +199,16 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
+                            composable(Screens.EditAlarm.route) {
+                                val editAlarmViewModel: EditAlarmViewModel by viewModels()
+                                val uiState by editAlarmViewModel.uiState.collectAsState()
+
+                                EditAlarmScreen(
+                                    uiState = uiState,
+                                    onSelectionAllChanged = {},
+                                    onSelectionChanged = {}
+                                )
+                            }
 
                             composable(Screens.Stopwatch.route) {
 
