@@ -97,7 +97,10 @@ fun AlarmScreen(
                                         text = "Edit"
                                     )
                                 },
-                                onClick = onEdit
+                                onClick = {
+                                    expanded = false
+                                    onEdit()
+                                }
                             )
                         }
                         if (sortAvailable) {
@@ -133,7 +136,8 @@ fun AlarmScreen(
             items(alarmItems) { item ->
                 AlarmItemCard(
                     alarmItem = item,
-                    onCheckedChange = onAlarmChanged
+                    onCheckedChange = onAlarmChanged,
+                    onLongClick = onEdit
                 )
             }
         }
@@ -150,7 +154,7 @@ private fun AlarmScreenPreview() {
             onEdit = {},
             onSort = {},
             onSettings = {},
-            onAlarmChanged = {}
+            onAlarmChanged = {},
         )
     }
 }

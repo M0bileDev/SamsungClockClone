@@ -192,7 +192,7 @@ class MainActivity : ComponentActivity() {
                                 AlarmScreen(
                                     uiState = uiState,
                                     onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
-                                    onEdit = {},
+                                    onEdit = { navController.navigate(Screens.EditAlarm.route) },
                                     onSort = {},
                                     onSettings = {},
                                     onAlarmChanged = alarmViewModel::onAlarmChanged

@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.example.samsungclockclone.ui.customViews
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,9 +38,17 @@ import com.example.samsungclockclone.ui.utils.strings
 fun AlarmItemCard(
     modifier: Modifier = Modifier,
     alarmItem: AlarmItem,
-    onCheckedChange: (AlarmId) -> Unit
+    onCheckedChange: (AlarmId) -> Unit,
+    onLongClick: () -> Unit
 ) = with(alarmItem) {
-    Card(modifier = modifier.height(90.dp)) {
+    Card(
+        modifier = modifier
+            .height(90.dp)
+            .combinedClickable(
+                onClick = {},
+                onLongClick = onLongClick
+            )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,7 +114,8 @@ private fun AlarmItemCardPreview() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview,
-            onCheckedChange = {}
+            onCheckedChange = {},
+            onLongClick = {}
         )
     }
 }
@@ -113,7 +126,8 @@ private fun AlarmItemCardPreview2() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview2,
-            onCheckedChange = {}
+            onCheckedChange = {},
+            onLongClick = {}
         )
     }
 }
@@ -124,7 +138,8 @@ private fun AlarmItemCardPreview3() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview3,
-            onCheckedChange = {}
+            onCheckedChange = {},
+            onLongClick = {}
         )
     }
 }
@@ -135,7 +150,8 @@ private fun AlarmItemCardPreview4() {
     SamsungClockCloneTheme {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview4,
-            onCheckedChange = {}
+            onCheckedChange = {},
+            onLongClick = {}
         )
     }
 }
