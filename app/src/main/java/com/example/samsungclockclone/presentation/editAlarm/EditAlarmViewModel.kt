@@ -6,6 +6,7 @@ import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
+import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,15 +48,18 @@ class EditAlarmViewModel @Inject constructor(
                         alarmWithManagers.alarmMangerEntityList.minOf { it.fireTime }
 
                     val selectedDaysOfWeek =
-                        alarmWithManagers.alarmMangerEntityList.map { alarmManager ->
-                            val tmpCalendar = calendar.apply {
-                                timeInMillis = alarmManager.fireTime
+                        if (alarmWithManagers.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
+                            alarmWithManagers.alarmMangerEntityList.map { alarmManager ->
+                                val tmpCalendar = calendar.apply {
+                                    timeInMillis = alarmManager.fireTime
+                                }
+                                val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
+                                DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
+                                    calendarDayOfWeek
+                                )
                             }
-                            val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
-                            DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
-                                calendarDayOfWeek
-                            )
-                        }
+                        } else emptyList()
+
 
                     with(alarmWithManagers.alarmEntity) {
                         EditAlarmItem(
@@ -65,7 +69,7 @@ class EditAlarmViewModel @Inject constructor(
                                 firstFireTime,
                                 mode,
                                 enable,
-                                selectedDaysOfWeek
+                                selectedDaysOfWeek = selectedDaysOfWeek
                             )
                         )
                     }
