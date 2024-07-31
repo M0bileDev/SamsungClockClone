@@ -1,6 +1,7 @@
 package com.example.samsungclockclone.domain.model.alarm
 
 import com.example.samsungclockclone.domain.utils.AlarmMode
+import com.example.samsungclockclone.domain.utils.DayOfWeek
 
 data class EditAlarmItem(
     val selected: Boolean = false,
@@ -28,6 +29,18 @@ data class EditAlarmItem(
                 1721730918345,
                 AlarmMode.OnlyTime,
                 enable = true
+            )
+        )
+        val editAlarmItemPreview3 = EditAlarmItem(
+            selected = false,
+            dragged = false,
+            alarmItem = AlarmItem(
+                0L,
+                "Preview",
+                1721730918345,
+                AlarmMode.DayOfWeekAndTime,
+                enable = true,
+                selectedDaysOfWeek = listOf(DayOfWeek.Friday, DayOfWeek.Monday)
             )
         )
     }
