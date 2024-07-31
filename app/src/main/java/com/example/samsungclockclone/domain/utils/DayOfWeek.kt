@@ -38,7 +38,7 @@ enum class DayOfWeek {
         fun differenceBetweenPresentAndAlarmDay(presentDay: DayOfWeek, alarmDay: DayOfWeek): Int {
             return when {
                 alarmDay < presentDay -> {
-                    (7 - presentDay.ordinal) + 1
+                    (7 - presentDay.ordinal)
                 }
 
                 alarmDay > presentDay -> {
