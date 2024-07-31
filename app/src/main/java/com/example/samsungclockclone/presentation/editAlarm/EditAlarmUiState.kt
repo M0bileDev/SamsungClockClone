@@ -5,6 +5,7 @@ import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
 
 data class EditAlarmUiState(
     val editAlarmItems: List<EditAlarmItem> = emptyList(),
+    val allSelected: Boolean = false
     // TODO: Create enum type of bottom buttons
 ) {
     companion object {
