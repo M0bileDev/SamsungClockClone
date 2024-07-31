@@ -50,7 +50,7 @@ fun EditAlarmScreen(
                 actions = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         RadioButton(
-                            selected = false,
+                            selected = allSelected,
                             onClick = onSelectionAllChanged
                         )
                         Text(text = "All")

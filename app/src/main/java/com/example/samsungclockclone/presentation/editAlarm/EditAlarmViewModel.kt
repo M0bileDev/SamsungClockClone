@@ -3,6 +3,7 @@ package com.example.samsungclockclone.presentation.editAlarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
+import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
 import com.example.samsungclockclone.domain.utils.DayOfWeek
@@ -23,11 +24,13 @@ class EditAlarmViewModel @Inject constructor(
 
     private val calendar = Calendar.getInstance()
     private val editAlarmItems = MutableStateFlow(emptyList<EditAlarmItem>())
+    private val allSelected = MutableStateFlow(false)
 
-    val uiState = combine(editAlarmItems) { editAlarmItems ->
+    val uiState = combine(editAlarmItems, allSelected) { editAlarmItems, allSelected ->
 
         EditAlarmUiState(
-            editAlarmItems[0]
+            editAlarmItems,
+            allSelected
         )
     }.stateIn(
         viewModelScope,
@@ -71,5 +74,22 @@ class EditAlarmViewModel @Inject constructor(
         }
     }
 
+    fun onSelectionChanged(alarmId: AlarmId) {
+        val mutableEditAlarmItems = editAlarmItems.value
+        val updatedEditAlarmItems = mutableEditAlarmItems.map {
+            it.copy(selected = if (alarmId == it.alarmItem.alarmId) !it.selected else it.selected)
+        }
+        allSelected.value = updatedEditAlarmItems.all { it.selected }
+        editAlarmItems.value = updatedEditAlarmItems
+    }
+
+    fun onSelectionAllChanged() {
+        val mutableEditAlarmItems = editAlarmItems.value
+        val updatedEditAlarmItems = mutableEditAlarmItems.map {
+            it.copy(selected = !allSelected.value)
+        }
+        allSelected.value = updatedEditAlarmItems.all { it.selected }
+        editAlarmItems.value = updatedEditAlarmItems
+    }
 
 }
