@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDestination
@@ -117,7 +118,7 @@ class MainActivity : ComponentActivity() {
                         ) {
 
                             composable(Screens.AddAlarm.route) {
-                                val addAlarmViewModel: AddAlarmViewModel by viewModels()
+                                val addAlarmViewModel: AddAlarmViewModel = hiltViewModel()
                                 val uiState by addAlarmViewModel.uiState.collectAsState()
                                 val localDate by remember {
                                     mutableStateOf(LocalDateTime.now())
