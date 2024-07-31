@@ -137,3 +137,14 @@ private fun EditAlarmItemCardPreview2() {
         )
     }
 }
+
+@Preview
+@Composable
+private fun EditAlarmItemCardPreview3() {
+    SamsungClockCloneTheme {
+        EditAlarmItemCard(
+            editAlarmItem = EditAlarmItem.editAlarmItemPreview3,
+            onSelectionChanged = {},
+        )
+    }
+}
