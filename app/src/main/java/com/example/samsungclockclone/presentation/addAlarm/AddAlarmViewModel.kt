@@ -68,7 +68,8 @@ class AddAlarmViewModel @Inject constructor(
         val (displayPermissionRequire, displayDatePicker) = permissionAndDatePicker
 
         val actualDateTime = LocalDateTime.now()
-        val dateTimeFormatter = DateTimeFormatter.ofPattern(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
+        val dateTimeFormatter =
+            DateTimeFormatter.ofPattern(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
 
         val scheduleInfo = when (alarmMode) {
             AlarmMode.OnlyTime -> {
@@ -236,6 +237,8 @@ class AddAlarmViewModel @Inject constructor(
                     val alarmMilliseconds = actualDateTime
                         .withHour(alarmHour.value)
                         .withMinute(alarmMinute.value)
+                        .withSecond(0)
+                        .withNano(0)
                         .plusDays(1)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
@@ -247,6 +250,8 @@ class AddAlarmViewModel @Inject constructor(
                     val alarmMilliseconds = actualDateTime
                         .withHour(alarmHour.value)
                         .withMinute(alarmMinute.value)
+                        .withSecond(0)
+                        .withNano(0)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
                         .toEpochMilli()
@@ -270,6 +275,8 @@ class AddAlarmViewModel @Inject constructor(
                     actualDateTime
                         .withHour(alarmHour.value)
                         .withMinute(alarmMinute.value)
+                        .withSecond(0)
+                        .withNano(0)
                         .plusDays(daysDifference)
                         .atZone(ZoneId.systemDefault())
                         .toInstant()
@@ -285,6 +292,8 @@ class AddAlarmViewModel @Inject constructor(
                         timeInMillis = calendarDateMilliseconds.value
                         set(Calendar.HOUR, alarmHour.value)
                         set(Calendar.MINUTE, alarmMinute.value)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
                     }
 
                 val alarmMilliseconds = tmpCalendar
