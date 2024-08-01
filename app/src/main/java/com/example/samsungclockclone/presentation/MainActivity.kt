@@ -228,7 +228,11 @@ class MainActivity : ComponentActivity() {
                                 EditAlarmScreen(
                                     uiState = uiState,
                                     onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
-                                    onSelectionChanged = editAlarmViewModel::onSelectionChanged
+                                    onSelectionChanged = editAlarmViewModel::onSelectionChanged,
+                                    onTurnOn = {},
+                                    onTurnOff = {},
+                                    onDelete = {},
+                                    onDeleteAll = {}
                                 )
                             }
 
