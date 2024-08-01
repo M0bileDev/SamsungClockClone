@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.data.local.scheduler.AlarmId
+import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.strings
@@ -42,7 +43,7 @@ fun AlarmScreen(
     modifier: Modifier = Modifier,
     uiState: AlarmUiState,
     onAddAlarm: () -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (EditAlarmMode) -> Unit,
     onSort: () -> Unit,
     onSettings: () -> Unit,
     onAlarmChanged: (AlarmId) -> Unit
@@ -99,7 +100,7 @@ fun AlarmScreen(
                                 },
                                 onClick = {
                                     expanded = false
-                                    onEdit()
+                                    onEdit(EditAlarmMode.EditAlarmToolbarAction)
                                 }
                             )
                         }
@@ -137,7 +138,7 @@ fun AlarmScreen(
                 AlarmItemCard(
                     alarmItem = item,
                     onCheckedChange = onAlarmChanged,
-                    onLongClick = onEdit
+                    onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
                 )
             }
         }
