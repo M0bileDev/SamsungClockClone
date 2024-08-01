@@ -32,9 +32,21 @@ class EditAlarmViewModel @Inject constructor(
 
     val uiState = combine(editAlarmItems, allSelected) { editAlarmItems, allSelected ->
 
+        val turnOnEnabled =
+            editAlarmItems.any { it.selected && !it.alarmItem.enable }
+        val turnOffEnabled =
+            editAlarmItems.any { it.selected && it.alarmItem.enable }
+        val deleteEnabled =
+            editAlarmItems.any { it.selected } && !editAlarmItems.all { it.selected }
+        val deleteAllEnabled = editAlarmItems.all { it.selected }
+
         EditAlarmUiState(
             editAlarmItems,
-            allSelected
+            allSelected,
+            turnOnEnabled,
+            turnOffEnabled,
+            deleteEnabled,
+            deleteAllEnabled
         )
     }.stateIn(
         viewModelScope,
@@ -47,7 +59,7 @@ class EditAlarmViewModel @Inject constructor(
 
         viewModelScope.launch {
             alarmDao.collectAlarmAndAlarmManagers().collectLatest { alarms ->
-                editAlarmItems.value = alarms.map { alarmWithManagers ->
+                val mappedAlarms = alarms.map { alarmWithManagers ->
 
                     val firstFireTime =
                         alarmWithManagers.alarmMangerEntityList.minOf { it.fireTime }
@@ -80,6 +92,10 @@ class EditAlarmViewModel @Inject constructor(
                         )
                     }
                 }
+
+                editAlarmItems.value = mappedAlarms
+                //Handle specific case passing alarm id through argument
+                allSelected.value = mappedAlarms.all { it.selected }
             }
         }
     }
