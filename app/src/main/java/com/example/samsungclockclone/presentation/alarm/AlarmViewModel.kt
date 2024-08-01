@@ -8,11 +8,14 @@ import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -23,6 +26,13 @@ class AlarmViewModel @Inject constructor(
     private val alarmScheduler: AlarmScheduler,
     private val alarmDao: AlarmDao
 ) : ViewModel() {
+
+    sealed interface AlarmAction {
+        data class EditAlarm(val alarmId: AlarmId = -1L) : AlarmAction
+    }
+
+    private val alarmActions = Channel<AlarmAction>()
+    val actions = alarmActions.receiveAsFlow()
 
     private val calendar = Calendar.getInstance()
     private val alarmItems = MutableStateFlow(emptyList<AlarmItem>())
@@ -96,6 +106,21 @@ class AlarmViewModel @Inject constructor(
 //            alarmManagers.forEach { alarmManager ->
 //                alarmScheduler.cancel(alarmManager.uniqueId)
 //            }
+        }
+    }
+
+    fun onEdit(editAlarmMode: EditAlarmMode) {
+        viewModelScope.launch {
+            when (editAlarmMode) {
+                is EditAlarmMode.EditAlarmItemAction -> {
+                    alarmActions.send(AlarmAction.EditAlarm(editAlarmMode.alarmId))
+                }
+
+                is EditAlarmMode.EditAlarmToolbarAction -> {
+                    alarmActions.send(AlarmAction.EditAlarm())
+                }
+
+            }
         }
     }
 
