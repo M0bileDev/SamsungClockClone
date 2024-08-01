@@ -33,10 +33,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.samsungclockclone.navigation.NavigationUtils.navBottomItems
 import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
@@ -45,6 +47,7 @@ import com.example.samsungclockclone.presentation.alarm.AlarmScreen
 import com.example.samsungclockclone.presentation.alarm.AlarmViewModel
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmScreen
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmViewModel
+import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.customModifier.drawUnderline
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -144,8 +147,8 @@ class MainActivity : ComponentActivity() {
                                                 .toEpochMilli()
                                         }
                                     })
-                                val lifecycle = LocalLifecycleOwner.current
 
+                                val lifecycle = LocalLifecycleOwner.current
                                 LaunchedEffect(key1 = lifecycle) {
                                     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                                         addAlarmViewModel.actions.collectLatest { action ->
@@ -190,18 +193,36 @@ class MainActivity : ComponentActivity() {
                                 val alarmViewModel: AlarmViewModel by viewModels()
                                 val uiState by alarmViewModel.uiState.collectAsState()
 
+                                val lifecycle = LocalLifecycleOwner.current
+                                LaunchedEffect(key1 = lifecycle) {
+                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                        alarmViewModel.actions.collectLatest { action ->
+                                            when (action) {
+                                                is AlarmViewModel.AlarmAction.EditAlarm -> {
+                                                    navController.navigate("${Screens.EditAlarm.route}/${action.alarmId}")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 AlarmScreen(
                                     uiState = uiState,
                                     onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
-                                    onEdit = { navController.navigate(Screens.EditAlarm.route) },
+                                    onEdit = alarmViewModel::onEdit,
                                     onSort = {},
                                     onSettings = {},
                                     onAlarmChanged = alarmViewModel::onAlarmChanged
                                 )
                             }
 
-                            composable(Screens.EditAlarm.route) {
-                                val editAlarmViewModel: EditAlarmViewModel by viewModels()
+                            composable(
+                                route = "${Screens.EditAlarm.route}/{${ALARM_ID_KEY}}",
+                                arguments = listOf(navArgument(ALARM_ID_KEY) {
+                                    type = NavType.LongType
+                                })
+                            ) {
+                                val editAlarmViewModel: EditAlarmViewModel = hiltViewModel()
                                 val uiState by editAlarmViewModel.uiState.collectAsState()
 
                                 EditAlarmScreen(
