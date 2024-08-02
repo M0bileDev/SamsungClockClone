@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
@@ -24,7 +25,10 @@ interface AlarmDao {
     ): Flow<AlarmWithAlarmManagerEntity>
 
     @Query("SELECT * FROM alarm_table")
-    fun collectAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
+    suspend fun getAllAlarmAndAlarmManagers(): List<AlarmWithAlarmManagerEntity>
+
+    @Query("SELECT * FROM alarm_table")
+    fun collectAllAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
     @Query("SELECT * FROM alarm_table")
     fun collectAllAlarms(): Flow<List<AlarmEntity>>
@@ -37,6 +41,13 @@ interface AlarmDao {
 
     @Update
     suspend fun updateAlarm(alarm: AlarmEntity)
+
+    @Transaction
+    suspend fun deleteAllAlarms(alarms: List<AlarmEntity>){
+        alarms.forEach { alarm ->
+            deleteAlarm(alarm)
+        }
+    }
 
     @Delete
     suspend fun deleteAlarm(alarmEntity: AlarmEntity)

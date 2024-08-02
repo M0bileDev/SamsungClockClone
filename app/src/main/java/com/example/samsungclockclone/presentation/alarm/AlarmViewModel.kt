@@ -62,7 +62,7 @@ class AlarmViewModel @Inject constructor(
             // TODO: 1. synchronize to clock tick
             //       2. refresh each minute
             //       3. Extract logic to separate function
-            alarmDao.collectAlarmAndAlarmManagers().collectLatest { alarms ->
+            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
                 alarmItems.value = alarms.map { alarmWithAlarmManager ->
                     val firstFireTime =
                         alarmWithAlarmManager.alarmMangerEntityList.minOf { it.fireTime }

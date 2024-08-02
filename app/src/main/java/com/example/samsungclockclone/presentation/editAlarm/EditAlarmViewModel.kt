@@ -58,7 +58,7 @@ class EditAlarmViewModel @Inject constructor(
         val alarmId = handleAlarmId()
 
         viewModelScope.launch {
-            alarmDao.collectAlarmAndAlarmManagers().collectLatest { alarms ->
+            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
                 val mappedAlarms = alarms.map { alarmWithManagers ->
 
                     val firstFireTime =
@@ -154,6 +154,39 @@ class EditAlarmViewModel @Inject constructor(
 
         }
 
+    }
+
+    fun onDelete() {
+        viewModelScope.launch {
+            val selectedEditAlarms = editAlarmItems.value.filter { it.selected }
+
+            selectedEditAlarms.forEach { editAlarm ->
+                val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(editAlarm.alarmItem.alarmId)
+
+                alarmManagers.forEach {alarmManager ->
+                    // TODO: cancel alarm manager after full db implementation
+                }
+
+                alarmDao.deleteAlarm(alarm)
+                // TODO: navigate back to AlarmScreen
+            }
+
+        }
+    }
+
+    fun onDeleteAll() {
+        viewModelScope.launch {
+            val allAlarmAndAlarmManagers = alarmDao.getAllAlarmAndAlarmManagers()
+
+            val allAlarmManagers = allAlarmAndAlarmManagers.map { it.alarmMangerEntityList }
+            allAlarmManagers.forEach { alarmManager ->
+                // TODO: cancel alarm manager after full db implementation
+            }
+
+            val allAlarms = allAlarmAndAlarmManagers.map { it.alarmEntity }
+            alarmDao.deleteAllAlarms(allAlarms)
+            // TODO: navigate back to AlarmScreen
+        }
     }
 
 }
