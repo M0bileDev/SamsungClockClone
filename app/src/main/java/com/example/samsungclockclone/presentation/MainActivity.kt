@@ -229,8 +229,8 @@ class MainActivity : ComponentActivity() {
                                     uiState = uiState,
                                     onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
                                     onSelectionChanged = editAlarmViewModel::onSelectionChanged,
-                                    onTurnOn = {},
-                                    onTurnOff = {},
+                                    onTurnOn = editAlarmViewModel::onTurnOn,
+                                    onTurnOff = editAlarmViewModel::onTurnOff,
                                     onDelete = {},
                                     onDeleteAll = {}
                                 )

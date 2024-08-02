@@ -122,4 +122,38 @@ class EditAlarmViewModel @Inject constructor(
         editAlarmItems.value = updatedEditAlarmItems
     }
 
+    fun onTurnOn() {
+        viewModelScope.launch {
+            val selectedEditAlarms = editAlarmItems.value.filter { it.selected }
+
+            selectedEditAlarms.forEach { editAlarm ->
+                val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(editAlarm.alarmItem.alarmId)
+                val updatedAlarm = alarm.copy(enable = true)
+                alarmDao.updateAlarm(updatedAlarm)
+
+                // TODO: set alarm manager after full db implementation
+                // TODO: navigate back to AlarmScreen
+            }
+
+        }
+
+    }
+
+    fun onTurnOff() {
+        viewModelScope.launch {
+            val selectedEditAlarms = editAlarmItems.value.filter { it.selected }
+
+            selectedEditAlarms.forEach { editAlarm ->
+                val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(editAlarm.alarmItem.alarmId)
+                val updatedAlarm = alarm.copy(enable = false)
+                alarmDao.updateAlarm(updatedAlarm)
+
+                // TODO: cancel alarm manager after full db implementation
+                // TODO: navigate back to AlarmScreen
+            }
+
+        }
+
+    }
+
 }
