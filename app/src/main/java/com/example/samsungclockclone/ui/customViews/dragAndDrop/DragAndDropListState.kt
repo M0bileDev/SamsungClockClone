@@ -4,7 +4,11 @@ import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.getLazyListItemInfo
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.offsetBottom
 import kotlinx.coroutines.Job
@@ -26,109 +30,94 @@ class DragAndDropListState(
     val lazyListState: LazyListState,
     private val onMove: (Index, Index) -> Unit
 ) {
+    var overScrollJob by mutableStateOf<Job?>(null)
 
-    var overScrollJob: Job? = null
-    private var draggedElementDistance = 0f
-    private var _draggedElementIndex = -1
-        set(value) {
-            field = value
-            draggedElement = with(_draggedElementIndex) {
-                if (value == -1) {
-                    NotInitLazyListItemInfo()
-                } else {
-                    lazyListState.getLazyListItemInfo(this)
-                }
+    private var draggedDistance by mutableStateOf(0f)
+    private var initiallyDraggedElement by mutableStateOf<LazyListItemInfo?>(null)
+    var currentIndexOfDraggedItem by mutableStateOf<Int?>(null)
+        private set
+    private val initialOffsets: Pair<Int, Int>?
+        get() = initiallyDraggedElement?.let {
+            Pair(it.offset, it.offsetBottom)
+        }
+    val elementDisplacement: Float?
+        get() = currentIndexOfDraggedItem
+            ?.let {
+                lazyListState.getLazyListItemInfo(index = it)
             }
-        }
-    val draggedElementIndex: Int
-        get() = _draggedElementIndex
+            ?.let { item ->
+                (initiallyDraggedElement?.offset ?: 0f).toFloat() + draggedDistance - item.offset
+            }
 
-    private val draggedElementOffset: Pair<Offset, Offset>
-        get() = with(draggedElement) {
-            Pair(
-                offset.toFloat() + draggedElementDistance,
-                offsetBottom.toFloat() + draggedElementDistance
-            )
+    private val currentElement: LazyListItemInfo?
+        get() = currentIndexOfDraggedItem?.let {
+            lazyListState.getLazyListItemInfo(index = it)
         }
 
-    val draggedElementDisplacement
-        get() = with(lazyListState) {
-            val element = getLazyListItemInfo(_draggedElementIndex)
-            draggedElement.offset.toFloat() + draggedElementDistance - element.offset
-        }
 
-    private var draggedElement: LazyListItemInfo = NotInitLazyListItemInfo()
-
-    fun onDragStart(offset: androidx.compose.ui.geometry.Offset) {
+    fun onDragStart(offset: Offset) {
         lazyListState.layoutInfo.visibleItemsInfo
-            .first { element ->
-                offset.y.toInt() in element.offset..(element.offsetBottom)
-            }.also {
-                _draggedElementIndex = it.index
+            .firstOrNull { item ->
+                offset.y.toInt() in item.offset..(item.offset + item.size)
+            }?.also {
+                currentIndexOfDraggedItem = it.index
+                initiallyDraggedElement = it
             }
     }
 
     fun onDragInterrupted() {
-        draggedElementDistance = 0f
-        _draggedElementIndex = -1
+        draggedDistance = 0f
+        currentIndexOfDraggedItem = null
+        initiallyDraggedElement = null
         overScrollJob?.cancel()
     }
 
-    fun onDrag(offset: androidx.compose.ui.geometry.Offset) {
-        draggedElementDistance += offset.y
+    fun onDrag(offset: Offset) {
+        draggedDistance += offset.y
 
-        val (topOffset, bottomOffset) = draggedElementOffset
-        lazyListState
-            .layoutInfo
-            .visibleItemsInfo
-            .filterNot { element ->
-                element.offsetBottom < topOffset || element.offset > bottomOffset || draggedElement.index == element.index
-            }.first { element ->
-                val delta = topOffset - draggedElement.offset
-                when {
-                    delta > 0 -> {
-                        bottomOffset > element.offsetBottom
-                    }
+        initialOffsets?.let { (topOffset, bottomOffset) ->
+            val startOffset = topOffset + draggedDistance
+            val endOffset = bottomOffset + draggedDistance
 
-                    else -> {
-                        topOffset < element.offset
+            currentElement?.let { hovered ->
+                lazyListState.layoutInfo.visibleItemsInfo
+                    // Returns a list containing all elements not matching the given predicate.
+                    .filterNot { item ->
+                        item.offsetBottom < startOffset || item.offset > endOffset || hovered.index == item.index
                     }
-                }
-            }.also { element ->
-                onMove(_draggedElementIndex, element.index)
-                _draggedElementIndex = element.index
+                    .firstOrNull { item ->
+                        val delta = startOffset - hovered.offset
+                        when {
+                            delta > 0 -> (endOffset > item.offsetBottom)
+                            else -> (startOffset < item.offset)
+                        }
+                    }?.also { item ->
+                        currentIndexOfDraggedItem?.let { current ->
+                            onMove.invoke(current, item.index)
+                        }
+                        currentIndexOfDraggedItem = item.index
+                    }
             }
-    }
-
-    fun onOverScroll(): Float {
-        return with(draggedElementOffset) {
-            val (topOffset, bottomOffset) = draggedElementOffset
-            val viewportEndOffset = lazyListState.layoutInfo.viewportEndOffset
-            val viewportStartOffset = lazyListState.layoutInfo.viewportStartOffset
-            when {
-                draggedElementDistance > 0 -> {
-                    (bottomOffset - viewportEndOffset).takeIf { diff -> diff > 0 }
-                }
-
-                draggedElementDistance < 0 -> {
-                    (topOffset - viewportStartOffset).takeIf { diff -> diff < 0 }
-                }
-
-                else -> null
-            } ?: 0f
         }
     }
 
-}
+    fun onOverScroll(): Float {
+        return initiallyDraggedElement?.let {
+            val startOffset = it.offset + draggedDistance
+            val endOffset = it.offsetBottom + draggedDistance
 
-class NotInitLazyListItemInfo : LazyListItemInfo {
-    override val index: Int
-        get() = throw IllegalStateException("Index not initialize. You have to use initialized object!")
-    override val key: Any
-        get() = throw IllegalStateException("Key not initialize. You have to use initialized object!")
-    override val offset: Int
-        get() = throw IllegalStateException("Offset not initialize. You have to use initialized object!")
-    override val size: Int
-        get() = throw IllegalStateException("Size not initialize. You have to use initialized object!")
+            return@let when {
+                draggedDistance > 0 -> (endOffset - lazyListState.layoutInfo.viewportEndOffset).takeIf { diff ->
+                    diff > 0
+                }
+
+                draggedDistance < 0 -> (startOffset - lazyListState.layoutInfo.viewportStartOffset).takeIf { diff ->
+                    diff < 0
+                }
+
+                else -> null
+            }
+        } ?: 0f
+    }
 
 }
