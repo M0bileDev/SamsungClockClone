@@ -80,12 +80,12 @@ private fun DrawPointerAbovePreview() {
 
 @SuppressLint("ComposableModifierFactory")
 @Composable
-fun Modifier.translationYDragDropList(
+fun Modifier.translationYDragAndDrop(
     index: Int,
     dragAndDropListState: DragAndDropListState
 ): Modifier {
-    val offsetOrNull = dragAndDropListState.draggedElementDisplacement.takeIf {
-        index == dragAndDropListState.draggedElementIndex
+    val offsetOrNull = dragAndDropListState.elementDisplacement.takeIf {
+        index == dragAndDropListState.currentIndexOfDraggedItem
     }
     return this then Modifier.graphicsLayer {
         translationY = offsetOrNull ?: 0f
