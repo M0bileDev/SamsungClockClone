@@ -7,15 +7,24 @@ import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.samsungclockclone.ui.customModifier.translationYDragDropList
+import com.example.samsungclockclone.ui.customModifier.translationYDragAndDrop
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
+import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -67,7 +76,7 @@ fun <T> DragAndDropLazyColumn(
     ) {
         itemsIndexed(items) { index, item ->
             Box(
-                modifier = Modifier.translationYDragDropList(
+                modifier = Modifier.translationYDragAndDrop(
                     index = index,
                     dragAndDropListState = dragAndDropListState
                 )
@@ -75,6 +84,33 @@ fun <T> DragAndDropLazyColumn(
                 content(item)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun DragAndDropListStatePreview() {
+    SamsungClockCloneTheme {
+
+        val editableList = remember {
+            mutableListOf("First", "Second", "Third")
+        }
+
+        DragAndDropLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            items = editableList,
+            onMove = { fromIndex, toIndex -> editableList.move(fromIndex, toIndex) },
+            content = {
+                Card(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(text = it)
+                }
+            }
+        )
     }
 }
 
