@@ -5,13 +5,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.geometry.Offset
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.getLazyListItemInfo
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.offsetBottom
 import kotlinx.coroutines.Job
+import androidx.compose.ui.geometry.Offset as GeometryOffset
 
 typealias Index = Int
 typealias Offset = Float
@@ -32,13 +33,11 @@ class DragAndDropListState(
 ) {
     var overScrollJob by mutableStateOf<Job?>(null)
 
-    private var draggedDistance by mutableStateOf(0f)
+    private var draggedDistance by mutableFloatStateOf(0f)
     private var initiallyDraggedElement by mutableStateOf<LazyListItemInfo?>(null)
-    var currentIndexOfDraggedItem by mutableStateOf<Int?>(null)
-        private set
-    private val initialOffsets: Pair<Int, Int>?
+    private val initiallyDragElementOffsets: Pair<Offset, Offset>?
         get() = initiallyDraggedElement?.let {
-            Pair(it.offset, it.offsetBottom)
+            Pair(it.offset + draggedDistance, it.offsetBottom + draggedDistance)
         }
     val elementDisplacement: Float?
         get() = currentIndexOfDraggedItem
@@ -49,13 +48,15 @@ class DragAndDropListState(
                 (initiallyDraggedElement?.offset ?: 0f).toFloat() + draggedDistance - item.offset
             }
 
+    var currentIndexOfDraggedItem by mutableStateOf<Int?>(null)
+        private set
     private val currentElement: LazyListItemInfo?
         get() = currentIndexOfDraggedItem?.let {
             lazyListState.getLazyListItemInfo(index = it)
         }
 
 
-    fun onDragStart(offset: Offset) {
+    fun onDragStart(offset: GeometryOffset) {
         lazyListState.layoutInfo.visibleItemsInfo
             .firstOrNull { item ->
                 offset.y.toInt() in item.offset..(item.offset + item.size)
@@ -72,24 +73,21 @@ class DragAndDropListState(
         overScrollJob?.cancel()
     }
 
-    fun onDrag(offset: Offset) {
+    fun onDrag(offset: GeometryOffset) {
         draggedDistance += offset.y
 
-        initialOffsets?.let { (topOffset, bottomOffset) ->
-            val startOffset = topOffset + draggedDistance
-            val endOffset = bottomOffset + draggedDistance
+        initiallyDragElementOffsets?.let { (topOffset, bottomOffset) ->
 
             currentElement?.let { hovered ->
                 lazyListState.layoutInfo.visibleItemsInfo
-                    // Returns a list containing all elements not matching the given predicate.
                     .filterNot { item ->
-                        item.offsetBottom < startOffset || item.offset > endOffset || hovered.index == item.index
+                        item.offsetBottom < topOffset || item.offset > bottomOffset || hovered.index == item.index
                     }
                     .firstOrNull { item ->
-                        val delta = startOffset - hovered.offset
+                        val delta = topOffset - hovered.offset
                         when {
-                            delta > 0 -> (endOffset > item.offsetBottom)
-                            else -> (startOffset < item.offset)
+                            delta > 0 -> (bottomOffset > item.offsetBottom)
+                            else -> (topOffset < item.offset)
                         }
                     }?.also { item ->
                         currentIndexOfDraggedItem?.let { current ->
@@ -102,16 +100,14 @@ class DragAndDropListState(
     }
 
     fun onOverScroll(): Float {
-        return initiallyDraggedElement?.let {
-            val startOffset = it.offset + draggedDistance
-            val endOffset = it.offsetBottom + draggedDistance
+        return initiallyDragElementOffsets?.let { (topOffset, bottomOffset) ->
 
             return@let when {
-                draggedDistance > 0 -> (endOffset - lazyListState.layoutInfo.viewportEndOffset).takeIf { diff ->
+                draggedDistance > 0 -> (bottomOffset - lazyListState.layoutInfo.viewportEndOffset).takeIf { diff ->
                     diff > 0
                 }
 
-                draggedDistance < 0 -> (startOffset - lazyListState.layoutInfo.viewportStartOffset).takeIf { diff ->
+                draggedDistance < 0 -> (topOffset - lazyListState.layoutInfo.viewportStartOffset).takeIf { diff ->
                     diff < 0
                 }
 
