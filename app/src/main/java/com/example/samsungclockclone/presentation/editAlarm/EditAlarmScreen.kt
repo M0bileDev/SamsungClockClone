@@ -91,10 +91,11 @@ fun EditAlarmScreen(
             items = editAlarmItems,
             onMove = { _, _ ->
                 // TODO: Here use extension function move MutableList<T>.move
+
             },
-            content = {
+            content = { contentValue, selected ->
                 EditAlarmItemCard(
-                    editAlarmItem = it,
+                    editAlarmItem = contentValue,
                     onSelectionChanged = onSelectionChanged
                 )
             }
