@@ -102,7 +102,7 @@ fun EditAlarmScreen(
             onDragCondition = {
                 dragIconPress
             },
-            content = { contentValue, selected ->
+            content = { contentValue, dragged ->
                 EditAlarmItemCard(
                     editAlarmItem = contentValue,
                     onSelectionChanged = onSelectionChanged,
