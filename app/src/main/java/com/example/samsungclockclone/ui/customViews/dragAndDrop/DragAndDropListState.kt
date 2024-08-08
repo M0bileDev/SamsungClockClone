@@ -20,16 +20,18 @@ typealias Offset = Float
 @Composable
 fun rememberDragAndDropListState(
     lazyListState: LazyListState = rememberLazyListState(),
-    onMove: (Index, Index) -> Unit
+    onMove: (Index, Index) -> Unit,
+    onDragCondition: () -> Boolean = { true }
 ): DragAndDropListState {
     return remember {
-        DragAndDropListState(lazyListState, onMove)
+        DragAndDropListState(lazyListState, onMove, onDragCondition)
     }
 }
 
 class DragAndDropListState(
     val lazyListState: LazyListState,
-    private val onMove: (Index, Index) -> Unit
+    private val onMove: (Index, Index) -> Unit,
+    private val onDragCondition: () -> Boolean = { true }
 ) {
     var overScrollJob by mutableStateOf<Job?>(null)
 
@@ -57,6 +59,8 @@ class DragAndDropListState(
 
 
     fun onDragStart(offset: GeometryOffset) {
+        if (!onDragCondition()) return
+
         lazyListState.layoutInfo.visibleItemsInfo
             .firstOrNull { item ->
                 offset.y.toInt() in item.offset..(item.offset + item.size)
@@ -74,6 +78,8 @@ class DragAndDropListState(
     }
 
     fun onDrag(offset: GeometryOffset) {
+        if (!onDragCondition()) return
+
         draggedDistance += offset.y
 
         initiallyDragElementOffsets?.let { (topOffset, bottomOffset) ->
