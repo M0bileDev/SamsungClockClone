@@ -22,6 +22,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -82,6 +86,9 @@ fun EditAlarmScreen(
             )
         }
     ) {
+
+        var dragIconPress by remember { mutableStateOf(false) }
+
         DragAndDropLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -91,12 +98,15 @@ fun EditAlarmScreen(
             items = editAlarmItems,
             onMove = { _, _ ->
                 // TODO: Here use extension function move MutableList<T>.move
-
+            },
+            onDragCondition = {
+                dragIconPress
             },
             content = { contentValue, selected ->
                 EditAlarmItemCard(
                     editAlarmItem = contentValue,
-                    onSelectionChanged = onSelectionChanged
+                    onSelectionChanged = onSelectionChanged,
+                    onDragIconPress = { press -> dragIconPress = press }
                 )
             }
         )
