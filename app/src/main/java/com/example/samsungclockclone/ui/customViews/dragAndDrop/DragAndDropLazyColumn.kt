@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.ui.customViews.dragAndDrop
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -15,10 +16,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +36,7 @@ fun <T> DragAndDropLazyColumn(
     modifier: Modifier = Modifier,
     items: List<T>,
     onMove: (Index, Index) -> Unit,
-    content: @Composable (T) -> Unit,
+    content: @Composable (T, Boolean) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
@@ -75,13 +79,18 @@ fun <T> DragAndDropLazyColumn(
         userScrollEnabled = userScrollEnabled
     ) {
         itemsIndexed(items) { index, item ->
+            val selected by remember {
+                derivedStateOf {
+                    dragAndDropListState.currentIndexOfDraggedItem?.let { it == index } ?: false
+                }
+            }
             Box(
                 modifier = Modifier.translationYDragAndDrop(
                     index = index,
                     dragAndDropListState = dragAndDropListState
                 )
             ) {
-                content(item)
+                content(item, selected)
             }
         }
     }
@@ -101,13 +110,14 @@ private fun DragAndDropListStatePreview() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             items = editableList,
             onMove = { fromIndex, toIndex -> editableList.move(fromIndex, toIndex) },
-            content = {
+            content = { text, selected ->
                 Card(
                     modifier = Modifier
                         .height(40.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    border = if (selected) BorderStroke(2.dp, Color.Red) else null
                 ) {
-                    Text(text = it)
+                    Text(text = text)
                 }
             }
         )
