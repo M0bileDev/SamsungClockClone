@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.data.local.scheduler
+package com.example.samsungclockclone.domain.scheduler
 
 typealias AlarmId = Long
 typealias AlarmMilliseconds = Long
