@@ -42,8 +42,19 @@ interface AlarmDao {
     @Update
     suspend fun updateAlarm(alarm: AlarmEntity)
 
+    @Update
+    suspend fun updateAlarms(list: List<AlarmEntity>)
+
     @Transaction
-    suspend fun deleteAllAlarms(alarms: List<AlarmEntity>){
+    suspend fun insertAlarmUpdateOrder(alarmEntity: AlarmEntity): Long {
+        val id = insertAlarm(alarmEntity)
+        val updatedAlarmEntity = alarmEntity.copy(customOrder = id)
+        updateAlarm(updatedAlarmEntity)
+        return id
+    }
+
+    @Transaction
+    suspend fun deleteAllAlarms(alarms: List<AlarmEntity>) {
         alarms.forEach { alarm ->
             deleteAlarm(alarm)
         }
@@ -53,7 +64,7 @@ interface AlarmDao {
     suspend fun deleteAlarm(alarmEntity: AlarmEntity)
 
     @Insert
-    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity) : Long
+    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity): Long
 
     @Delete
     suspend fun deleteAlarmManager(alarmManagerEntity: AlarmManagerEntity)
