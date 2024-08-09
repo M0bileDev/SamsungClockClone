@@ -17,17 +17,14 @@ data class EditAlarmUiState(
             listOf(
                 EditAlarmItem(
                     selected = false,
-                    dragged = false,
                     AlarmItem.alarmItemPreview
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = false,
                     AlarmItem.alarmItemPreview2
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = true,
                     AlarmItem.alarmItemPreview3
                 ),
             )
@@ -40,17 +37,14 @@ data class EditAlarmUiState(
             editAlarmItems = listOf(
                 EditAlarmItem(
                     selected = false,
-                    dragged = false,
                     AlarmItem.alarmItemPreview
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = false,
                     AlarmItem.alarmItemPreview2
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = true,
                     AlarmItem.alarmItemPreview3
                 ),
             )
@@ -64,17 +58,14 @@ data class EditAlarmUiState(
             editAlarmItems = listOf(
                 EditAlarmItem(
                     selected = true,
-                    dragged = false,
                     AlarmItem.alarmItemPreview
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = false,
                     AlarmItem.alarmItemPreview2
                 ),
                 EditAlarmItem(
                     selected = true,
-                    dragged = false,
                     AlarmItem.alarmItemPreview3
                 ),
             )

@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,7 +40,9 @@ import com.example.samsungclockclone.ui.utils.strings
 fun EditAlarmItemCard(
     modifier: Modifier = Modifier,
     editAlarmItem: EditAlarmItem,
-    onSelectionChanged: (AlarmId) -> Unit
+    dragged: Boolean = false,
+    onSelectionChanged: (AlarmId) -> Unit,
+    onDragIconPress: (Boolean) -> Unit
 ) = with(editAlarmItem) {
     Card(
         modifier = modifier.height(90.dp),
@@ -54,7 +58,17 @@ fun EditAlarmItemCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val press = event.type != PointerEventType.Release
+                                onDragIconPress(press)
+                            }
+                        }
+                    },
                 painter = painterResource(id = drawables.ic_drag),
                 contentDescription = "Change alarm id ${alarmItem.alarmId} position"
             )
@@ -122,7 +136,9 @@ private fun EditAlarmItemCardPreview() {
     SamsungClockCloneTheme {
         EditAlarmItemCard(
             editAlarmItem = EditAlarmItem.editAlarmItemPreview,
-            onSelectionChanged = {}
+            dragged = true,
+            onSelectionChanged = {},
+            onDragIconPress = {}
         )
     }
 }
@@ -133,7 +149,9 @@ private fun EditAlarmItemCardPreview2() {
     SamsungClockCloneTheme {
         EditAlarmItemCard(
             editAlarmItem = EditAlarmItem.editAlarmItemPreview2,
+            dragged = true,
             onSelectionChanged = {},
+            onDragIconPress = {}
         )
     }
 }
@@ -145,6 +163,7 @@ private fun EditAlarmItemCardPreview3() {
         EditAlarmItemCard(
             editAlarmItem = EditAlarmItem.editAlarmItemPreview3,
             onSelectionChanged = {},
+            onDragIconPress = {}
         )
     }
 }

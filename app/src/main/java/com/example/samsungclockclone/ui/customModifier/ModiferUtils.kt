@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.ui.customModifier
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -7,10 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.DragAndDropListState
 
 fun Modifier.drawUnderline(
     visible: Boolean,
@@ -73,4 +76,18 @@ private fun DrawPointerAbovePreview() {
         ),
         text = "Preview"
     )
+}
+
+@SuppressLint("ComposableModifierFactory")
+@Composable
+fun Modifier.translationYDragAndDrop(
+    index: Int,
+    dragAndDropListState: DragAndDropListState
+): Modifier {
+    val offsetOrNull = dragAndDropListState.elementDisplacement.takeIf {
+        index == dragAndDropListState.currentIndexOfDraggedItem
+    }
+    return this then Modifier.graphicsLayer {
+        translationY = offsetOrNull ?: 0f
+    }
 }

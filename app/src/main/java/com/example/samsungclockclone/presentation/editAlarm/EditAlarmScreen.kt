@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +22,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,6 +37,7 @@ import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Com
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview3
 import com.example.samsungclockclone.ui.customViews.EditAlarmItemCard
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.DragAndDropLazyColumn
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.drawables
 
@@ -83,20 +86,30 @@ fun EditAlarmScreen(
             )
         }
     ) {
-        LazyColumn(
+
+        var dragIconPress by remember { mutableStateOf(false) }
+
+        DragAndDropLazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(editAlarmItems) { item ->
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            items = editAlarmItems,
+            onMove = { _, _ ->
+                // TODO: Implementation reorder items not added yet
+            },
+            onDragCondition = {
+                dragIconPress
+            },
+            content = { contentValue, dragged ->
                 EditAlarmItemCard(
-                    editAlarmItem = item,
-                    onSelectionChanged = onSelectionChanged
+                    editAlarmItem = contentValue,
+                    onSelectionChanged = onSelectionChanged,
+                    onDragIconPress = { press -> dragIconPress = press }
                 )
             }
-        }
+        )
     }
 }
 
