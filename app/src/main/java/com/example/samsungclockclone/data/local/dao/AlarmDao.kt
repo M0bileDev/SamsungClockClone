@@ -30,6 +30,9 @@ interface AlarmDao {
     @Query("SELECT * FROM alarm_table")
     fun collectAllAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
+    @Query("SELECT * FROM alarm_table ORDER BY customOrder ASC")
+    fun collectAllAlarmAndAlarmManagersCustomOrder(): Flow<List<AlarmWithAlarmManagerEntity>>
+
     @Query("SELECT * FROM alarm_table")
     fun collectAllAlarms(): Flow<List<AlarmEntity>>
 
