@@ -1,6 +1,6 @@
 package com.example.samsungclockclone.di
 
-import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
+import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.data.local.scheduler.AlarmSchedulerImpl
 import dagger.Binds
 import dagger.Module

@@ -32,7 +32,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme

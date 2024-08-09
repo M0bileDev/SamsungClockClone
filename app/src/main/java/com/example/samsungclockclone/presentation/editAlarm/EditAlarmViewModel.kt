@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
@@ -23,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    // alarmPreferences: AlarmPreferences
     private val alarmDao: AlarmDao
 ) : ViewModel() {
 
@@ -83,6 +84,7 @@ class EditAlarmViewModel @Inject constructor(
                             selected = id == alarmId,
                             alarmItem = AlarmItem(
                                 id,
+                                customOrder,
                                 name,
                                 firstFireTime,
                                 mode,

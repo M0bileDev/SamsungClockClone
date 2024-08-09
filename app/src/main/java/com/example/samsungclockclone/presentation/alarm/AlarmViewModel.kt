@@ -3,9 +3,9 @@ package com.example.samsungclockclone.presentation.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
-import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
+import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
@@ -84,6 +84,7 @@ class AlarmViewModel @Inject constructor(
                     with(alarmWithAlarmManager.alarmEntity) {
                         AlarmItem(
                             id,
+                            customOrder,
                             name,
                             firstFireTime,
                             mode,
