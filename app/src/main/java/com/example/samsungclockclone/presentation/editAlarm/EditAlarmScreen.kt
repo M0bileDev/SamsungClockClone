@@ -97,7 +97,7 @@ fun EditAlarmScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             items = editAlarmItems,
             onMove = { _, _ ->
-                // TODO: Here use extension function move MutableList<T>.move
+                // TODO: Implementation reorder items not added yet
             },
             onDragCondition = {
                 dragIconPress
