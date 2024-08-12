@@ -53,6 +53,7 @@ fun EditAlarmScreen(
     onDelete: () -> Unit,
     onDeleteAll: () -> Unit,
     onMove: (Index, Index) -> Unit,
+    onMoveCompleted: () -> Unit
 ) = with(uiState) {
 
     val topAppBarState = rememberTopAppBarState()
@@ -105,8 +106,14 @@ fun EditAlarmScreen(
             content = { contentValue, dragged ->
                 EditAlarmItemCard(
                     editAlarmItem = contentValue,
+                    dragged = dragged,
                     onSelectionChanged = onSelectionChanged,
-                    onDragIconPress = { press -> dragIconPress = press }
+                    onDragIconPress = { press ->
+                        dragIconPress = press
+                        if (!press) {
+                            onMoveCompleted()
+                        }
+                    }
                 )
             }
         )
@@ -191,7 +198,8 @@ private fun EditAlarmScreenPreview() {
             onTurnOff = {},
             onDelete = {},
             onDeleteAll = {},
-            onMove = { _, _ -> }
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }
@@ -208,7 +216,8 @@ private fun EditAlarmScreenPreview2() {
             onTurnOff = {},
             onDelete = {},
             onDeleteAll = {},
-            onMove = { _, _ -> }
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }
@@ -225,7 +234,8 @@ private fun EditAlarmScreenPreview3() {
             onTurnOff = {},
             onDelete = {},
             onDeleteAll = {},
-            onMove = { _, _ -> }
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }
