@@ -9,6 +9,8 @@ import androidx.room.Update
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
+import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -30,6 +32,9 @@ interface AlarmDao {
     @Query("SELECT * FROM alarm_table")
     fun collectAllAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
+    @Query("SELECT * FROM alarm_table ORDER BY customOrder ASC")
+    fun collectAllAlarmAndAlarmManagersCustomOrder(): Flow<List<AlarmWithAlarmManagerEntity>>
+
     @Query("SELECT * FROM alarm_table")
     fun collectAllAlarms(): Flow<List<AlarmEntity>>
 
@@ -42,8 +47,30 @@ interface AlarmDao {
     @Update
     suspend fun updateAlarm(alarm: AlarmEntity)
 
+    @Update
+    suspend fun updateAlarms(list: List<AlarmEntity>)
+
+    @Query("UPDATE alarm_table SET customOrder =:customOrder WHERE id =:alarmId")
+    suspend fun updateAlarmCustomOrder(alarmId: AlarmId, customOrder: Index)
+
     @Transaction
-    suspend fun deleteAllAlarms(alarms: List<AlarmEntity>){
+    suspend fun updateAlarmCustomOrderList(customOrderList: List<Pair<AlarmId, Index>>) {
+        customOrderList.forEach {
+            val (alarmId, customOrder) = it
+            updateAlarmCustomOrder(alarmId, customOrder)
+        }
+    }
+
+    @Transaction
+    suspend fun insertAlarmUpdateOrder(alarmEntity: AlarmEntity): Long {
+        val id = insertAlarm(alarmEntity)
+        val updatedAlarmEntity = alarmEntity.copy(id = id, customOrder = id)
+        updateAlarm(updatedAlarmEntity)
+        return id
+    }
+
+    @Transaction
+    suspend fun deleteAllAlarms(alarms: List<AlarmEntity>) {
         alarms.forEach { alarm ->
             deleteAlarm(alarm)
         }
@@ -53,7 +80,7 @@ interface AlarmDao {
     suspend fun deleteAlarm(alarmEntity: AlarmEntity)
 
     @Insert
-    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity) : Long
+    suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity): Long
 
     @Delete
     suspend fun deleteAlarmManager(alarmManagerEntity: AlarmManagerEntity)

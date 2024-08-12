@@ -4,17 +4,23 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
+import com.example.samsungclockclone.domain.preferences.AlarmOrder
+import com.example.samsungclockclone.domain.preferences.AlarmPreferences
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -23,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val alarmPreferences: AlarmPreferences,
     private val alarmDao: AlarmDao
 ) : ViewModel() {
 
@@ -56,47 +63,106 @@ class EditAlarmViewModel @Inject constructor(
 
     init {
         val alarmId = handleAlarmId()
+        // TODO: Fix this mess
+        //  1) Mapper
+        //  2) Extract repeated logic -> Strategy patter?
 
         viewModelScope.launch {
-            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
-                val mappedAlarms = alarms.map { alarmWithManagers ->
+            val deferredAlarmOrder = async { alarmPreferences.collectAlarmOrder().first() }
+            val order = deferredAlarmOrder.await()
 
-                    val firstFireTime =
-                        alarmWithManagers.alarmMangerEntityList.minOf { it.fireTime }
+            when (order) {
+                AlarmOrder.DEFAULT -> {
+                    alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
+                        val mappedAlarms = alarms.map { alarmWithManagers ->
 
-                    val selectedDaysOfWeek =
-                        if (alarmWithManagers.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
-                            alarmWithManagers.alarmMangerEntityList.map { alarmManager ->
-                                val tmpCalendar = calendar.apply {
-                                    timeInMillis = alarmManager.fireTime
-                                }
-                                val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
-                                DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
-                                    calendarDayOfWeek
+                            val firstFireTime =
+                                alarmWithManagers.alarmMangerEntityList.minOf { it.fireTime }
+
+                            val selectedDaysOfWeek =
+                                if (alarmWithManagers.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
+                                    alarmWithManagers.alarmMangerEntityList.map { alarmManager ->
+                                        val tmpCalendar = calendar.apply {
+                                            timeInMillis = alarmManager.fireTime
+                                        }
+                                        val calendarDayOfWeek =
+                                            tmpCalendar.get(Calendar.DAY_OF_WEEK)
+                                        DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
+                                            calendarDayOfWeek
+                                        )
+                                    }
+                                } else emptyList()
+
+
+                            with(alarmWithManagers.alarmEntity) {
+                                EditAlarmItem(
+                                    selected = id == alarmId,
+                                    alarmItem = AlarmItem(
+                                        id,
+                                        customOrder,
+                                        name,
+                                        firstFireTime,
+                                        mode,
+                                        enable,
+                                        selectedDaysOfWeek = selectedDaysOfWeek
+                                    )
                                 )
                             }
-                        } else emptyList()
+                        }
 
-
-                    with(alarmWithManagers.alarmEntity) {
-                        EditAlarmItem(
-                            selected = id == alarmId,
-                            alarmItem = AlarmItem(
-                                id,
-                                name,
-                                firstFireTime,
-                                mode,
-                                enable,
-                                selectedDaysOfWeek = selectedDaysOfWeek
-                            )
-                        )
+                        editAlarmItems.value = mappedAlarms
+                        //Handle specific case passing alarm id through argument
+                        allSelected.value = mappedAlarms.all { it.selected }
                     }
                 }
 
-                editAlarmItems.value = mappedAlarms
-                //Handle specific case passing alarm id through argument
-                allSelected.value = mappedAlarms.all { it.selected }
+                AlarmOrder.ALARM_TIME_ORDER -> TODO()
+                AlarmOrder.CUSTOM_ORDER -> {
+                    alarmDao.collectAllAlarmAndAlarmManagersCustomOrder()
+                        .collectLatest { alarms ->
+                            val mappedAlarms = alarms.map { alarmWithManagers ->
+
+                                val firstFireTime =
+                                    alarmWithManagers.alarmMangerEntityList.minOf { it.fireTime }
+
+                                val selectedDaysOfWeek =
+                                    if (alarmWithManagers.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
+                                        alarmWithManagers.alarmMangerEntityList.map { alarmManager ->
+                                            val tmpCalendar = calendar.apply {
+                                                timeInMillis = alarmManager.fireTime
+                                            }
+                                            val calendarDayOfWeek =
+                                                tmpCalendar.get(Calendar.DAY_OF_WEEK)
+                                            DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
+                                                calendarDayOfWeek
+                                            )
+                                        }
+                                    } else emptyList()
+
+
+                                with(alarmWithManagers.alarmEntity) {
+                                    EditAlarmItem(
+                                        selected = id == alarmId,
+                                        alarmItem = AlarmItem(
+                                            id,
+                                            customOrder,
+                                            name,
+                                            firstFireTime,
+                                            mode,
+                                            enable,
+                                            selectedDaysOfWeek = selectedDaysOfWeek
+                                        )
+                                    )
+                                }
+                            }
+
+                            editAlarmItems.value = mappedAlarms
+                            //Handle specific case passing alarm id through argument
+                            allSelected.value = mappedAlarms.all { it.selected }
+                        }
+                }
             }
+
         }
     }
 
@@ -163,7 +229,7 @@ class EditAlarmViewModel @Inject constructor(
             selectedEditAlarms.forEach { editAlarm ->
                 val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(editAlarm.alarmItem.alarmId)
 
-                alarmManagers.forEach {alarmManager ->
+                alarmManagers.forEach { alarmManager ->
                     // TODO: cancel alarm manager after full db implementation
                 }
 
@@ -187,6 +253,21 @@ class EditAlarmViewModel @Inject constructor(
             alarmDao.deleteAllAlarms(allAlarms)
             // TODO: navigate back to AlarmScreen
         }
+    }
+
+    fun onMove(fromIndex: Index, toIndex: Index) {
+        val mutableEditAlarmItems = editAlarmItems.value.toMutableList()
+        mutableEditAlarmItems.move(fromIndex, toIndex)
+        editAlarmItems.value = mutableEditAlarmItems
+    }
+
+    fun onMoveCompleted() {
+        viewModelScope.launch {
+            val pairAlarmIdCustomOrderList =
+                editAlarmItems.value.mapIndexed { index, editAlarmItem -> editAlarmItem.alarmItem.alarmId to index }
+            alarmDao.updateAlarmCustomOrderList(pairAlarmIdCustomOrderList)
+        }
+        // TODO: change sort preferences to custom order
     }
 
 }

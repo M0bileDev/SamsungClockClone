@@ -232,7 +232,9 @@ class MainActivity : ComponentActivity() {
                                     onTurnOn = editAlarmViewModel::onTurnOn,
                                     onTurnOff = editAlarmViewModel::onTurnOff,
                                     onDelete = editAlarmViewModel::onDelete,
-                                    onDeleteAll = editAlarmViewModel::onDeleteAll
+                                    onDeleteAll = editAlarmViewModel::onDeleteAll,
+                                    onMove = editAlarmViewModel::onMove,
+                                    onMoveCompleted = editAlarmViewModel::onMoveCompleted
                                 )
                             }
 

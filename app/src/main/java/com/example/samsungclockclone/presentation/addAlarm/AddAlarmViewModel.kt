@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
-import com.example.samsungclockclone.data.local.scheduler.AlarmMilliseconds
-import com.example.samsungclockclone.data.local.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
+import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.scheduler.AlarmMilliseconds
+import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
@@ -162,7 +162,7 @@ class AddAlarmViewModel @Inject constructor(
                 name = alarmName.value,
                 enable = true
             )
-            val alarmId = alarmDao.insertAlarm(alarmEntity)
+            val alarmId = alarmDao.insertAlarmUpdateOrder(alarmEntity)
 
             val alarmRepeat = alarmMode.value.toAlarmRepeat()
             val alarms: List<Pair<AlarmId, AlarmMilliseconds>> =

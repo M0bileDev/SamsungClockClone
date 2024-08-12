@@ -32,12 +32,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview3
 import com.example.samsungclockclone.ui.customViews.EditAlarmItemCard
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.DragAndDropLazyColumn
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.drawables
 
@@ -50,7 +51,9 @@ fun EditAlarmScreen(
     onTurnOn: () -> Unit,
     onTurnOff: () -> Unit,
     onDelete: () -> Unit,
-    onDeleteAll: () -> Unit
+    onDeleteAll: () -> Unit,
+    onMove: (Index, Index) -> Unit,
+    onMoveCompleted: () -> Unit
 ) = with(uiState) {
 
     val topAppBarState = rememberTopAppBarState()
@@ -96,17 +99,21 @@ fun EditAlarmScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             items = editAlarmItems,
-            onMove = { _, _ ->
-                // TODO: Implementation reorder items not added yet
-            },
+            onMove = onMove,
             onDragCondition = {
                 dragIconPress
             },
             content = { contentValue, dragged ->
                 EditAlarmItemCard(
                     editAlarmItem = contentValue,
+                    dragged = dragged,
                     onSelectionChanged = onSelectionChanged,
-                    onDragIconPress = { press -> dragIconPress = press }
+                    onDragIconPress = { press ->
+                        dragIconPress = press
+                        if (!press) {
+                            onMoveCompleted()
+                        }
+                    }
                 )
             }
         )
@@ -190,7 +197,9 @@ private fun EditAlarmScreenPreview() {
             onTurnOn = {},
             onTurnOff = {},
             onDelete = {},
-            onDeleteAll = {}
+            onDeleteAll = {},
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }
@@ -206,7 +215,9 @@ private fun EditAlarmScreenPreview2() {
             onTurnOn = {},
             onTurnOff = {},
             onDelete = {},
-            onDeleteAll = {}
+            onDeleteAll = {},
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }
@@ -222,7 +233,9 @@ private fun EditAlarmScreenPreview3() {
             onTurnOn = {},
             onTurnOff = {},
             onDelete = {},
-            onDeleteAll = {}
+            onDeleteAll = {},
+            onMove = { _, _ -> },
+            onMoveCompleted = {}
         )
     }
 }

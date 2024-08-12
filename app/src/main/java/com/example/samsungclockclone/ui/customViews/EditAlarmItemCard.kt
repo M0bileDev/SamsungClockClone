@@ -25,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.samsungclockclone.data.local.scheduler.AlarmId
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.ext.toDate
 import com.example.samsungclockclone.presentation.addAlarm.utils.toNameResourceList

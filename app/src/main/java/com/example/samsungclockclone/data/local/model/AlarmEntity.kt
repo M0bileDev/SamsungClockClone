@@ -8,6 +8,7 @@ import com.example.samsungclockclone.domain.utils.AlarmMode
 data class AlarmEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
+    val customOrder:Long = 0L,
     val mode: AlarmMode,
     val name: String,
     val enable: Boolean

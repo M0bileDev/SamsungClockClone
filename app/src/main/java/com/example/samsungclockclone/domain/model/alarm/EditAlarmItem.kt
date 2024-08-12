@@ -12,6 +12,7 @@ data class EditAlarmItem(
             selected = true,
             alarmItem = AlarmItem(
                 0L,
+                0L,
                 "Preview",
                 1721730918345,
                 AlarmMode.OnlyTime,
@@ -22,6 +23,7 @@ data class EditAlarmItem(
             selected = false,
             alarmItem = AlarmItem(
                 0L,
+                0L,
                 "Preview",
                 1721730918345,
                 AlarmMode.OnlyTime,
@@ -31,6 +33,7 @@ data class EditAlarmItem(
         val editAlarmItemPreview3 = EditAlarmItem(
             selected = false,
             alarmItem = AlarmItem(
+                0L,
                 0L,
                 "Preview",
                 1721730918345,
