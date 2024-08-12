@@ -9,6 +9,8 @@ import androidx.room.Update
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
+import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -47,6 +49,17 @@ interface AlarmDao {
 
     @Update
     suspend fun updateAlarms(list: List<AlarmEntity>)
+
+    @Query("UPDATE alarm_table SET customOrder =:customOrder WHERE id =:alarmId")
+    suspend fun updateAlarmCustomOrder(alarmId: AlarmId, customOrder: Index)
+
+    @Transaction
+    suspend fun updateAlarmCustomOrderList(customOrderList: List<Pair<AlarmId, Index>>) {
+        customOrderList.forEach {
+            val (alarmId, customOrder) = it
+            updateAlarmCustomOrder(alarmId, customOrder)
+        }
+    }
 
     @Transaction
     suspend fun insertAlarmUpdateOrder(alarmEntity: AlarmEntity): Long {
