@@ -13,6 +13,7 @@ import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
+import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -257,8 +258,14 @@ class EditAlarmViewModel @Inject constructor(
         }
     }
 
-    fun onMove(fromIndex: Index, toIndex: Index){
-        // TODO: Add implementation
+    fun onMove(fromIndex: Index, toIndex: Index) {
+        val mutableEditAlarmItems = editAlarmItems.value.toMutableList()
+        mutableEditAlarmItems.move(fromIndex, toIndex)
+        viewModelScope.launch {
+            val pairAlarmIdCustomOrderList =
+                mutableEditAlarmItems.mapIndexed { index, editAlarmItem -> editAlarmItem.alarmItem.alarmId to index }
+            alarmDao.updateAlarmCustomOrderList(pairAlarmIdCustomOrderList)
+        }
     }
 
 }
