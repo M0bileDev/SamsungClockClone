@@ -64,7 +64,7 @@ interface AlarmDao {
     @Transaction
     suspend fun insertAlarmUpdateOrder(alarmEntity: AlarmEntity): Long {
         val id = insertAlarm(alarmEntity)
-        val updatedAlarmEntity = alarmEntity.copy(customOrder = id)
+        val updatedAlarmEntity = alarmEntity.copy(id = id, customOrder = id)
         updateAlarm(updatedAlarmEntity)
         return id
     }
