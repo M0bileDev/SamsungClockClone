@@ -3,28 +3,33 @@ package com.example.samsungclockclone.presentation.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
+import com.example.samsungclockclone.domain.preferences.AlarmOrder
+import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.scheduler.AlarmId
-import com.example.samsungclockclone.domain.utils.AlarmMode
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
+import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
+import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
+import com.example.samsungclockclone.usecase.UpdateAlarmEnableSwitchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
-    private val alarmScheduler: AlarmScheduler,
-    private val alarmDao: AlarmDao
+    private val alarmPreferences: AlarmPreferences,
+    private val getAlarmItemsUseCase: GetAlarmItemsUseCase,
+    private val getAlarmItemsCustomOrderUseCase: GetAlarmItemsCustomOrderUseCase,
+    private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase
 ) : ViewModel() {
 
     sealed interface AlarmAction {
@@ -34,7 +39,6 @@ class AlarmViewModel @Inject constructor(
     private val alarmActions = Channel<AlarmAction>()
     val actions = alarmActions.receiveAsFlow()
 
-    private val calendar = Calendar.getInstance()
     private val alarmItems = MutableStateFlow(emptyList<AlarmItem>())
     private val editModeEnable = MutableStateFlow(false)
 
@@ -62,51 +66,35 @@ class AlarmViewModel @Inject constructor(
             // TODO: 1. synchronize to clock tick
             //       2. refresh each minute
             //       3. Extract logic to separate function
-            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
-                alarmItems.value = alarms.map { alarmWithAlarmManager ->
-                    val firstFireTime =
-                        alarmWithAlarmManager.alarmMangerEntityList.minOf { it.fireTime }
+            val deferredAlarmOrder = async { alarmPreferences.collectAlarmOrder().first() }
+            val order = deferredAlarmOrder.await()
 
-                    val selectedDaysOfWeek =
-                        if (alarmWithAlarmManager.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
-                            alarmWithAlarmManager.alarmMangerEntityList.map { alarmManager ->
-                                val tmpCalendar = calendar.apply {
-                                    timeInMillis = alarmManager.fireTime
-                                }
-                                val calendarDayOfWeek = tmpCalendar.get(Calendar.DAY_OF_WEEK)
-                                DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek(
-                                    calendarDayOfWeek
-                                )
-                            }
-                        } else emptyList()
+            when (order) {
+                AlarmOrder.DEFAULT -> {
+                    getAlarmItemsUseCase(
+                        { mapped ->
+                            alarmItems.value = mapped
+                        },
+                        this
+                    )
+                }
 
-
-                    with(alarmWithAlarmManager.alarmEntity) {
-                        AlarmItem(
-                            id,
-                            customOrder,
-                            name,
-                            firstFireTime,
-                            mode,
-                            enable,
-                            selectedDaysOfWeek = selectedDaysOfWeek
-                        )
-                    }
+                AlarmOrder.ALARM_TIME_ORDER -> TODO()
+                AlarmOrder.CUSTOM_ORDER -> {
+                    getAlarmItemsCustomOrderUseCase(
+                        { mapped ->
+                            alarmItems.value = mapped
+                        },
+                        this
+                    )
                 }
             }
         }
     }
 
-    fun onAlarmChanged(alarmId: AlarmId) {
+    fun onAlarmEnableSwitch(alarmId: AlarmId) {
         viewModelScope.launch {
-            val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
-            val updatedAlarm = alarm.copy(enable = !alarm.enable)
-            alarmDao.updateAlarm(updatedAlarm)
-
-            // TODO: enable after database full implementation
-//            alarmManagers.forEach { alarmManager ->
-//                alarmScheduler.cancel(alarmManager.uniqueId)
-//            }
+            updateAlarmEnableSwitchUseCase(alarmId, this)
         }
     }
 
@@ -120,7 +108,6 @@ class AlarmViewModel @Inject constructor(
                 is EditAlarmMode.EditAlarmToolbarAction -> {
                     alarmActions.send(AlarmAction.EditAlarm())
                 }
-
             }
         }
     }
