@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                     onEdit = alarmViewModel::onEdit,
                                     onSort = {},
                                     onSettings = {},
-                                    onAlarmChanged = alarmViewModel::onAlarmChanged
+                                    onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch
                                 )
                             }
 

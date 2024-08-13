@@ -2,20 +2,14 @@ package com.example.samsungclockclone.presentation.addAlarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.model.AlarmEntity
-import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
-import com.example.samsungclockclone.domain.scheduler.AlarmId
-import com.example.samsungclockclone.domain.scheduler.AlarmMilliseconds
-import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
-import com.example.samsungclockclone.domain.utils.toAlarmRepeat
 import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
+import com.example.samsungclockclone.usecase.SaveAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +27,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddAlarmViewModel @Inject constructor(
-    private val alarmScheduler: AlarmScheduler,
-    private val alarmDao: AlarmDao
+    private val saveAlarmUseCase: SaveAlarmUseCase
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -151,46 +144,22 @@ class AddAlarmViewModel @Inject constructor(
     }
 
     fun onSave() {
-
         // TODO: add security to check if alarm time is not past time
         val alarmMillisecondsList = createAlarmMilliseconds()
-
-        //save alarm information inside database
         viewModelScope.launch {
-            val alarmEntity = AlarmEntity(
-                mode = alarmMode.value,
-                name = alarmName.value,
-                enable = true
+            saveAlarmUseCase(
+                alarmMode.value,
+                alarmName.value,
+                alarmMillisecondsList,
+                this
             )
-            val alarmId = alarmDao.insertAlarmUpdateOrder(alarmEntity)
-
-            val alarmRepeat = alarmMode.value.toAlarmRepeat()
-            val alarms: List<Pair<AlarmId, AlarmMilliseconds>> =
-                alarmMillisecondsList.map { alarmMilliseconds ->
-                    val alarmManagerEntity = AlarmManagerEntity(
-                        parentId = alarmId,
-                        fireTime = alarmMilliseconds,
-                        repeat = alarmRepeat
-                    )
-                    alarmDao.insertAlarmManager(alarmManagerEntity) to alarmMilliseconds
-                }
-
-            // TODO: enable after database full implementation
-            //schedule alarms via alarm manager
-//            alarmScheduler.schedule(
-//                alarms,
-//                onScheduleCompleted = ::onScheduleCompleted,
-//                onScheduleDenied = ::onScheduleDenied
-//            )
-        }
-
-    }
-
-    private fun onScheduleCompleted() {
-        viewModelScope.launch {
-            addAlarmActions.send(AddAlarmAction.ScheduleCompleted)
         }
     }
+
+    private fun onScheduleCompleted() = viewModelScope.launch {
+        addAlarmActions.send(AddAlarmAction.ScheduleCompleted)
+    }
+
 
     private fun onScheduleDenied() {
         displayPermissionRequire.value = true
@@ -213,7 +182,6 @@ class AddAlarmViewModel @Inject constructor(
 
     fun onDismissDatePicker() {
         displayDatePicker.value = false
-
     }
 
     fun onDateChanged(selectedDateMillis: Long) {

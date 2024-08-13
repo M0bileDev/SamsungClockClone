@@ -46,7 +46,7 @@ fun AlarmScreen(
     onEdit: (EditAlarmMode) -> Unit,
     onSort: () -> Unit,
     onSettings: () -> Unit,
-    onAlarmChanged: (AlarmId) -> Unit
+    onAlarmEnableSwitch: (AlarmId) -> Unit
 ) = with(uiState) {
 
     val topAppBarState = rememberTopAppBarState()
@@ -137,7 +137,7 @@ fun AlarmScreen(
             items(alarmItems) { item ->
                 AlarmItemCard(
                     alarmItem = item,
-                    onCheckedChange = onAlarmChanged,
+                    onCheckedChange = onAlarmEnableSwitch,
                     onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
                 )
             }
@@ -155,7 +155,7 @@ private fun AlarmScreenPreview() {
             onEdit = {},
             onSort = {},
             onSettings = {},
-            onAlarmChanged = {},
+            onAlarmEnableSwitch = {},
         )
     }
 }
