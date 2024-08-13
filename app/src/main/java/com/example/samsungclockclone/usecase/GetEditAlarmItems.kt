@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
-class GetAllAlarmsWithAlarmManagersCustomOrderUseCase @Inject constructor(
+class GetEditAlarmItems @Inject constructor(
     private val alarmDao: AlarmDao
 ) {
 
@@ -31,7 +31,7 @@ class GetAllAlarmsWithAlarmManagersCustomOrderUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            alarmDao.collectAllAlarmAndAlarmManagersCustomOrder().collectLatest { alarms ->
+            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
                 val mappedAlarms = alarms.map { alarmWithManagers ->
 
                     val firstFireTime =

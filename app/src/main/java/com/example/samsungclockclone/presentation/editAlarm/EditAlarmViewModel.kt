@@ -12,8 +12,8 @@ import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
 import com.example.samsungclockclone.usecase.DeleteAlarmUseCase
 import com.example.samsungclockclone.usecase.DeleteAllAlarmsUseCase
-import com.example.samsungclockclone.usecase.GetAllAlarmsAndAlarmManagersUseCase
-import com.example.samsungclockclone.usecase.GetAllAlarmsWithAlarmManagersCustomOrderUseCase
+import com.example.samsungclockclone.usecase.GetEditAlarmItems
+import com.example.samsungclockclone.usecase.GetEditAlarmItemsCustomOrder
 import com.example.samsungclockclone.usecase.TurnOffAlarmItemUseCase
 import com.example.samsungclockclone.usecase.TurnOnAlarmUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmCustomOrderUseCase
@@ -31,8 +31,8 @@ import javax.inject.Inject
 class EditAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val alarmPreferences: AlarmPreferences,
-    private val getAllAlarmsAndAlarmManagersUseCase: GetAllAlarmsAndAlarmManagersUseCase,
-    private val getAllAlarmsWithAlarmManagersCustomOrderUseCase: GetAllAlarmsWithAlarmManagersCustomOrderUseCase,
+    private val getEditAlarmItems: GetEditAlarmItems,
+    private val getEditAlarmItemsCustomOrder: GetEditAlarmItemsCustomOrder,
     private val turnOnAlarmUseCase: TurnOnAlarmUseCase,
     private val turnOffAlarmItemUseCase: TurnOffAlarmItemUseCase,
     private val deleteAlarmUseCase: DeleteAlarmUseCase,
@@ -76,7 +76,7 @@ class EditAlarmViewModel @Inject constructor(
 
             when (order) {
                 AlarmOrder.DEFAULT -> {
-                    getAllAlarmsAndAlarmManagersUseCase(
+                    getEditAlarmItems(
                         alarmId,
                         { mappedAlarms ->
                             editAlarmItems.value = mappedAlarms
@@ -89,7 +89,7 @@ class EditAlarmViewModel @Inject constructor(
 
                 AlarmOrder.ALARM_TIME_ORDER -> TODO()
                 AlarmOrder.CUSTOM_ORDER -> {
-                    getAllAlarmsWithAlarmManagersCustomOrderUseCase(
+                    getEditAlarmItemsCustomOrder(
                         alarmId,
                         { mappedAlarms ->
                             editAlarmItems.value = mappedAlarms
