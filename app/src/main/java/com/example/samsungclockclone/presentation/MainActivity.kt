@@ -210,7 +210,7 @@ class MainActivity : ComponentActivity() {
                                     uiState = uiState,
                                     onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
                                     onEdit = alarmViewModel::onEdit,
-                                    onSort = {},
+                                    onSort = alarmViewModel::onSort,
                                     onSettings = {},
                                     onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch
                                 )
