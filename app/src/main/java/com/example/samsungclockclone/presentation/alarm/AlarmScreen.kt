@@ -32,7 +32,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.ext.toStringRes
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
@@ -44,7 +46,7 @@ fun AlarmScreen(
     uiState: AlarmUiState,
     onAddAlarm: () -> Unit,
     onEdit: (EditAlarmMode) -> Unit,
-    onSort: () -> Unit,
+    onSort: (AlarmOrder) -> Unit,
     onSettings: () -> Unit,
     onAlarmEnableSwitch: (AlarmId) -> Unit
 ) = with(uiState) {
@@ -57,7 +59,10 @@ fun AlarmScreen(
     }
     val scrollBehaviour = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
     val resources = LocalContext.current.resources
-    var expanded by remember {
+    var menuExpanded by remember {
+        mutableStateOf(false)
+    }
+    var sortMenuExpanded by remember {
         mutableStateOf(false)
     }
 
@@ -82,15 +87,15 @@ fun AlarmScreen(
                         )
                     }
                     IconButton(
-                        onClick = { expanded = true }) {
+                        onClick = { menuExpanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "Manage drop down menu"
                         )
                     }
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }) {
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }) {
                         if (editAvailable) {
                             DropdownMenuItem(
                                 text = {
@@ -99,7 +104,7 @@ fun AlarmScreen(
                                     )
                                 },
                                 onClick = {
-                                    expanded = false
+                                    menuExpanded = false
                                     onEdit(EditAlarmMode.EditAlarmToolbarAction)
                                 }
                             )
@@ -111,7 +116,10 @@ fun AlarmScreen(
                                         text = "Sort"
                                     )
                                 },
-                                onClick = onSort
+                                onClick = {
+                                    menuExpanded = false
+                                    sortMenuExpanded = true
+                                }
                             )
                         }
                         DropdownMenuItem(
@@ -122,6 +130,23 @@ fun AlarmScreen(
                             },
                             onClick = onSettings
                         )
+                    }
+                    DropdownMenu(
+                        expanded = sortMenuExpanded,
+                        onDismissRequest = { sortMenuExpanded = false }) {
+                        AlarmOrder.entries.forEach { order ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = resources.getString(order.toStringRes())
+                                    )
+                                },
+                                onClick = {
+                                    sortMenuExpanded = false
+                                    onSort(order)
+                                }
+                            )
+                        }
                     }
                 },
                 scrollBehavior = scrollBehaviour

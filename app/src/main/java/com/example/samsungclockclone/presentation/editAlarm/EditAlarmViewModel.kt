@@ -3,8 +3,8 @@ package com.example.samsungclockclone.presentation.editAlarm
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
-import com.example.samsungclockclone.domain.preferences.AlarmOrder
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
@@ -12,8 +12,8 @@ import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
 import com.example.samsungclockclone.usecase.DeleteAlarmUseCase
 import com.example.samsungclockclone.usecase.DeleteAllAlarmsUseCase
-import com.example.samsungclockclone.usecase.GetEditAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.GetEditAlarmItemsCustomOrderUseCase
+import com.example.samsungclockclone.usecase.GetEditAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.TurnOffAlarmItemUseCase
 import com.example.samsungclockclone.usecase.TurnOnAlarmUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmCustomOrderUseCase

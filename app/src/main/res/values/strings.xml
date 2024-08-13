@@ -20,4 +20,8 @@
     <string name="every_x">Every %1$s</string>
     <string name="everyday">Everyday</string>
     <string name="value_only_x">%1$s</string>
+
+    <string name="alarm_order_default">Default</string>
+    <string name="alarm_order_custom_order">Custom order</string>
+    <string name="alarm_order_alarm_time_order">Alarm time order</string>
 </resources>

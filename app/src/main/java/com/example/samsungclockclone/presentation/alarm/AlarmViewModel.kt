@@ -2,8 +2,8 @@ package com.example.samsungclockclone.presentation.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
-import com.example.samsungclockclone.domain.preferences.AlarmOrder
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
@@ -11,6 +11,7 @@ import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
 import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmEnableSwitchUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,8 @@ class AlarmViewModel @Inject constructor(
     private val getAlarmItemsCustomOrderUseCase: GetAlarmItemsCustomOrderUseCase,
     private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase
 ) : ViewModel() {
+
+    private var getAlarmItemsJob: Job? = null
 
     sealed interface AlarmAction {
         data class EditAlarm(val alarmId: AlarmId = -1L) : AlarmAction
@@ -60,7 +63,12 @@ class AlarmViewModel @Inject constructor(
     )
 
     init {
-        viewModelScope.launch {
+        getAlarmItems()
+    }
+
+    private fun getAlarmItems() {
+        getAlarmItemsJob?.cancel()
+        getAlarmItemsJob = viewModelScope.launch {
             // TODO: 1. synchronize to clock tick
             //       2. refresh each minute
             //       3. Extract logic to separate function
@@ -106,4 +114,10 @@ class AlarmViewModel @Inject constructor(
             }
         }
     }
+
+    fun onSort(alarmOrder: AlarmOrder) = viewModelScope.launch {
+        alarmPreferences.saveAlarmOrder(alarmOrder)
+        getAlarmItems()
+    }
+
 }
