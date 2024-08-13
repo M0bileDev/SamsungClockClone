@@ -3,7 +3,7 @@ package com.example.samsungclockclone.data.local.preferences
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.samsungclockclone.domain.preferences.AlarmOrder
+import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.ext.alarmDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
