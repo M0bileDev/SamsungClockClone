@@ -156,11 +156,10 @@ class AddAlarmViewModel @Inject constructor(
         }
     }
 
-    private fun onScheduleCompleted() {
-        viewModelScope.launch {
-            addAlarmActions.send(AddAlarmAction.ScheduleCompleted)
-        }
+    private fun onScheduleCompleted() = viewModelScope.launch {
+        addAlarmActions.send(AddAlarmAction.ScheduleCompleted)
     }
+
 
     private fun onScheduleDenied() {
         displayPermissionRequire.value = true

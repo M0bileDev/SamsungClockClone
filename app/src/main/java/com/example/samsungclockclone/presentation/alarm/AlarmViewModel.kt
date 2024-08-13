@@ -2,12 +2,10 @@ package com.example.samsungclockclone.presentation.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.preferences.AlarmOrder
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.scheduler.AlarmId
-import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
 import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
@@ -92,24 +90,20 @@ class AlarmViewModel @Inject constructor(
         }
     }
 
-    fun onAlarmEnableSwitch(alarmId: AlarmId) {
-        viewModelScope.launch {
-            updateAlarmEnableSwitchUseCase(alarmId, this)
-        }
+    fun onAlarmEnableSwitch(alarmId: AlarmId) = viewModelScope.launch {
+        updateAlarmEnableSwitchUseCase(alarmId, this)
     }
 
-    fun onEdit(editAlarmMode: EditAlarmMode) {
-        viewModelScope.launch {
-            when (editAlarmMode) {
-                is EditAlarmMode.EditAlarmItemAction -> {
-                    alarmActions.send(AlarmAction.EditAlarm(editAlarmMode.alarmId))
-                }
 
-                is EditAlarmMode.EditAlarmToolbarAction -> {
-                    alarmActions.send(AlarmAction.EditAlarm())
-                }
+    fun onEdit(editAlarmMode: EditAlarmMode) = viewModelScope.launch {
+        when (editAlarmMode) {
+            is EditAlarmMode.EditAlarmItemAction -> {
+                alarmActions.send(AlarmAction.EditAlarm(editAlarmMode.alarmId))
+            }
+
+            is EditAlarmMode.EditAlarmToolbarAction -> {
+                alarmActions.send(AlarmAction.EditAlarm())
             }
         }
     }
-
 }
