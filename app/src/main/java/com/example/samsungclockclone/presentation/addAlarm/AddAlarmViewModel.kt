@@ -1,14 +1,18 @@
 package com.example.samsungclockclone.presentation.addAlarm
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
+import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
 import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
+import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
+import com.example.samsungclockclone.usecase.GetAlarmByIdUseCase
 import com.example.samsungclockclone.usecase.SaveAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -23,11 +27,15 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Calendar.HOUR_OF_DAY
+import java.util.Calendar.MINUTE
 import javax.inject.Inject
 
 @HiltViewModel
 class AddAlarmViewModel @Inject constructor(
-    private val saveAlarmUseCase: SaveAlarmUseCase
+    private val savedStateHandle: SavedStateHandle,
+    private val saveAlarmUseCase: SaveAlarmUseCase,
+    private val getAlarmByIdUseCase: GetAlarmByIdUseCase
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -39,6 +47,7 @@ class AddAlarmViewModel @Inject constructor(
     private val addAlarmActions = Channel<AddAlarmAction>()
     val actions = addAlarmActions.receiveAsFlow()
 
+    private val calendar = Calendar.getInstance()
     private val alarmHour = MutableStateFlow(0)
     private val alarmMinute = MutableStateFlow(0)
     private val calendarDateMilliseconds = MutableStateFlow(0L)
@@ -112,6 +121,56 @@ class AddAlarmViewModel @Inject constructor(
         initialValue = AddAlarmUiState()
     )
 
+    init {
+        shouldEdit()
+    }
+
+    private fun shouldEdit() {
+        val alarmId = handleAlarmId()
+        if (alarmId == -1L) return
+
+        viewModelScope.launch {
+            getAlarmByIdUseCase(
+                alarmId,
+                onDataCompleted = { data ->
+                    calendar.apply {
+                        timeInMillis = data.alarmMangerEntityList[0].fireTime
+                    }
+
+                    alarmHour.value = calendar.get(HOUR_OF_DAY)
+                    alarmMinute.value = calendar.get(MINUTE)
+                    alarmMode.value = data.alarmEntity.mode
+
+
+                    when (data.alarmEntity.mode) {
+                        AlarmMode.OnlyTime -> {
+                            //nothing to update
+                        }
+
+                        AlarmMode.DayOfWeekAndTime -> {
+                            val daysOfWeek =
+                                data.alarmMangerEntityList.map { manager ->
+                                    manager.dayOfWeek ?: throw IllegalStateException()
+                                }
+                            selectedDaysOfWeek.value = daysOfWeek
+                        }
+
+                        AlarmMode.CalendarDateAndTime -> {
+                            calendarDateMilliseconds.value = data.alarmMangerEntityList[0].fireTime
+                        }
+                    }
+
+                    alarmName.value = data.alarmEntity.name
+                },
+                this
+            )
+        }
+    }
+
+    private fun handleAlarmId(): AlarmId {
+        return checkNotNull(savedStateHandle[ALARM_ID_KEY])
+    }
+
     fun hourChanged(hour: Int) {
         alarmHour.value = hour
     }
@@ -152,6 +211,7 @@ class AddAlarmViewModel @Inject constructor(
                 alarmMode.value,
                 alarmName.value,
                 alarmMillisecondsList,
+                selectedDaysOfWeek.value,
                 this
             )
             addAlarmActions.send(AddAlarmAction.NavigateBack)
@@ -260,7 +320,7 @@ class AddAlarmViewModel @Inject constructor(
                 val tmpCalendar = calendar
                     .apply {
                         timeInMillis = calendarDateMilliseconds.value
-                        set(Calendar.HOUR, alarmHour.value)
+                        set(Calendar.HOUR_OF_DAY, alarmHour.value)
                         set(Calendar.MINUTE, alarmMinute.value)
                         set(Calendar.SECOND, 0)
                         set(Calendar.MILLISECOND, 0)
@@ -273,6 +333,16 @@ class AddAlarmViewModel @Inject constructor(
                 listOf(alarmMilliseconds)
             }
         }
+    }
+
+    //Value used to update hour when update alarm
+    fun onMoveToHour(): Int {
+        return alarmHour.value
+    }
+
+    //Value used to update minute when update alarm
+    fun onMoveToMinute(): Int {
+        return alarmMinute.value
     }
 }
 
