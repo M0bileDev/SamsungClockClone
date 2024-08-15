@@ -9,7 +9,8 @@ data class EditAlarmUiState(
     val turnOnEnabled: Boolean = false,
     val turnOffEnabled: Boolean = false,
     val deleteEnabled: Boolean = false,
-    val deleteAllEnabled: Boolean = false
+    val deleteAllEnabled: Boolean = false,
+    val selectedAlarmsCount: Int = 0
     // TODO: Create enum type of bottom buttons
 ) {
     companion object {

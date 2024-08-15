@@ -52,6 +52,7 @@ class EditAlarmViewModel @Inject constructor(
         val deleteEnabled =
             editAlarmItems.any { it.selected } && !editAlarmItems.all { it.selected }
         val deleteAllEnabled = editAlarmItems.all { it.selected }
+        val selectedAlarmsCount = editAlarmItems.count { it.selected }
 
         EditAlarmUiState(
             editAlarmItems,
@@ -59,7 +60,8 @@ class EditAlarmViewModel @Inject constructor(
             turnOnEnabled,
             turnOffEnabled,
             deleteEnabled,
-            deleteAllEnabled
+            deleteAllEnabled,
+            selectedAlarmsCount
         )
     }.stateIn(
         viewModelScope,

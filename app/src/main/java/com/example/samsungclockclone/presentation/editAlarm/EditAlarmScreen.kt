@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.domain.scheduler.AlarmId
@@ -41,6 +42,7 @@ import com.example.samsungclockclone.ui.customViews.dragAndDrop.DragAndDropLazyC
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.drawables
+import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
 fun EditAlarmScreen(
@@ -74,7 +76,10 @@ fun EditAlarmScreen(
         topBar = {
             MediumTopAppBar(
                 title = {
-                    Text(text = "Selected (wip)")
+                    val titleRes =
+                        if (selectedAlarmsCount > 0) strings.x_selected else strings.selected_alarms
+                    val title = stringResource(id = titleRes, selectedAlarmsCount)
+                    Text(text = title)
                 },
                 actions = {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
