@@ -48,7 +48,7 @@ class AlarmViewModel @Inject constructor(
     ) { alarmItems, editModeEnable ->
 
         val editAvailable = alarmItems.isNotEmpty()
-        val sortAvailable = alarmItems.size > 2
+        val sortAvailable = alarmItems.size > 1
 
         AlarmUiState(
             alarmItems,
