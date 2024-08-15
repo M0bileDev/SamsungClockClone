@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.ext.toStringRes
+import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
@@ -44,7 +45,7 @@ import com.example.samsungclockclone.ui.utils.strings
 fun AlarmScreen(
     modifier: Modifier = Modifier,
     uiState: AlarmUiState,
-    onAddAlarm: () -> Unit,
+    onAdd: (AddAlarmMode) -> Unit,
     onEdit: (EditAlarmMode) -> Unit,
     onSort: (AlarmOrder) -> Unit,
     onSettings: () -> Unit,
@@ -79,7 +80,9 @@ fun AlarmScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = onAddAlarm
+                        onClick = {
+                            onAdd(AddAlarmMode.AddAlarmToolbarAction)
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -163,6 +166,7 @@ fun AlarmScreen(
                 AlarmItemCard(
                     alarmItem = item,
                     onCheckedChange = onAlarmEnableSwitch,
+                    onClick = { onAdd(AddAlarmMode.AddAlarmItemAction(item.alarmId)) },
                     onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
                 )
             }
@@ -176,7 +180,7 @@ private fun AlarmScreenPreview() {
     SamsungClockCloneTheme {
         AlarmScreen(
             uiState = AlarmUiState.alarmUiStatePreview,
-            onAddAlarm = {},
+            onAdd = {},
             onEdit = {},
             onSort = {},
             onSettings = {},
