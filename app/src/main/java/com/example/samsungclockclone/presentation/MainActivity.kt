@@ -3,6 +3,7 @@
 package com.example.samsungclockclone.presentation
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.ComponentActivity
@@ -158,13 +159,17 @@ class MainActivity : ComponentActivity() {
                                                 }
 
                                                 AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
-                                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                                         startActivity(
                                                             Intent(
                                                                 ACTION_REQUEST_SCHEDULE_EXACT_ALARM
                                                             )
                                                         )
                                                     }
+                                                }
+
+                                                AddAlarmViewModel.AddAlarmAction.NavigateBack -> {
+                                                    navController.navigateUp()
                                                 }
                                             }
                                         }
