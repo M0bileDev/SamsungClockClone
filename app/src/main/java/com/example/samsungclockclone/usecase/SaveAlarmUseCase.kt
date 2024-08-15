@@ -6,6 +6,7 @@ import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.domain.scheduler.AlarmId
 import com.example.samsungclockclone.domain.scheduler.AlarmMilliseconds
 import com.example.samsungclockclone.domain.utils.AlarmMode
+import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.toAlarmRepeat
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +24,7 @@ class SaveAlarmUseCase @Inject constructor(
         alarmMode: AlarmMode,
         alarmName: String,
         alarmMillisecondsList: List<Long>,
+        selectedDaysOfWeek: List<DayOfWeek>,
         parentScope: CoroutineScope,
         dispatcher: CoroutineDispatcher = Dispatchers.Default
     ): Job {
@@ -38,14 +40,29 @@ class SaveAlarmUseCase @Inject constructor(
 
             val alarmRepeat = alarmMode.toAlarmRepeat()
             val alarms: List<Pair<AlarmId, AlarmMilliseconds>> =
-                alarmMillisecondsList.map { alarmMilliseconds ->
-                    val alarmManagerEntity = AlarmManagerEntity(
-                        parentId = alarmId,
-                        fireTime = alarmMilliseconds,
-                        repeat = alarmRepeat
-                    )
-                    alarmDao.insertAlarmManager(alarmManagerEntity) to alarmMilliseconds
+                if (selectedDaysOfWeek.isNotEmpty()) {
+                    val zipped = alarmMillisecondsList.zip(selectedDaysOfWeek)
+                    zipped.map {
+                        val (milliseconds, day) = it
+                        val alarmManagerEntity = AlarmManagerEntity(
+                            parentId = alarmId,
+                            fireTime = milliseconds,
+                            repeat = alarmRepeat,
+                            dayOfWeek = day
+                        )
+                        alarmDao.insertAlarmManager(alarmManagerEntity) to milliseconds
+                    }
+                } else {
+                    alarmMillisecondsList.map { milliseconds ->
+                        val alarmManagerEntity = AlarmManagerEntity(
+                            parentId = alarmId,
+                            fireTime = milliseconds,
+                            repeat = alarmRepeat
+                        )
+                        alarmDao.insertAlarmManager(alarmManagerEntity) to milliseconds
+                    }
                 }
+
 
             // TODO: enable after database full implementation
             // TODO: extract to other use case?
