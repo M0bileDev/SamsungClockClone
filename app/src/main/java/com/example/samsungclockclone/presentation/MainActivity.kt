@@ -121,7 +121,13 @@ class MainActivity : ComponentActivity() {
                             startDestination = Screens.Alarm.route
                         ) {
 
-                            composable(Screens.AddAlarm.route) {
+
+                            composable(
+                                "${Screens.AddAlarm.route}/{${ALARM_ID_KEY}}",
+                                arguments = listOf(navArgument(ALARM_ID_KEY) {
+                                    type = NavType.LongType
+                                })
+                            ) {
                                 val addAlarmViewModel: AddAlarmViewModel = hiltViewModel()
                                 val uiState by addAlarmViewModel.uiState.collectAsState()
                                 val localDate by remember {
@@ -181,7 +187,9 @@ class MainActivity : ComponentActivity() {
                                     uiState = uiState,
                                     datePickerState = datePickerState,
                                     onHourChanged = addAlarmViewModel::hourChanged,
+                                    onMoveToHour = addAlarmViewModel::onMoveToHour,
                                     onMinuteChanged = addAlarmViewModel::minuteChanged,
+                                    onMoveToMinute = addAlarmViewModel::onMoveToMinute,
                                     onDateChanged = addAlarmViewModel::onDateChanged,
                                     onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
                                     onNameChanged = addAlarmViewModel::nameChanged,
@@ -206,6 +214,11 @@ class MainActivity : ComponentActivity() {
                                                 is AlarmViewModel.AlarmAction.EditAlarm -> {
                                                     navController.navigate("${Screens.EditAlarm.route}/${action.alarmId}")
                                                 }
+
+                                                is AlarmViewModel.AlarmAction.AddAlarm -> {
+                                                    navController.navigate("${Screens.AddAlarm.route}/${action.alarmId}")
+                                                }
+
                                             }
                                         }
                                     }
@@ -213,7 +226,7 @@ class MainActivity : ComponentActivity() {
 
                                 AlarmScreen(
                                     uiState = uiState,
-                                    onAddAlarm = { navController.navigate(Screens.AddAlarm.route) },
+                                    onAdd = alarmViewModel::onAdd,
                                     onEdit = alarmViewModel::onEdit,
                                     onSort = alarmViewModel::onSort,
                                     onSettings = {},
@@ -232,9 +245,9 @@ class MainActivity : ComponentActivity() {
 
                                 val lifecycle = LocalLifecycleOwner.current
                                 LaunchedEffect(key1 = lifecycle) {
-                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                                         editAlarmViewModel.actions.collectLatest { action ->
-                                            when(action){
+                                            when (action) {
                                                 EditAlarmViewModel.EditAlarmAction.NavigateBack -> {
                                                     navController.navigateUp()
                                                 }
