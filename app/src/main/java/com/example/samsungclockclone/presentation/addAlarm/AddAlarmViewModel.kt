@@ -207,6 +207,7 @@ class AddAlarmViewModel @Inject constructor(
         // TODO: add security to check if alarm time is not past time
         val alarmMillisecondsList = createAlarmMilliseconds()
         viewModelScope.launch {
+            // TODO: Add logic to update alarm
             saveAlarmUseCase(
                 alarmMode.value,
                 alarmName.value,
