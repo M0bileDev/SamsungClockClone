@@ -19,10 +19,12 @@ import com.example.samsungclockclone.usecase.TurnOnAlarmUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmCustomOrderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +41,13 @@ class EditAlarmViewModel @Inject constructor(
     private val deleteAllAlarmsUseCase: DeleteAllAlarmsUseCase,
     private val updateAlarmCustomOrderUseCase: UpdateAlarmCustomOrderUseCase
 ) : ViewModel() {
+
+    sealed interface EditAlarmAction {
+        data object NavigateBack : EditAlarmAction
+    }
+
+    private val editAlarmActions = Channel<EditAlarmAction>()
+    val actions = editAlarmActions.receiveAsFlow()
 
     private val editAlarmItems = MutableStateFlow(emptyList<EditAlarmItem>())
     private val allSelected = MutableStateFlow(false)
@@ -131,9 +140,9 @@ class EditAlarmViewModel @Inject constructor(
         selectedEditAlarms.forEach { editAlarm ->
             turnOnAlarmUseCase(editAlarm.alarmItem.alarmId, this)
             // TODO: set alarm manager after full db implementation
-            // TODO: navigate back to AlarmScreen
         }
 
+        editAlarmActions.send(EditAlarmAction.NavigateBack)
     }
 
 
@@ -142,8 +151,9 @@ class EditAlarmViewModel @Inject constructor(
 
         selectedEditAlarms.forEach { editAlarm ->
             turnOffAlarmItemUseCase(editAlarm.alarmItem.alarmId, this)
-            // TODO: navigate back to AlarmScreen
         }
+
+        editAlarmActions.send(EditAlarmAction.NavigateBack)
     }
 
 
@@ -152,9 +162,9 @@ class EditAlarmViewModel @Inject constructor(
 
         selectedEditAlarms.forEach { editAlarm ->
             deleteAlarmUseCase(editAlarm.alarmItem.alarmId, this)
-            // TODO: navigate back to AlarmScreen
         }
 
+        editAlarmActions.send(EditAlarmAction.NavigateBack)
     }
 
 
@@ -162,7 +172,7 @@ class EditAlarmViewModel @Inject constructor(
 
     fun onDeleteAll() = viewModelScope.launch {
         deleteAllAlarmsUseCase(this)
-        // TODO: navigate back to AlarmScreen
+        editAlarmActions.send(EditAlarmAction.NavigateBack)
     }
 
 
