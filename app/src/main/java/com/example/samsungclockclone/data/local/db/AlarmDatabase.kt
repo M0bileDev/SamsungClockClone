@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.samsungclockclone.data.local.converter.AlarmModeConverter
 import com.example.samsungclockclone.data.local.converter.AlarmRepeatConverter
+import com.example.samsungclockclone.data.local.converter.DayOfWeekConverter
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
@@ -18,7 +19,8 @@ import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 )
 @TypeConverters(
     AlarmModeConverter::class,
-    AlarmRepeatConverter::class
+    AlarmRepeatConverter::class,
+    DayOfWeekConverter::class
 )
 abstract class AlarmDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
