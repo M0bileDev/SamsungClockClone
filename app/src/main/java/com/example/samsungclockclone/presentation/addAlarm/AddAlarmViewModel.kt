@@ -33,6 +33,7 @@ class AddAlarmViewModel @Inject constructor(
     sealed interface AddAlarmAction {
         data object ScheduleCompleted : AddAlarmAction
         data object RequestSchedulePermission : AddAlarmAction
+        data object NavigateBack : AddAlarmAction
     }
 
     private val addAlarmActions = Channel<AddAlarmAction>()
@@ -153,6 +154,7 @@ class AddAlarmViewModel @Inject constructor(
                 alarmMillisecondsList,
                 this
             )
+            addAlarmActions.send(AddAlarmAction.NavigateBack)
         }
     }
 
