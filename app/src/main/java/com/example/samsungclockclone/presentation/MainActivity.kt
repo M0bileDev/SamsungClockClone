@@ -225,6 +225,19 @@ class MainActivity : ComponentActivity() {
                                 val editAlarmViewModel: EditAlarmViewModel = hiltViewModel()
                                 val uiState by editAlarmViewModel.uiState.collectAsState()
 
+                                val lifecycle = LocalLifecycleOwner.current
+                                LaunchedEffect(key1 = lifecycle) {
+                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+                                        editAlarmViewModel.actions.collectLatest { action ->
+                                            when(action){
+                                                EditAlarmViewModel.EditAlarmAction.NavigateBack -> {
+                                                    navController.navigateUp()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 EditAlarmScreen(
                                     uiState = uiState,
                                     onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
