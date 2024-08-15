@@ -6,6 +6,7 @@ import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
 import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
@@ -35,6 +36,8 @@ class AlarmViewModel @Inject constructor(
 
     sealed interface AlarmAction {
         data class EditAlarm(val alarmId: AlarmId = -1L) : AlarmAction
+
+        data class AddAlarm(val alarmId: AlarmId = -1L) : AlarmAction
     }
 
     private val alarmActions = Channel<AlarmAction>()
@@ -118,6 +121,18 @@ class AlarmViewModel @Inject constructor(
     fun onSort(alarmOrder: AlarmOrder) = viewModelScope.launch {
         alarmPreferences.saveAlarmOrder(alarmOrder)
         getAlarmItems()
+    }
+
+    fun onAdd(addAlarmMode: AddAlarmMode) = viewModelScope.launch {
+        when (addAlarmMode) {
+            is AddAlarmMode.AddAlarmItemAction -> {
+                alarmActions.send(AlarmAction.AddAlarm(addAlarmMode.alarmId))
+            }
+
+            is AddAlarmMode.AddAlarmToolbarAction -> {
+                alarmActions.send(AlarmAction.AddAlarm())
+            }
+        }
     }
 
 }

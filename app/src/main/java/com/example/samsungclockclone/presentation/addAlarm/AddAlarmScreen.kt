@@ -57,7 +57,9 @@ fun AddAlarmScreen(
     uiState: AddAlarmUiState,
     datePickerState: DatePickerState,
     onHourChanged: (Int) -> Unit,
+    onMoveToHour: () -> Int,
     onMinuteChanged: (Int) -> Unit,
+    onMoveToMinute: () -> Int,
     onDateChanged: (Long) -> Unit,
     onDayOfWeekChanged: (DayOfWeek) -> Unit,
     onNameChanged: (String) -> Unit,
@@ -102,7 +104,8 @@ fun AddAlarmScreen(
                     timeFormat = TimeFormat.Hours,
                     onValueChanged = { hour ->
                         onHourChanged(hour)
-                    }
+                    },
+                    onMoveToValue = onMoveToHour
                 )
                 Text(
                     modifier = Modifier
@@ -119,7 +122,8 @@ fun AddAlarmScreen(
                     timeFormat = TimeFormat.Minutes,
                     onValueChanged = { minute ->
                         onMinuteChanged(minute)
-                    }
+                    },
+                    onMoveToValue = onMoveToMinute
                 )
             }
             Card {
@@ -277,7 +281,9 @@ private fun AddAlarmPreview() {
             uiState = addAlarmUiStatePreview,
             datePickerState = DatePickerState(CalendarLocale.ROOT),
             onHourChanged = {},
+            onMoveToHour = { 0 },
             onMinuteChanged = {},
+            onMoveToMinute = { 0 },
             onDateChanged = {},
             onDayOfWeekChanged = {},
             onNameChanged = {},

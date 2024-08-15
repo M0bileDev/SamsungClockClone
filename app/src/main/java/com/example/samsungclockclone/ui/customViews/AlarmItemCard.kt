@@ -39,13 +39,14 @@ fun AlarmItemCard(
     modifier: Modifier = Modifier,
     alarmItem: AlarmItem,
     onCheckedChange: (AlarmId) -> Unit,
+    onClick: () -> Unit,
     onLongClick: () -> Unit
 ) = with(alarmItem) {
     Card(
         modifier = modifier
             .height(90.dp)
             .combinedClickable(
-                onClick = {},
+                onClick = onClick,
                 onLongClick = onLongClick
             )
     ) {
@@ -115,6 +116,7 @@ private fun AlarmItemCardPreview() {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview,
             onCheckedChange = {},
+            onClick = {},
             onLongClick = {}
         )
     }
@@ -127,6 +129,7 @@ private fun AlarmItemCardPreview2() {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview2,
             onCheckedChange = {},
+            onClick = {},
             onLongClick = {}
         )
     }
@@ -139,6 +142,7 @@ private fun AlarmItemCardPreview3() {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview3,
             onCheckedChange = {},
+            onClick = {},
             onLongClick = {}
         )
     }
@@ -151,6 +155,7 @@ private fun AlarmItemCardPreview4() {
         AlarmItemCard(
             alarmItem = AlarmItem.alarmItemPreview4,
             onCheckedChange = {},
+            onClick = {},
             onLongClick = {}
         )
     }

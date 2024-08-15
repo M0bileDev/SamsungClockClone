@@ -28,6 +28,7 @@ import com.example.samsungclockclone.data.utils.TimeFormat
 import com.example.samsungclockclone.data.utils.convertTimeFormatToString
 import com.example.samsungclockclone.data.utils.formatTimeValue
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import kotlinx.coroutines.delay
 
 /**
  * Swipable clock widget. Parameters value are created to show at once max
@@ -45,19 +46,25 @@ fun SwipeableClock(
     itemSize: Dp = swipeableAreaHeight / 3,
     itemsFlungAtOnce: Int = 12,
     fontSize: TextUnit = 40.sp,
-    onValueChanged: (Int) -> Unit
+    onValueChanged: (Int) -> Unit,
+    onMoveToValue: () -> Int?
 ) {
 
     val pagerState = rememberPagerState(pageCount = {
         clockCount
     })
+
     val fling = PagerDefaults.flingBehavior(
         state = pagerState,
         pagerSnapDistance = PagerSnapDistance.atMost(itemsFlungAtOnce)
     )
 
-    LaunchedEffect(key1 = pagerState) {
+    LaunchedEffect(key1 = pagerState, key2 = onMoveToValue) {
+        val moveToValue = onMoveToValue() ?: 0
+        val page = clockStartPoint - moveToValue
         pagerState.scrollToPage(clockStartPoint)
+        delay(300)
+        pagerState.animateScrollToPage(page)
     }
 
     LaunchedEffect(key1 = pagerState) {
@@ -100,6 +107,7 @@ private fun SwipeableClockPreview() {
         SwipeableClock(
             modifier = Modifier.fillMaxSize(),
             timeFormat = TimeFormat.Hours,
+            onMoveToValue = { 0 },
             onValueChanged = {}
         )
     }
