@@ -9,7 +9,7 @@ import androidx.room.Update
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
-import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
 
@@ -82,7 +82,18 @@ interface AlarmDao {
     @Insert
     suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity): Long
 
+    @Transaction
+    suspend fun insertAlarmMangers(managers: List<AlarmManagerEntity>) {
+        managers.forEach { alarmManager ->
+            insertAlarmManager(alarmManager)
+        }
+    }
+
     @Delete
     suspend fun deleteAlarmManager(alarmManagerEntity: AlarmManagerEntity)
+
+    @Transaction
+    @Query("DELETE FROM alarm_manager_table WHERE parentId =:parentId")
+    suspend fun deleteAlarmManagerById(parentId: AlarmId)
 
 }
