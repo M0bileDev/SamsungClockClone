@@ -6,9 +6,9 @@ import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.data.local.receiver.ALARM_ID_KEY
 import com.example.samsungclockclone.data.local.receiver.AlarmReceiver
-import com.example.samsungclockclone.domain.scheduler.AlarmId
-import com.example.samsungclockclone.domain.scheduler.AlarmMilliseconds
 import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
+import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

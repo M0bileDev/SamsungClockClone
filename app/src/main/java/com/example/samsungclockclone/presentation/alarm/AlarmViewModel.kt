@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
-import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase

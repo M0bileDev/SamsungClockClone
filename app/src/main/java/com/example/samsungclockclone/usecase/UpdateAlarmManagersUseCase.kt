@@ -1,8 +1,8 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.toAlarmRepeat
@@ -14,13 +14,13 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SaveAlarmUseCase @Inject constructor(
+class UpdateAlarmManagersUseCase @Inject constructor(
     private val alarmDao: AlarmDao
 ) {
 
     suspend operator fun invoke(
+        alarmId: AlarmId,
         alarmMode: AlarmMode,
-        alarmName: String,
         alarmMillisecondsList: List<Long>,
         selectedDaysOfWeek: List<DayOfWeek>,
         parentScope: CoroutineScope,
@@ -29,12 +29,8 @@ class SaveAlarmUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            val alarmEntity = AlarmEntity(
-                mode = alarmMode,
-                name = alarmName,
-                enable = true
-            )
-            val alarmId = alarmDao.insertAlarmUpdateOrder(alarmEntity)
+            alarmDao.deleteAlarmManagerById(alarmId)
+            // TODO: cancel alarm manager after full db implementation
 
             val alarmRepeat = alarmMode.toAlarmRepeat()
             val entities: List<AlarmManagerEntity> =
@@ -64,10 +60,7 @@ class SaveAlarmUseCase @Inject constructor(
 
             alarmDao.insertAlarmMangers(entities)
 
-
-            // TODO: enable after database full implementation
-            // TODO: extract to other use case?
-            //schedule alarms via alarm manager
+            //TODO schedule alarms via alarm manager
 //            alarmScheduler.schedule(
 //                alarms,
 //                onScheduleCompleted = ::onScheduleCompleted,
@@ -76,4 +69,5 @@ class SaveAlarmUseCase @Inject constructor(
 
         }
     }
+
 }

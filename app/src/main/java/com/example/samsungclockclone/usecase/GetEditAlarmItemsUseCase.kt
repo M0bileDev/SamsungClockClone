@@ -3,7 +3,7 @@ package com.example.samsungclockclone.usecase
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
-import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import kotlinx.coroutines.CoroutineDispatcher

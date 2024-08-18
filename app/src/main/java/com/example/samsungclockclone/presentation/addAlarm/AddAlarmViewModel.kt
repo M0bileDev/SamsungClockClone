@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
-import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
@@ -14,6 +14,7 @@ import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
 import com.example.samsungclockclone.usecase.GetAlarmByIdUseCase
 import com.example.samsungclockclone.usecase.SaveAlarmUseCase
+import com.example.samsungclockclone.usecase.UpdateAlarmManagersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,8 @@ import javax.inject.Inject
 class AddAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val saveAlarmUseCase: SaveAlarmUseCase,
-    private val getAlarmByIdUseCase: GetAlarmByIdUseCase
+    private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
+    private val updateAlarmManagersUseCase: UpdateAlarmManagersUseCase
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -47,7 +49,9 @@ class AddAlarmViewModel @Inject constructor(
     private val addAlarmActions = Channel<AddAlarmAction>()
     val actions = addAlarmActions.receiveAsFlow()
 
-    private val calendar = Calendar.getInstance()
+    private var alarmId: AlarmId = -1L
+    private val editAlarm = alarmId != -1L
+
     private val alarmHour = MutableStateFlow(0)
     private val alarmMinute = MutableStateFlow(0)
     private val calendarDateMilliseconds = MutableStateFlow(0L)
@@ -122,18 +126,20 @@ class AddAlarmViewModel @Inject constructor(
     )
 
     init {
-        shouldEdit()
+        alarmId = handleAlarmId()
+
+        if (editAlarm) {
+            overrideAlarm()
+        }
     }
 
-    private fun shouldEdit() {
-        val alarmId = handleAlarmId()
-        if (alarmId == -1L) return
-
+    private fun overrideAlarm() {
         viewModelScope.launch {
             getAlarmByIdUseCase(
                 alarmId,
                 onDataCompleted = { data ->
-                    calendar.apply {
+
+                    val calendar = Calendar.getInstance().apply {
                         timeInMillis = data.alarmMangerEntityList[0].fireTime
                     }
 
@@ -207,13 +213,24 @@ class AddAlarmViewModel @Inject constructor(
         // TODO: add security to check if alarm time is not past time
         val alarmMillisecondsList = createAlarmMilliseconds()
         viewModelScope.launch {
-            saveAlarmUseCase(
-                alarmMode.value,
-                alarmName.value,
-                alarmMillisecondsList,
-                selectedDaysOfWeek.value,
-                this
-            )
+            if (editAlarm) {
+                updateAlarmManagersUseCase(
+                    alarmId,
+                    alarmMode.value,
+                    alarmMillisecondsList,
+                    selectedDaysOfWeek.value,
+                    this
+                )
+            } else {
+                saveAlarmUseCase(
+                    alarmMode.value,
+                    alarmName.value,
+                    alarmMillisecondsList,
+                    selectedDaysOfWeek.value,
+                    this
+                )
+            }
+
             addAlarmActions.send(AddAlarmAction.NavigateBack)
         }
     }
