@@ -14,7 +14,7 @@ import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
 import com.example.samsungclockclone.usecase.GetAlarmByIdUseCase
 import com.example.samsungclockclone.usecase.SaveAlarmUseCase
-import com.example.samsungclockclone.usecase.UpdateAlarmManagersUseCase
+import com.example.samsungclockclone.usecase.UpdateAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ class AddAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val saveAlarmUseCase: SaveAlarmUseCase,
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
-    private val updateAlarmManagersUseCase: UpdateAlarmManagersUseCase
+    private val updateAlarmUseCase: UpdateAlarmUseCase
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -215,7 +215,7 @@ class AddAlarmViewModel @Inject constructor(
         val alarmMillisecondsList = createAlarmMilliseconds()
         viewModelScope.launch {
             if (editAlarm) {
-                updateAlarmManagersUseCase(
+                updateAlarmUseCase(
                     alarmId,
                     alarmMode.value,
                     alarmMillisecondsList,
