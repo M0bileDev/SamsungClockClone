@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.domain.scheduler
 
-typealias AlarmId = Long
-typealias AlarmMilliseconds = Long
+import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
 
 interface AlarmScheduler {
     fun schedule(
