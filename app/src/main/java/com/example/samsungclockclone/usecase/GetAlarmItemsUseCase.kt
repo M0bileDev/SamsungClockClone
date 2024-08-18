@@ -30,8 +30,11 @@ class GetAlarmItemsUseCase @Inject constructor(
 
             alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
                 val mappedAlarms = alarms.map { alarmWithAlarmManager ->
-                    val firstFireTime =
+                    val firstFireTime = if (alarmWithAlarmManager.alarmMangerEntityList.isEmpty()) {
+                        0L
+                    } else {
                         alarmWithAlarmManager.alarmMangerEntityList.minOf { it.fireTime }
+                    }
 
                     val selectedDaysOfWeek =
                         if (alarmWithAlarmManager.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
