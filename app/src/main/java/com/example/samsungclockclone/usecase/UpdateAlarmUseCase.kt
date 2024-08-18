@@ -14,7 +14,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class UpdateAlarmManagersUseCase @Inject constructor(
+class UpdateAlarmUseCase @Inject constructor(
     private val alarmDao: AlarmDao
 ) {
 
@@ -28,6 +28,8 @@ class UpdateAlarmManagersUseCase @Inject constructor(
     ): Job {
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
+
+            alarmDao.updateAlarmMode(alarmId, alarmMode)
 
             alarmDao.deleteAlarmManagerById(alarmId)
             // TODO: cancel alarm manager after full db implementation
