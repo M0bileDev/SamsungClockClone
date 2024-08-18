@@ -33,7 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.samsungclockclone.domain.scheduler.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview3
