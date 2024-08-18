@@ -14,7 +14,7 @@ import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
 import com.example.samsungclockclone.usecase.GetAlarmByIdUseCase
 import com.example.samsungclockclone.usecase.SaveAlarmUseCase
-import com.example.samsungclockclone.usecase.UpdateAlarmManagersUseCase
+import com.example.samsungclockclone.usecase.UpdateAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +37,7 @@ class AddAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val saveAlarmUseCase: SaveAlarmUseCase,
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
-    private val updateAlarmManagersUseCase: UpdateAlarmManagersUseCase
+    private val updateAlarmUseCase: UpdateAlarmUseCase
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -50,7 +50,10 @@ class AddAlarmViewModel @Inject constructor(
     val actions = addAlarmActions.receiveAsFlow()
 
     private var alarmId: AlarmId = -1L
-    private val editAlarm = alarmId != -1L
+    private val editAlarm
+        get() = alarmId != -1L
+    private val dateTimeFormatter =
+        DateTimeFormatter.ofPattern(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
 
     private val alarmHour = MutableStateFlow(0)
     private val alarmMinute = MutableStateFlow(0)
@@ -74,20 +77,22 @@ class AddAlarmViewModel @Inject constructor(
         val (alarmMode, alarmName) = modeAndName
         val (displayPermissionRequire, displayDatePicker) = permissionAndDatePicker
 
-        val actualDateTime = LocalDateTime.now()
-        val dateTimeFormatter =
-            DateTimeFormatter.ofPattern(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
 
         val scheduleInfo = when (alarmMode) {
             AlarmMode.OnlyTime -> {
-                if (hour <= actualDateTime.hour && minute <= actualDateTime.minute) {
-                    val tomorrowDate = actualDateTime.plusDays(1)
-                    val date = tomorrowDate.format(dateTimeFormatter)
-                    AddAlarmString(AddAlarmStringType.TomorrowX, date)
-                } else {
-                    val date = actualDateTime.format(dateTimeFormatter)
-                    AddAlarmString(AddAlarmStringType.TodayX, date)
-                }
+                checkTodayOrTomorrow(
+                    hour,
+                    minute,
+                    onToday = { actualDateTime ->
+                        val date = actualDateTime.format(dateTimeFormatter)
+                        AddAlarmString(AddAlarmStringType.TodayX, date)
+                    },
+                    onTomorrow = { actualDateTime ->
+                        val tomorrowDate = actualDateTime.plusDays(1)
+                        val date = tomorrowDate.format(dateTimeFormatter)
+                        AddAlarmString(AddAlarmStringType.TomorrowX, date)
+                    }
+                )
             }
 
             AlarmMode.DayOfWeekAndTime -> {
@@ -124,6 +129,43 @@ class AddAlarmViewModel @Inject constructor(
         started = SharingStarted.Eagerly,
         initialValue = AddAlarmUiState()
     )
+
+    /**
+     * Function compares arguments hour and minute with built in LocalDateTime.
+     * Function returns generic type if any is passed.
+     *
+     * onActualDateTime provide default call LocalDateTime.now() which can be override.
+     *
+     * onToday and onTomorrow have to be provided.
+     *
+     * 1) If hours (passing through argument and LocalDateTime.now()) are equals, check minutes.
+     * 1a) If passed minutes are smaller than actual date call onTomorrow()
+     * 1b) If passed minutes are greater than actual date call onToday()
+     * 2) If passed hours are smaller than actual date call onTomorrow()
+     * 3) If none of above conditions are met call onToday()
+     */
+    private fun <T> checkTodayOrTomorrow(
+        hour: Int,
+        minute: Int,
+        onActualDateTime: () -> LocalDateTime = { LocalDateTime.now() },
+        onToday: (LocalDateTime) -> T,
+        onTomorrow: (LocalDateTime) -> T
+    ): T {
+
+        val actualDateTime = onActualDateTime()
+
+        return if (hour == actualDateTime.hour) {
+            if (minute <= actualDateTime.minute) {
+                onTomorrow(actualDateTime)
+            } else {
+                onToday(actualDateTime)
+            }
+        } else if (hour <= actualDateTime.hour) {
+            onTomorrow(actualDateTime)
+        } else {
+            onToday(actualDateTime)
+        }
+    }
 
     init {
         alarmId = handleAlarmId()
@@ -214,7 +256,7 @@ class AddAlarmViewModel @Inject constructor(
         val alarmMillisecondsList = createAlarmMilliseconds()
         viewModelScope.launch {
             if (editAlarm) {
-                updateAlarmManagersUseCase(
+                updateAlarmUseCase(
                     alarmId,
                     alarmMode.value,
                     alarmMillisecondsList,
@@ -278,33 +320,36 @@ class AddAlarmViewModel @Inject constructor(
 
         return when (alarmMode.value) {
             AlarmMode.OnlyTime -> {
-                // actual time: 12:00, 11:59 -> next day,  12:00 -> next day, 00:00 -> next day, 12:01 -> same day,  23:59 -> same day
-                if (alarmHour.value <= actualDateTime.hour && alarmMinute.value <= actualDateTime.minute) {
-                    //alarm next day
-                    val alarmMilliseconds = actualDateTime
-                        .withHour(alarmHour.value)
-                        .withMinute(alarmMinute.value)
-                        .withSecond(0)
-                        .withNano(0)
-                        .plusDays(1)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli()
+                checkTodayOrTomorrow(
+                    alarmHour.value,
+                    alarmMinute.value,
+                    onToday = { dateTime ->
+                        val alarmMilliseconds = dateTime
+                            .withHour(alarmHour.value)
+                            .withMinute(alarmMinute.value)
+                            .withSecond(0)
+                            .withNano(0)
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli()
 
-                    listOf(alarmMilliseconds)
-                } else {
-                    //alarm same day
-                    val alarmMilliseconds = actualDateTime
-                        .withHour(alarmHour.value)
-                        .withMinute(alarmMinute.value)
-                        .withSecond(0)
-                        .withNano(0)
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()
-                        .toEpochMilli()
+                        listOf(alarmMilliseconds)
+                    },
+                    onTomorrow = { dateTime ->
+                        val alarmMilliseconds = dateTime
+                            .withHour(alarmHour.value)
+                            .withMinute(alarmMinute.value)
+                            .withSecond(0)
+                            .withNano(0)
+                            .plusDays(1)
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli()
 
-                    listOf(alarmMilliseconds)
-                }
+                        listOf(alarmMilliseconds)
+                    },
+                    onActualDateTime = { actualDateTime }
+                )
             }
 
             AlarmMode.DayOfWeekAndTime -> {
