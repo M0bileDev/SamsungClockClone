@@ -3,8 +3,6 @@ package com.example.samsungclockclone.usecase
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
-import com.example.samsungclockclone.domain.scheduler.AlarmId
-import com.example.samsungclockclone.domain.scheduler.AlarmMilliseconds
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.toAlarmRepeat
@@ -39,29 +37,32 @@ class SaveAlarmUseCase @Inject constructor(
             val alarmId = alarmDao.insertAlarmUpdateOrder(alarmEntity)
 
             val alarmRepeat = alarmMode.toAlarmRepeat()
-            val alarms: List<Pair<AlarmId, AlarmMilliseconds>> =
+            val entities: List<AlarmManagerEntity> =
                 if (selectedDaysOfWeek.isNotEmpty()) {
+
                     val zipped = alarmMillisecondsList.zip(selectedDaysOfWeek)
                     zipped.map {
                         val (milliseconds, day) = it
-                        val alarmManagerEntity = AlarmManagerEntity(
+                        AlarmManagerEntity(
                             parentId = alarmId,
                             fireTime = milliseconds,
                             repeat = alarmRepeat,
                             dayOfWeek = day
                         )
-                        alarmDao.insertAlarmManager(alarmManagerEntity) to milliseconds
+
                     }
+
                 } else {
                     alarmMillisecondsList.map { milliseconds ->
-                        val alarmManagerEntity = AlarmManagerEntity(
+                        AlarmManagerEntity(
                             parentId = alarmId,
                             fireTime = milliseconds,
                             repeat = alarmRepeat
                         )
-                        alarmDao.insertAlarmManager(alarmManagerEntity) to milliseconds
                     }
                 }
+
+            alarmDao.insertAlarmMangers(entities)
 
 
             // TODO: enable after database full implementation
