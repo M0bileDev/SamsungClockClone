@@ -50,7 +50,8 @@ class AddAlarmViewModel @Inject constructor(
     val actions = addAlarmActions.receiveAsFlow()
 
     private var alarmId: AlarmId = -1L
-    private val editAlarm = alarmId != -1L
+    private val editAlarm
+        get() = alarmId != -1L
 
     private val alarmHour = MutableStateFlow(0)
     private val alarmMinute = MutableStateFlow(0)
