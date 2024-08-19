@@ -3,7 +3,10 @@ package com.example.samsungclockclone.presentation.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.AlarmOrder
+import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
+import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
+import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
@@ -52,12 +55,19 @@ class AlarmViewModel @Inject constructor(
 
         val editAvailable = alarmItems.isNotEmpty()
         val sortAvailable = alarmItems.size > 1
+        val alarmsOff = alarmItems.any { !it.enable }
+        val alarmTitleString = if (alarmsOff) {
+            AlarmTitleString.AlarmsOff
+        } else {
+            createAlarmTitleStringNearestAlarm(alarmItems)
+        }
 
         AlarmUiState(
             alarmItems,
             editAvailable,
             sortAvailable,
-            editModeEnable
+            editModeEnable,
+            alarmTitleString
         )
     }.stateIn(
         viewModelScope,
@@ -67,6 +77,23 @@ class AlarmViewModel @Inject constructor(
 
     init {
         getAlarmItems()
+    }
+
+    private fun createAlarmTitleStringNearestAlarm(alarmItems: List<AlarmItem>): AlarmTitleString.NearestAlarm {
+        val nearestFireTime = alarmItems.map { it.fireTime }.minOf { it }
+        val difference = nearestFireTime - System.currentTimeMillis()
+        val days = difference / (1000 * 60 * 60 * 24)
+        val hours = difference / (1000 * 60 * 60)
+        val minutes = difference / (1000 * 60)
+        val differenceType = when {
+            days > 0 -> DifferenceType.DAYS
+            hours > 0 -> DifferenceType.HOURS_MINUTES
+            else -> DifferenceType.MINUTES
+        }
+        return AlarmTitleString.NearestAlarm(
+            nearestFireTime,
+            AlarmDifference(days.toInt(), hours.toInt(), minutes.toInt(), differenceType)
+        )
     }
 
     private fun getAlarmItems() {
