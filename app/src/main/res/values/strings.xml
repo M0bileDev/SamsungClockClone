@@ -27,4 +27,10 @@
 
     <string name="selected_alarms">Selected alarms</string>
     <string name="x_selected">%1$d selected</string>
+
+    <string name="alarms_off">All alarms are off</string>
+    <string name="alarm_in_x">Alarm in %1$s</string>
+    <string name="alarm_x_days">%1$d days</string>
+    <string name="alarm_x_hours_x_minutes">%1$d hours %2$d minutes</string>
+    <string name="alarm_x_minutes">%1$d minutes</string>
 </resources>
