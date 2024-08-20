@@ -18,7 +18,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.domain.model.AlarmOrder
@@ -45,6 +48,7 @@ import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
+import com.example.samsungclockclone.ui.utils.plurals
 import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
@@ -78,7 +82,7 @@ fun AlarmScreen(
             .fillMaxSize()
             .nestedScroll(scrollBehaviour.nestedScrollConnection),
         topBar = {
-            MediumTopAppBar(
+            LargeTopAppBar(
                 title = {
                     AlarmTitle(topAppBarCollapsed, resources, alarmTitleString)
                 },
@@ -199,19 +203,29 @@ private fun AlarmTitle(
             is AlarmTitleString.NearestAlarm -> {
                 val differenceString =
                     when (alarmTitleString.alarmDifference.differenceType) {
-                        DifferenceType.DAYS -> resources.getString(
-                            strings.alarm_x_days,
+                        DifferenceType.DAYS -> pluralStringResource(
+                            plurals.x_days,
+                            alarmTitleString.alarmDifference.daysDifference,
                             alarmTitleString.alarmDifference.daysDifference
                         )
 
-                        DifferenceType.HOURS_MINUTES -> resources.getString(
-                            strings.alarm_x_hours_x_minutes,
-                            alarmTitleString.alarmDifference.hoursDifference,
-                            alarmTitleString.alarmDifference.minutesDifference
-                        )
+                        DifferenceType.HOURS_MINUTES -> {
+                            val hoursString = pluralStringResource(
+                                plurals.x_hours,
+                                alarmTitleString.alarmDifference.hoursDifference,
+                                alarmTitleString.alarmDifference.hoursDifference
+                            )
+                            val minutesString = pluralStringResource(
+                                plurals.x_minutes,
+                                alarmTitleString.alarmDifference.minutesDifference,
+                                alarmTitleString.alarmDifference.minutesDifference
+                            )
+                            stringResource(id = strings.x_y_values, hoursString, minutesString)
+                        }
 
-                        DifferenceType.MINUTES -> resources.getString(
-                            strings.alarm_x_minutes,
+                        DifferenceType.MINUTES -> pluralStringResource(
+                            plurals.x_minutes,
+                            alarmTitleString.alarmDifference.minutesDifference,
                             alarmTitleString.alarmDifference.minutesDifference
                         )
                     }
@@ -220,12 +234,14 @@ private fun AlarmTitle(
                         text = resources.getString(
                             strings.alarm_in_x,
                             differenceString
-                        )
+                        ),
+                        style = MaterialTheme.typography.titleLarge
                     )
                     Text(
                         text = alarmTitleString.alarmMillis.toDate(
                             SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
-                        )
+                        ),
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
