@@ -30,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,6 +73,7 @@ fun AddAlarmScreen(
 ) = with(uiState) {
     Scaffold(modifier = modifier,
         bottomBar = {
+            val bottomTextStyle = MaterialTheme.typography.labelLarge.copy(fontSize = 20.sp)
             Row(Modifier.fillMaxWidth()) {
                 TextButton(
                     modifier = Modifier
@@ -79,7 +81,7 @@ fun AddAlarmScreen(
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     onClick = onCancel
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = "Cancel", style = bottomTextStyle)
                 }
                 TextButton(
                     modifier = Modifier
@@ -87,7 +89,7 @@ fun AddAlarmScreen(
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     onClick = onSave
                 ) {
-                    Text(text = "Save")
+                    Text(text = "Save", style = bottomTextStyle)
                 }
             }
         }) {
