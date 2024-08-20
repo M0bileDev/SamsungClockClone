@@ -3,6 +3,7 @@
 package com.example.samsungclockclone.presentation
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
@@ -40,6 +41,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.samsungclockclone.data.receiver.TimeTickReceiver
+import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.navigation.NavigationUtils.navBottomItems
 import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
@@ -55,9 +58,31 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDateTime
 import java.time.ZoneId
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var ticker: TimeTicker
+
+    private val tickerReceiver = TimeTickReceiver()
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver(tickerReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(tickerReceiver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ticker.onDestroy()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SamsungClockCloneApplication()
@@ -290,3 +315,4 @@ private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
             ?: false
     }
 }
+
