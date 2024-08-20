@@ -1,11 +1,11 @@
-package com.example.samsungclockclone.data.local.scheduler
+package com.example.samsungclockclone.data.scheduler
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.samsungclockclone.data.local.receiver.ALARM_ID_KEY
-import com.example.samsungclockclone.data.local.receiver.AlarmReceiver
+import com.example.samsungclockclone.data.receiver.ALARM_ID_KEY
+import com.example.samsungclockclone.data.receiver.AlarmReceiver
 import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMilliseconds

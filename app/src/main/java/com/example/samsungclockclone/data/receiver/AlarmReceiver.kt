@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.data.local.receiver
+package com.example.samsungclockclone.data.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
