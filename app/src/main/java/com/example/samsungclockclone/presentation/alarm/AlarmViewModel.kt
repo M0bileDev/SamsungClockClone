@@ -55,11 +55,12 @@ class AlarmViewModel @Inject constructor(
 
         val editAvailable = alarmItems.isNotEmpty()
         val sortAvailable = alarmItems.size > 1
-        val alarmsOff = alarmItems.any { !it.enable }
+        val alarmsOff = alarmItems.all { !it.enable }
         val alarmTitleString = if (alarmsOff) {
             AlarmTitleString.AlarmsOff
         } else {
-            createAlarmTitleStringNearestAlarm(alarmItems)
+            val enabledAlarms = alarmItems.filter { it.enable }
+            createAlarmTitleStringNearestAlarm(enabledAlarms)
         }
 
         AlarmUiState(
@@ -83,8 +84,8 @@ class AlarmViewModel @Inject constructor(
         val nearestFireTime = alarmItems.map { it.fireTime }.minOf { it }
         val difference = nearestFireTime - System.currentTimeMillis()
         val days = difference / (1000 * 60 * 60 * 24)
-        val hours = difference / (1000 * 60 * 60)
-        val minutes = difference / (1000 * 60)
+        val hours = difference / (1000 * 60 * 60) % 24
+        val minutes = difference / (1000 * 60) % 60
         val differenceType = when {
             days > 0 -> DifferenceType.DAYS
             hours > 0 -> DifferenceType.HOURS_MINUTES
