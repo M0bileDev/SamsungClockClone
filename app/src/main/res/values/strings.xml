@@ -30,7 +30,31 @@
 
     <string name="alarms_off">All alarms are off</string>
     <string name="alarm_in_x">Alarm in %1$s</string>
-    <string name="alarm_x_days">%1$d days</string>
-    <string name="alarm_x_hours_x_minutes">%1$d hours %2$d minutes</string>
-    <string name="alarm_x_minutes">%1$d minutes</string>
+
+    <plurals name="x_days">
+        <item quantity="one">%d day</item>
+        <item quantity="two">%d days</item>
+        <item quantity="few">%d days</item>
+        <item quantity="many">%d days</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="x_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="two">%d hours</item>
+        <item quantity="few">%d hours</item>
+        <item quantity="many">%d hours</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+
+    <plurals name="x_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="two">%d minutes</item>
+        <item quantity="few">%d minutes</item>
+        <item quantity="many">%d minutes</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <string name="x_y_values">%1$s %2$s</string>
+
 </resources>
