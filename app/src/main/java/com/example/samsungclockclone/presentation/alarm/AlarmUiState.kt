@@ -1,12 +1,14 @@
 package com.example.samsungclockclone.presentation.alarm
 
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
+import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 
 data class AlarmUiState(
     val alarmItems: List<AlarmItem> = emptyList(),
     val editAvailable: Boolean = false,
     val sortAvailable: Boolean = false,
-    val editModeEnable: Boolean = false
+    val editModeEnable: Boolean = false,
+    val alarmTitleString: AlarmTitleString = AlarmTitleString.AlarmsOff
 ) {
     companion object {
         val alarmUiStatePreview = AlarmUiState(

@@ -27,4 +27,34 @@
 
     <string name="selected_alarms">Selected alarms</string>
     <string name="x_selected">%1$d selected</string>
+
+    <string name="alarms_off">All alarms are off</string>
+    <string name="alarm_in_x">Alarm in %1$s</string>
+
+    <plurals name="x_days">
+        <item quantity="one">%d day</item>
+        <item quantity="two">%d days</item>
+        <item quantity="few">%d days</item>
+        <item quantity="many">%d days</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+
+    <plurals name="x_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="two">%d hours</item>
+        <item quantity="few">%d hours</item>
+        <item quantity="many">%d hours</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+
+    <plurals name="x_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="two">%d minutes</item>
+        <item quantity="few">%d minutes</item>
+        <item quantity="many">%d minutes</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <string name="x_y_values">%1$s %2$s</string>
+
 </resources>

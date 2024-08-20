@@ -2,7 +2,9 @@
 
 package com.example.samsungclockclone.presentation.alarm
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +18,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,15 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.domain.model.AlarmOrder
+import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
+import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.ext.toDate
 import com.example.samsungclockclone.ext.toStringRes
 import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.ui.customViews.AlarmItemCard
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
+import com.example.samsungclockclone.ui.utils.plurals
 import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
@@ -72,11 +82,9 @@ fun AlarmScreen(
             .fillMaxSize()
             .nestedScroll(scrollBehaviour.nestedScrollConnection),
         topBar = {
-            MediumTopAppBar(
+            LargeTopAppBar(
                 title = {
-                    Text(
-                        text = if (topAppBarCollapsed) resources.getString(strings.alarm) else "Alarm info (wip)"
-                    )
+                    AlarmTitle(topAppBarCollapsed, resources, alarmTitleString)
                 },
                 actions = {
                     IconButton(
@@ -169,6 +177,73 @@ fun AlarmScreen(
                     onClick = { onAdd(AddAlarmMode.AddAlarmItemAction(item.alarmId)) },
                     onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlarmTitle(
+    topAppBarCollapsed: Boolean,
+    resources: Resources,
+    alarmTitleString: AlarmTitleString
+) {
+    if (topAppBarCollapsed) {
+        Text(
+            text = resources.getString(strings.alarm)
+        )
+    } else {
+        when (alarmTitleString) {
+            AlarmTitleString.AlarmsOff -> {
+                Text(
+                    text = resources.getString(strings.alarms_off)
+                )
+            }
+
+            is AlarmTitleString.NearestAlarm -> {
+                val differenceString =
+                    when (alarmTitleString.alarmDifference.differenceType) {
+                        DifferenceType.DAYS -> pluralStringResource(
+                            plurals.x_days,
+                            alarmTitleString.alarmDifference.daysDifference,
+                            alarmTitleString.alarmDifference.daysDifference
+                        )
+
+                        DifferenceType.HOURS_MINUTES -> {
+                            val hoursString = pluralStringResource(
+                                plurals.x_hours,
+                                alarmTitleString.alarmDifference.hoursDifference,
+                                alarmTitleString.alarmDifference.hoursDifference
+                            )
+                            val minutesString = pluralStringResource(
+                                plurals.x_minutes,
+                                alarmTitleString.alarmDifference.minutesDifference,
+                                alarmTitleString.alarmDifference.minutesDifference
+                            )
+                            stringResource(id = strings.x_y_values, hoursString, minutesString)
+                        }
+
+                        DifferenceType.MINUTES -> pluralStringResource(
+                            plurals.x_minutes,
+                            alarmTitleString.alarmDifference.minutesDifference,
+                            alarmTitleString.alarmDifference.minutesDifference
+                        )
+                    }
+                Column {
+                    Text(
+                        text = resources.getString(
+                            strings.alarm_in_x,
+                            differenceString
+                        ),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Text(
+                        text = alarmTitleString.alarmMillis.toDate(
+                            SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
+                        ),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
