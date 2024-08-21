@@ -4,12 +4,16 @@ package com.example.samsungclockclone.presentation.alarm
 
 import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
@@ -30,12 +34,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
@@ -164,21 +170,46 @@ fun AlarmScreen(
             )
         }
     ) {
-        // TODO: Add no items handler
-        LazyColumn(
-            modifier = Modifier.padding(it),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(alarmItems) { item ->
-                AlarmItemCard(
-                    alarmItem = item,
-                    onCheckedChange = onAlarmEnableSwitch,
-                    onClick = { onAdd(AddAlarmMode.AddAlarmItemAction(item.alarmId)) },
-                    onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
-                )
+        if (alarmItems.isEmpty()) {
+            NoAlarms(scrollProvider = {
+                (-200 * topAppBarState.collapsedFraction).toInt()
+            })
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(alarmItems) { item ->
+                    AlarmItemCard(
+                        alarmItem = item,
+                        onCheckedChange = onAlarmEnableSwitch,
+                        onClick = { onAdd(AddAlarmMode.AddAlarmItemAction(item.alarmId)) },
+                        onLongClick = { onEdit(EditAlarmMode.EditAlarmItemAction(item.alarmId)) }
+                    )
+                }
             }
         }
+
+    }
+}
+
+@Composable
+private fun NoAlarms(scrollProvider: () -> Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(modifier = Modifier.offset {
+            IntOffset(
+                0,
+                scrollProvider()
+            )
+        }, text = "No alarms")
     }
 }
 
