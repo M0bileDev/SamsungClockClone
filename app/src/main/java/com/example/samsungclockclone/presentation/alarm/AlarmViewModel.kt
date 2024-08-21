@@ -8,6 +8,7 @@ import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
+import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
@@ -20,6 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,7 +34,8 @@ class AlarmViewModel @Inject constructor(
     private val alarmPreferences: AlarmPreferences,
     private val getAlarmItemsUseCase: GetAlarmItemsUseCase,
     private val getAlarmItemsCustomOrderUseCase: GetAlarmItemsCustomOrderUseCase,
-    private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase
+    private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase,
+    private val timeTicker: TimeTicker
 ) : ViewModel() {
 
     private var getAlarmItemsJob: Job? = null
@@ -48,10 +51,11 @@ class AlarmViewModel @Inject constructor(
 
     private val alarmItems = MutableStateFlow(emptyList<AlarmItem>())
     private val editModeEnable = MutableStateFlow(false)
+    private val tickMillis = MutableStateFlow(0L)
 
     val uiState = combine(
-        alarmItems, editModeEnable
-    ) { alarmItems, editModeEnable ->
+        alarmItems, editModeEnable, tickMillis
+    ) { alarmItems, editModeEnable, _ ->
 
         val editAvailable = alarmItems.isNotEmpty()
         val sortAvailable = alarmItems.size > 1
@@ -78,6 +82,15 @@ class AlarmViewModel @Inject constructor(
 
     init {
         getAlarmItems()
+        synchronizeWithClockTick()
+    }
+
+    private fun synchronizeWithClockTick() {
+        viewModelScope.launch {
+            timeTicker.onGetTick().collectLatest {
+                tickMillis.value = it
+            }
+        }
     }
 
     private fun createAlarmTitleStringNearestAlarm(alarmItems: List<AlarmItem>): AlarmTitleString.NearestAlarm {

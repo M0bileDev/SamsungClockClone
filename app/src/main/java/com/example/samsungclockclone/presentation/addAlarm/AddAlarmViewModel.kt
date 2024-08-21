@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
+import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
@@ -19,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -37,7 +39,8 @@ class AddAlarmViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val saveAlarmUseCase: SaveAlarmUseCase,
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
-    private val updateAlarmUseCase: UpdateAlarmUseCase
+    private val updateAlarmUseCase: UpdateAlarmUseCase,
+    private val timeTicker: TimeTicker
 ) : ViewModel() {
 
     sealed interface AddAlarmAction {
@@ -64,13 +67,15 @@ class AddAlarmViewModel @Inject constructor(
     private val alarmName = MutableStateFlow("")
     private val displayPermissionRequire = MutableStateFlow(false)
     private val displayDatePicker = MutableStateFlow(false)
+    private val tickMillis = MutableStateFlow(0L)
 
     val uiState = combine(
         combine(alarmHour, alarmMinute, ::Pair),
         combine(calendarDateMilliseconds, selectedDaysOfWeek, ::Pair),
         combine(alarmMode, alarmName, ::Pair),
-        combine(displayPermissionRequire, displayDatePicker, ::Pair)
-    ) { hourAndMinute, calendarAndDays, modeAndName, permissionAndDatePicker ->
+        combine(displayPermissionRequire, displayDatePicker, ::Pair),
+        combine(tickMillis, MutableStateFlow(Unit), ::Pair)
+    ) { hourAndMinute, calendarAndDays, modeAndName, permissionAndDatePicker, _ ->
 
         val (hour, minute) = hourAndMinute
         val (calendarDateMilliseconds, selectedDaysOfWeek) = calendarAndDays
@@ -130,6 +135,24 @@ class AddAlarmViewModel @Inject constructor(
         initialValue = AddAlarmUiState()
     )
 
+    init {
+        alarmId = handleAlarmId()
+
+        if (editAlarm) {
+            overrideAlarm()
+        }
+
+        synchronizeWithClockTick()
+    }
+
+    private fun synchronizeWithClockTick() {
+        viewModelScope.launch {
+            timeTicker.onGetTick().collectLatest {
+                tickMillis.value = it
+            }
+        }
+    }
+
     /**
      * Function compares arguments hour and minute with built in LocalDateTime.
      * Function returns generic type if any is passed.
@@ -164,14 +187,6 @@ class AddAlarmViewModel @Inject constructor(
             onTomorrow(actualDateTime)
         } else {
             onToday(actualDateTime)
-        }
-    }
-
-    init {
-        alarmId = handleAlarmId()
-
-        if (editAlarm) {
-            overrideAlarm()
         }
     }
 
