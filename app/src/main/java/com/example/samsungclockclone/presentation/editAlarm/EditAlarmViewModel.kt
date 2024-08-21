@@ -98,7 +98,9 @@ class EditAlarmViewModel @Inject constructor(
                     )
                 }
 
-                AlarmOrder.ALARM_TIME_ORDER -> TODO()
+                AlarmOrder.ALARM_TIME_ORDER -> {
+                    //Not implemented yet
+                }
                 AlarmOrder.CUSTOM_ORDER -> {
                     getEditAlarmItemsCustomOrderUseCase(
                         alarmId,
@@ -186,6 +188,5 @@ class EditAlarmViewModel @Inject constructor(
         val pairAlarmIdCustomOrderList =
             editAlarmItems.value.mapIndexed { index, editAlarmItem -> editAlarmItem.alarmItem.alarmId to index }
         updateAlarmCustomOrderUseCase(pairAlarmIdCustomOrderList, this)
-        // TODO: change sort preferences to custom order
     }
 }

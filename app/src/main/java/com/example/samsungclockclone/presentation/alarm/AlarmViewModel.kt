@@ -113,9 +113,6 @@ class AlarmViewModel @Inject constructor(
     private fun getAlarmItems() {
         getAlarmItemsJob?.cancel()
         getAlarmItemsJob = viewModelScope.launch {
-            // TODO: 1. synchronize to clock tick
-            //       2. refresh each minute
-            //       3. Extract logic to separate function
             val deferredAlarmOrder = async { alarmPreferences.collectAlarmOrder().first() }
             val order = deferredAlarmOrder.await()
 
@@ -129,7 +126,9 @@ class AlarmViewModel @Inject constructor(
                     )
                 }
 
-                AlarmOrder.ALARM_TIME_ORDER -> TODO()
+                AlarmOrder.ALARM_TIME_ORDER -> {
+                    //Not implemented yet
+                }
                 AlarmOrder.CUSTOM_ORDER -> {
                     getAlarmItemsCustomOrderUseCase(
                         { mapped ->
