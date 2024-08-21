@@ -38,9 +38,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.samsungclockclone.R
 import com.example.samsungclockclone.data.utils.TimeFormat
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.addAlarmUiStatePreview
@@ -51,6 +53,7 @@ import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
 import com.example.samsungclockclone.ui.customViews.SectionSwitch
 import com.example.samsungclockclone.ui.customViews.SwipeableClock
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.ui.utils.strings
 
 @Composable
 fun AddAlarmScreen(
@@ -81,7 +84,7 @@ fun AddAlarmScreen(
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     onClick = onCancel
                 ) {
-                    Text(text = "Cancel", style = bottomTextStyle)
+                    Text(text = stringResource(R.string.cancel), style = bottomTextStyle)
                 }
                 TextButton(
                     modifier = Modifier
@@ -89,7 +92,7 @@ fun AddAlarmScreen(
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     onClick = onSave
                 ) {
-                    Text(text = "Save", style = bottomTextStyle)
+                    Text(text = stringResource(R.string.save), style = bottomTextStyle)
                 }
             }
         }) {
@@ -115,7 +118,7 @@ fun AddAlarmScreen(
                         .fillMaxHeight()
                         .wrapContentHeight(Alignment.CenterVertically),
                     fontSize = 40.sp,
-                    text = ":"
+                    text = stringResource(R.string.separator)
                 )
                 SwipeableClock(
                     modifier = Modifier
@@ -153,7 +156,7 @@ fun AddAlarmScreen(
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text(text = "Alarm name")
+                            Text(text = stringResource(R.string.alarm_name))
                         },
                         value = alarmName,
                         singleLine = true,
@@ -163,7 +166,7 @@ fun AddAlarmScreen(
                                 IconButton(onClick = { onNameChanged("") }) {
                                     Icon(
                                         Icons.Default.Clear,
-                                        "Clear alarm name text input"
+                                        stringResource(R.string.content_description_clear_alarm_name_text_input)
                                     )
                                 }
                             }
@@ -171,22 +174,27 @@ fun AddAlarmScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     SectionSwitch(
-                        header = "Alarm sound",
+                        header = stringResource(R.string.alarm_sound),
                         body = soundName,
                         checked = soundEnabled,
                         onCheckedChange = {}
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                     SectionSwitch(
-                        header = "Vibration",
+                        header = stringResource(R.string.vibration),
                         body = vibrationName,
                         checked = vibrationEnabled,
                         onCheckedChange = {}
                     )
                     HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
                     SectionSwitch(
-                        header = "Snooze",
-                        body = "$snoozeIntervalName, $snoozeRepeatName",
+                        header = stringResource(R.string.snooze),
+                        body = stringResource(
+                            id = strings.x_separator_y_values,
+                            snoozeIntervalName,
+                            ",",
+                            snoozeRepeatName
+                        ),
                         checked = soundEnabled,
                         onCheckedChange = {}
                     )
@@ -203,20 +211,20 @@ fun AddAlarmScreen(
                     )
                 },
                 title = {
-                    Text("Permission required")
+                    Text(stringResource(R.string.permission_required))
                 },
                 text = {
-                    Text("You must confirm the \"Alarms & reminders\" special permission.")
+                    Text(stringResource(R.string.you_must_confirm_the_alarms_reminders_special_permission))
                 },
                 onDismissRequest = onDismissRequest,
                 dismissButton = {
                     TextButton(onClick = onDismissRequest) {
-                        Text(text = "Dismiss")
+                        Text(text = stringResource(R.string.dismiss))
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = onRequestSchedulePermission) {
-                        Text(text = "Settings")
+                        Text(text = stringResource(R.string.settings))
                     }
                 }
             )
@@ -226,7 +234,7 @@ fun AddAlarmScreen(
                 onDismissRequest = onDismissDatePicker,
                 dismissButton = {
                     TextButton(onClick = onDismissDatePicker) {
-                        Text(text = "Dismiss")
+                        Text(text = stringResource(R.string.dismiss))
                     }
                 },
                 confirmButton = {
@@ -235,7 +243,7 @@ fun AddAlarmScreen(
                             datePickerState.selectedDateMillis ?: throw IllegalStateException()
                         )
                     }) {
-                        Text(text = "OK")
+                        Text(text = stringResource(R.string.ok))
                     }
                 }
             ) {
@@ -268,7 +276,7 @@ private fun AlarmScheduleInfoCalendar(
         ) {
             Icon(
                 imageVector = Icons.Default.DateRange,
-                contentDescription = "Select date from calendar"
+                contentDescription = stringResource(R.string.content_description_select_date_from_calendar)
             )
         }
     }

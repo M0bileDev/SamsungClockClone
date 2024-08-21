@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.R
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
@@ -87,7 +88,7 @@ fun EditAlarmScreen(
                             selected = allSelected,
                             onClick = onSelectionAllChanged
                         )
-                        Text(text = "All")
+                        Text(text = stringResource(R.string.all))
                     }
                 },
                 scrollBehavior = scrollBehaviour
@@ -145,7 +146,7 @@ private fun EditAlarmUiState.EditAlarmBottomBar(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         painter = painterResource(id = drawables.ic_alarm_on),
-                        contentDescription = "Turn on selected alarms"
+                        contentDescription = stringResource(R.string.content_description_turn_on_selected_alarms)
                     )
                     Text("Turn on")
                 }
@@ -157,7 +158,7 @@ private fun EditAlarmUiState.EditAlarmBottomBar(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         painter = painterResource(id = drawables.ic_alarm_off),
-                        contentDescription = "Turn off selected alarms"
+                        contentDescription = stringResource(R.string.content_description_turn_off_selected_alarms)
                     )
                     Text("Turn off")
                 }
@@ -169,7 +170,7 @@ private fun EditAlarmUiState.EditAlarmBottomBar(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         painter = painterResource(id = drawables.ic_delete),
-                        contentDescription = "Delete selected alarms"
+                        contentDescription = stringResource(R.string.content_description_delete_selected_alarms)
                     )
                     Text("Delete")
                 }
@@ -181,9 +182,9 @@ private fun EditAlarmUiState.EditAlarmBottomBar(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
                         painter = painterResource(id = drawables.ic_delete),
-                        contentDescription = "Delete all alarms"
+                        contentDescription = stringResource(R.string.content_description_delete_all_alarms)
                     )
-                    Text("Delete all")
+                    Text(stringResource(R.string.delete_all))
                 }
             }
         }
