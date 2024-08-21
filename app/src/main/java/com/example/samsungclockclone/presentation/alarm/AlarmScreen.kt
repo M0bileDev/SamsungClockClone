@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.R
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
@@ -100,14 +101,14 @@ fun AlarmScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add alalrm"
+                            contentDescription = stringResource(R.string.content_description_add_alalrm)
                         )
                     }
                     IconButton(
                         onClick = { menuExpanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Manage drop down menu"
+                            contentDescription = stringResource(R.string.content_description_manage_drop_down_menu)
                         )
                     }
                     DropdownMenu(
@@ -117,7 +118,7 @@ fun AlarmScreen(
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        text = "Edit"
+                                        text = stringResource(R.string.edit)
                                     )
                                 },
                                 onClick = {
@@ -130,7 +131,7 @@ fun AlarmScreen(
                             DropdownMenuItem(
                                 text = {
                                     Text(
-                                        text = "Sort"
+                                        text = stringResource(R.string.sort)
                                     )
                                 },
                                 onClick = {
@@ -142,7 +143,7 @@ fun AlarmScreen(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    text = "Settings"
+                                    text = stringResource(R.string.settings)
                                 )
                             },
                             onClick = onSettings
@@ -209,7 +210,7 @@ private fun NoAlarms(scrollProvider: () -> Int) {
                 0,
                 scrollProvider()
             )
-        }, text = "No alarms")
+        }, text = stringResource(R.string.no_alarms))
     }
 }
 

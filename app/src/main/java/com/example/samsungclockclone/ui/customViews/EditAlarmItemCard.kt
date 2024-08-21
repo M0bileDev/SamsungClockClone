@@ -70,7 +70,10 @@ fun EditAlarmItemCard(
                         }
                     },
                 painter = painterResource(id = drawables.ic_drag),
-                contentDescription = "Change alarm id ${alarmItem.alarmId} position"
+                contentDescription = stringResource(
+                    id = strings.content_desc_change_alarm_id_x_position,
+                    alarmItem.alarmId
+                )
             )
             Column(
                 modifier = Modifier
