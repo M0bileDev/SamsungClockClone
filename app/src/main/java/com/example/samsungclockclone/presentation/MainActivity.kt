@@ -54,8 +54,13 @@ import com.example.samsungclockclone.presentation.editAlarm.EditAlarmViewModel
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.customModifier.drawUnderline
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.usecase.UpdateAlarmMangersUseCase
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -63,13 +68,24 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private var scopedJob: Job? = null
+    private val job: Job = Job()
+    private val coroutineScope = CoroutineScope(job + Dispatchers.Default)
+
     @Inject
     lateinit var ticker: TimeTicker
+
+    @Inject
+    lateinit var updateAlarmMangersUseCase: UpdateAlarmMangersUseCase
 
     private val tickerReceiver = TimeTickReceiver()
 
     override fun onResume() {
         super.onResume()
+        scopedJob?.cancel()
+        scopedJob = coroutineScope.launch {
+            updateAlarmMangersUseCase(this)
+        }
         registerReceiver(tickerReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
     }
 
@@ -81,6 +97,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ticker.onDestroy()
+        job.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
