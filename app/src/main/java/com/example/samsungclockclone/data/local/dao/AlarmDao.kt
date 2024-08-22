@@ -17,12 +17,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlarmDao {
 
-    @Query("SELECT * FROM alarm_table WHERE id =:alarmId LIMIT 1")
+    @Query("SELECT * FROM alarm_table WHERE id = :alarmId LIMIT 1")
     suspend fun getAlarmAndAlarmManagersById(
         alarmId: Long
     ): AlarmWithAlarmManagerEntity
 
-    @Query("SELECT * FROM alarm_table WHERE id =:alarmId LIMIT 1")
+    @Query("SELECT * FROM alarm_table WHERE id = :alarmId LIMIT 1")
     fun collectAlarmAndAlarmManagersById(
         alarmId: Long
     ): Flow<AlarmWithAlarmManagerEntity>
@@ -51,10 +51,10 @@ interface AlarmDao {
     @Update
     suspend fun updateAlarms(list: List<AlarmEntity>)
 
-    @Query("UPDATE alarm_table SET customOrder =:customOrder WHERE id =:alarmId")
+    @Query("UPDATE alarm_table SET customOrder = :customOrder WHERE id = :alarmId")
     suspend fun updateAlarmCustomOrder(alarmId: AlarmId, customOrder: Index)
 
-    @Query("UPDATE alarm_table SET mode =:alarmMode WHERE id =:alarmId")
+    @Query("UPDATE alarm_table SET mode = :alarmMode WHERE id = :alarmId")
     suspend fun updateAlarmMode(alarmId: AlarmId, alarmMode: AlarmMode)
 
     @Transaction
@@ -96,8 +96,38 @@ interface AlarmDao {
     @Delete
     suspend fun deleteAlarmManager(alarmManagerEntity: AlarmManagerEntity)
 
-    @Transaction
-    @Query("DELETE FROM alarm_manager_table WHERE parentId =:parentId")
+    @Query("DELETE FROM alarm_manager_table WHERE parentId = :parentId")
     suspend fun deleteAlarmManagerById(parentId: AlarmId)
 
+    @Query("SELECT id FROM alarm_table WHERE enable == 0")
+    suspend fun getDisabledAlarmIds(): List<AlarmId>
+
+    @Query("SELECT * FROM alarm_manager_table WHERE fireTime < :actualMillis AND parentId = :parentId")
+    suspend fun getAlarmManagersOutOfDate(
+        parentId: AlarmId,
+        actualMillis: Long
+    ): List<AlarmManagerEntity>
+
+    @Transaction
+    suspend fun getAlarmManagersOutOfDateByIds(
+        parentIds: List<AlarmId>,
+        actualMillis: Long
+    ): List<AlarmManagerEntity> {
+        return parentIds.map { parentId ->
+            getAlarmManagersOutOfDate(
+                parentId, actualMillis
+            )
+        }.flatten()
+    }
+
+    @Query("UPDATE alarm_manager_table SET fireTime = :newMillis WHERE uniqueId = :managerId")
+    suspend fun updateAlarmManagerOutOfDate(managerId: Long, newMillis: Long)
+
+    @Transaction
+    suspend fun updateAlarmManagersOutOfDate(pairsIdMillis: List<Pair<Long, Long>>) {
+        pairsIdMillis.forEach { pair ->
+            val (managerId, newMillis) = pair
+            updateAlarmManagerOutOfDate(managerId, newMillis)
+        }
+    }
 }
