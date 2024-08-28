@@ -37,11 +37,12 @@ class AlarmSchedulerImpl @Inject constructor(
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
+                    val alarmClockInfo = AlarmManager.AlarmClockInfo(
+                        alarm.second,
+                        broadcastReceiver
+                    )
                     alarmManager.setAlarmClock(
-                        AlarmManager.AlarmClockInfo(
-                            alarm.second,
-                            broadcastReceiver
-                        ),
+                        alarmClockInfo,
                         broadcastReceiver
                     )
                 }.run {
