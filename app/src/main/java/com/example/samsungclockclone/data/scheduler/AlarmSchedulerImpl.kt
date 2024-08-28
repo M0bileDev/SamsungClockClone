@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.data.scheduler
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -9,6 +10,7 @@ import com.example.samsungclockclone.data.receiver.AlarmReceiver
 import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
+import com.example.samsungclockclone.ext.checkPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -17,14 +19,15 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager: AlarmManager
 ) : AlarmScheduler {
 
+    @SuppressLint("ScheduleExactAlarm")
     override fun schedule(
-        alarms: List<Pair<AlarmId, AlarmMilliseconds>>,
+        alarmIdMillisecondsPairs: List<Pair<AlarmId, AlarmMilliseconds>>,
         onScheduleCompleted: () -> Unit,
         onScheduleDenied: () -> Unit
     ) {
-        checkPermission(
+        alarmManager.checkPermission(
             onPermissionGranted = {
-                alarms.forEach { alarm ->
+                alarmIdMillisecondsPairs.forEach { alarm ->
                     val intent = Intent(context, AlarmReceiver::class.java).apply {
                         putExtra(ALARM_ID_KEY, alarm.first)
                     }
@@ -34,9 +37,11 @@ class AlarmSchedulerImpl @Inject constructor(
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                        alarm.second,
+                    alarmManager.setAlarmClock(
+                        AlarmManager.AlarmClockInfo(
+                            alarm.second,
+                            broadcastReceiver
+                        ),
                         broadcastReceiver
                     )
                 }.run {
@@ -59,16 +64,5 @@ class AlarmSchedulerImpl @Inject constructor(
         alarmManager.cancel(
             broadcastReceiver
         )
-    }
-
-    private fun checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            val result = alarmManager.canScheduleExactAlarms()
-            if (result) {
-                onPermissionGranted()
-            } else {
-                onPermissionDenied()
-            }
-        }
     }
 }
