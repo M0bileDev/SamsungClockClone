@@ -2,6 +2,7 @@ package com.example.samsungclockclone.ext
 
 import android.app.AlarmManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 fun AlarmManager.checkPermission(onPermissionGranted: () -> Unit, onPermissionDenied: () -> Unit) {
@@ -25,11 +26,20 @@ fun AlarmManager.suspendCheckPermission(
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
         val result = canScheduleExactAlarms()
         if (result) {
-            coroutineScope.launch { onPermissionGranted() }
+            coroutineScope.launch {
+                if (!isActive) return@launch
+                onPermissionGranted()
+            }
         } else {
-            coroutineScope.launch { onPermissionDenied() }
+            coroutineScope.launch {
+                if (!isActive) return@launch
+                onPermissionDenied()
+            }
         }
     } else {
-        coroutineScope.launch { onPermissionGranted() }
+        coroutineScope.launch {
+            if (!isActive) return@launch
+            onPermissionGranted()
+        }
     }
 }
