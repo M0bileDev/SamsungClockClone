@@ -10,6 +10,7 @@ import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
 import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
@@ -87,9 +88,10 @@ interface AlarmDao {
     suspend fun insertAlarmManager(alarmManagerEntity: AlarmManagerEntity): Long
 
     @Transaction
-    suspend fun insertAlarmMangers(managers: List<AlarmManagerEntity>) {
-        managers.forEach { alarmManager ->
-            insertAlarmManager(alarmManager)
+    suspend fun insertAlarmMangers(managers: List<AlarmManagerEntity>): List<Pair<AlarmId, AlarmMilliseconds>> {
+        return managers.map { alarmManager ->
+            val alarmId = insertAlarmManager(alarmManager)
+            alarmId to alarmManager.fireTime
         }
     }
 
