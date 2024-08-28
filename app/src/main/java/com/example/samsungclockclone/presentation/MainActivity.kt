@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         ticker.onDestroy()
         job.cancel()
+        scopedJob?.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
