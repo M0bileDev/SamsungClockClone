@@ -14,7 +14,16 @@ class TimeTickReceiver : BroadcastReceiver() {
     lateinit var timeTicker: TimeTicker
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        timeTicker.onTimeTick(System.currentTimeMillis())
+        intent?.let {
+            when (it.action) {
+                Intent.ACTION_TIME_TICK, Intent.ACTION_TIME_CHANGED -> timeTicker.onTimeTick(System.currentTimeMillis())
+                else -> {
+                    //Nothing
+                }
+            }
+        }
+
+
     }
 
 }
