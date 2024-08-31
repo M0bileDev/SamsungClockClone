@@ -3,7 +3,7 @@ package com.example.samsungclockclone.domain.ticker
 import kotlinx.coroutines.flow.Flow
 
 interface TimeTicker {
-    fun onSendTick(
+    fun onTimeTick(
         milliseconds: Long,
     )
 

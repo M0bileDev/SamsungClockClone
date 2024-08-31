@@ -17,7 +17,7 @@ class TimeTickerImpl @Inject constructor() : TimeTicker {
     private val coroutineScope = CoroutineScope(job + dispatcher)
     private val tickPass: MutableSharedFlow<Long> = MutableSharedFlow()
 
-    override fun onSendTick(
+    override fun onTimeTick(
         milliseconds: Long,
     ) {
         coroutineScope.launch {

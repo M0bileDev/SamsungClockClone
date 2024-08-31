@@ -73,12 +73,12 @@ class MainActivity : ComponentActivity() {
     private val coroutineScope = CoroutineScope(job + Dispatchers.Default)
 
     @Inject
-    lateinit var ticker: TimeTicker
+    lateinit var timeTicker: TimeTicker
 
     @Inject
     lateinit var updateAlarmMangersUseCase: UpdateAlarmMangersUseCase
 
-    private val tickerReceiver = TimeTickReceiver()
+    private val timeTickReceiver = TimeTickReceiver()
 
     override fun onResume() {
         super.onResume()
@@ -86,17 +86,17 @@ class MainActivity : ComponentActivity() {
         scopedJob = coroutineScope.launch {
             updateAlarmMangersUseCase(this)
         }
-        registerReceiver(tickerReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
+        registerReceiver(timeTickReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(tickerReceiver)
+        unregisterReceiver(timeTickReceiver)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        ticker.onDestroy()
+        timeTicker.onDestroy()
         job.cancel()
         scopedJob?.cancel()
     }
@@ -333,4 +333,3 @@ private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
             ?: false
     }
 }
-
