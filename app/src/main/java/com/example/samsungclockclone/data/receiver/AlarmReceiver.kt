@@ -9,6 +9,7 @@ const val ALARM_ID_KEY = "ALARM_ID"
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        TODO("Not yet implemented")
+        println("LOGS alarm received")
+//        TODO("Not yet implemented")
     }
 }
