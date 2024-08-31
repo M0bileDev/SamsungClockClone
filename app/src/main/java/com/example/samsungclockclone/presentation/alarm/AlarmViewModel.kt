@@ -51,10 +51,10 @@ class AlarmViewModel @Inject constructor(
 
     private val alarmItems = MutableStateFlow(emptyList<AlarmItem>())
     private val editModeEnable = MutableStateFlow(false)
-    private val tickMillis = MutableStateFlow(0L)
+    private val timeMillis = MutableStateFlow(0L)
 
     val uiState = combine(
-        alarmItems, editModeEnable, tickMillis
+        alarmItems, editModeEnable, timeMillis
     ) { alarmItems, editModeEnable, _ ->
 
         val editAvailable = alarmItems.isNotEmpty()
@@ -82,13 +82,13 @@ class AlarmViewModel @Inject constructor(
 
     init {
         getAlarmItems()
-        synchronizeWithClockTick()
+        synchronizeWithTimeChanged()
     }
 
-    private fun synchronizeWithClockTick() {
+    private fun synchronizeWithTimeChanged() {
         viewModelScope.launch {
             timeTicker.onGetTick().collectLatest {
-                tickMillis.value = it
+                timeMillis.value = it
             }
         }
     }
@@ -129,6 +129,7 @@ class AlarmViewModel @Inject constructor(
                 AlarmOrder.ALARM_TIME_ORDER -> {
                     //Not implemented yet
                 }
+
                 AlarmOrder.CUSTOM_ORDER -> {
                     getAlarmItemsCustomOrderUseCase(
                         { mapped ->
