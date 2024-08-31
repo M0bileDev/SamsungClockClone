@@ -1,6 +1,5 @@
 package com.example.samsungclockclone.data.scheduler
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -19,7 +18,6 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager: AlarmManager
 ) : AlarmScheduler {
 
-    @SuppressLint("ScheduleExactAlarm")
     override fun schedule(
         alarmIdMillisecondsPairs: List<Pair<AlarmId, AlarmMilliseconds>>,
         onScheduleCompleted: () -> Unit,
