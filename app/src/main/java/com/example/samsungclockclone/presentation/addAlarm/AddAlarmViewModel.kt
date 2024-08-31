@@ -283,11 +283,11 @@ class AddAlarmViewModel @Inject constructor(
                     alarmName.value,
                     alarmMillisecondsList,
                     selectedDaysOfWeek.value,
+                    ::onScheduleCompleted,
+                    ::onScheduleDenied,
                     this
                 )
             }
-
-            addAlarmActions.send(AddAlarmAction.NavigateBack)
         }
     }
 

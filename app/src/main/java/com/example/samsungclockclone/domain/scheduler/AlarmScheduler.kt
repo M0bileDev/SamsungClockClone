@@ -5,7 +5,7 @@ import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
 
 interface AlarmScheduler {
     fun schedule(
-        alarms: List<Pair<AlarmId, AlarmMilliseconds>>,
+        alarmIdMillisecondsPairs: List<Pair<AlarmId, AlarmMilliseconds>>,
         onScheduleCompleted: () -> Unit,
         onScheduleDenied: () -> Unit
     )
