@@ -10,5 +10,5 @@ interface AlarmScheduler {
         onScheduleDenied: () -> Unit
     )
 
-    fun cancel(id: Long)
+    fun cancel(alarmId: AlarmId)
 }
