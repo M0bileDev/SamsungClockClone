@@ -31,6 +31,7 @@ class AlarmSchedulerImpl @Inject constructor(
                     }
                     val broadcastReceiver = PendingIntent.getBroadcast(
                         context,
+                        //unique alarm entity id
                         alarm.first.toInt(),
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -52,11 +53,11 @@ class AlarmSchedulerImpl @Inject constructor(
 
     }
 
-    override fun cancel(id: Long) {
+    override fun cancel(alarmId: AlarmId) {
         val intent = Intent(context, AlarmReceiver::class.java)
         val broadcastReceiver = PendingIntent.getBroadcast(
             context,
-            id.toInt(),
+            alarmId.toInt(),
             intent,
             PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
