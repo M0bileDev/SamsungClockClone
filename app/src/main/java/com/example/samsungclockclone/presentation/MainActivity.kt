@@ -68,9 +68,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var scopedJob: Job? = null
-    private val job: Job = Job()
-    private val coroutineScope = CoroutineScope(job + Dispatchers.Default)
+    private var job: Job? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     @Inject
     lateinit var timeTicker: TimeTicker
@@ -82,8 +81,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        scopedJob?.cancel()
-        scopedJob = coroutineScope.launch {
+        job?.cancel()
+        job = coroutineScope.launch {
             updateAlarmMangersUseCase(this)
         }
         registerReceiver(timeTickReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
@@ -97,8 +96,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         timeTicker.onDestroy()
-        job.cancel()
-        scopedJob?.cancel()
+        job?.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

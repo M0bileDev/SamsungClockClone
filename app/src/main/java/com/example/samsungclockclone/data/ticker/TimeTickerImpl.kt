@@ -12,15 +12,14 @@ import javax.inject.Inject
 
 class TimeTickerImpl @Inject constructor() : TimeTicker {
 
-    private val job = Job()
-    private val dispatcher = Dispatchers.Default
-    private val coroutineScope = CoroutineScope(job + dispatcher)
+    private var job: Job? = null
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val tickPass: MutableSharedFlow<Long> = MutableSharedFlow()
 
     override fun onTimeTick(
         milliseconds: Long,
     ) {
-        coroutineScope.launch {
+        job = coroutineScope.launch {
             tickPass.emit(milliseconds)
         }
     }
@@ -28,6 +27,6 @@ class TimeTickerImpl @Inject constructor() : TimeTicker {
     override fun onGetTick(): Flow<Long> = tickPass.asSharedFlow()
 
     override fun onDestroy() {
-        job.cancel()
+        job?.cancel()
     }
 }
