@@ -44,6 +44,8 @@ class AlarmViewModel @Inject constructor(
         data class EditAlarm(val alarmId: AlarmId = -1L) : AlarmAction
 
         data class AddAlarm(val alarmId: AlarmId = -1L) : AlarmAction
+
+        data object RequestSchedulePermission : AlarmAction
     }
 
     private val alarmActions = Channel<AlarmAction>()
@@ -143,7 +145,14 @@ class AlarmViewModel @Inject constructor(
     }
 
     fun onAlarmEnableSwitch(alarmId: AlarmId) = viewModelScope.launch {
-        updateAlarmEnableSwitchUseCase(alarmId, this)
+        updateAlarmEnableSwitchUseCase(
+            alarmId,
+            parentScope = this,
+            onScheduleDenied = {
+                this.launch {
+                    alarmActions.send(AlarmAction.RequestSchedulePermission)
+                }
+            })
     }
 
 
