@@ -2,6 +2,7 @@
 
 package com.example.samsungclockclone.presentation
 
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -110,6 +112,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
+            val context = LocalContext.current
 
             SamsungClockCloneTheme {
                 // A surface container using the 'background' color from the theme
@@ -206,13 +209,7 @@ class MainActivity : ComponentActivity() {
                                                 }
 
                                                 AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                                        startActivity(
-                                                            Intent(
-                                                                ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-                                                            )
-                                                        )
-                                                    }
+                                                    startActionRequestScheduleExactAlarm(context)
                                                 }
 
                                                 AddAlarmViewModel.AddAlarmAction.NavigateBack -> {
@@ -260,6 +257,9 @@ class MainActivity : ComponentActivity() {
                                                     navController.navigate("${Screens.AddAlarm.route}/${action.alarmId}")
                                                 }
 
+                                                is AlarmViewModel.AlarmAction.RequestSchedulePermission -> {
+                                                    startActionRequestScheduleExactAlarm(context)
+                                                }
                                             }
                                         }
                                     }
@@ -329,5 +329,15 @@ private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
     return !navBottomItems.any { screen ->
         currentDestination?.hierarchy?.any { destination -> screen.route == destination.route }
             ?: false
+    }
+}
+
+private fun startActionRequestScheduleExactAlarm(context: Context) = with(context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        startActivity(
+            Intent(
+                ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+            )
+        )
     }
 }
