@@ -1,6 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.local.dao.AlarmDao
+import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TurnOffAlarmItemUseCase @Inject constructor(
-    private val alarmDao: AlarmDao
+    private val alarmDao: AlarmDao,
+    private val alarmScheduler: AlarmScheduler
 ) {
 
     suspend operator fun invoke(
@@ -26,7 +28,11 @@ class TurnOffAlarmItemUseCase @Inject constructor(
             val updatedAlarm = alarm.copy(enable = false)
             alarmDao.updateAlarm(updatedAlarm)
 
-            // TODO: cancel alarm manager after full db implementation
+            alarmManagers
+                .map { it.uniqueId }
+                .forEach { alarmId ->
+                    alarmScheduler.cancel(alarmId)
+                }
         }
     }
 }
