@@ -275,6 +275,8 @@ class AddAlarmViewModel @Inject constructor(
                     alarmMode.value,
                     alarmMillisecondsList,
                     selectedDaysOfWeek.value,
+                    ::onScheduleCompleted,
+                    ::onScheduleDenied,
                     this
                 )
             } else {
