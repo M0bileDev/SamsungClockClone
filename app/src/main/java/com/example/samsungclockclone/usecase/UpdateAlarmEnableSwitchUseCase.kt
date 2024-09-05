@@ -38,17 +38,16 @@ class UpdateAlarmEnableSwitchUseCase @Inject constructor(
                     alarmManager.suspendCheckPermission(
                         this,
                         onPermissionGranted = {
-                            //todo unable until branch turn_on_alarm_manager
-//                            val idMillisecondsPairs =
-//                                alarmManagers.map { it.uniqueId to it.fireTime }
-//                            alarmScheduler.schedule(
-//                                idMillisecondsPairs,
-//                                onScheduleCompleted,
-//                                onScheduleDenied
-//                            )
-//
-//                            val updatedAlarm = alarm.copy(enable = enableAlarm)
-//                            alarmDao.updateAlarm(updatedAlarm)
+                            val idMillisecondsPairs =
+                                alarmManagers.map { it.uniqueId to it.fireTime }
+                            alarmScheduler.schedule(
+                                idMillisecondsPairs,
+                                onScheduleCompleted,
+                                onScheduleDenied
+                            )
+
+                            val updatedAlarm = alarm.copy(enable = true)
+                            alarmDao.updateAlarm(updatedAlarm)
                         },
                         onPermissionDenied = onScheduleDenied
                     )
