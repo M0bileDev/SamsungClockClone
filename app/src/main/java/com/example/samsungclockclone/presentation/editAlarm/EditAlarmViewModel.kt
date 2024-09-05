@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +45,8 @@ class EditAlarmViewModel @Inject constructor(
 
     sealed interface EditAlarmAction {
         data object NavigateBack : EditAlarmAction
+
+        data object RequestSchedulePermission : EditAlarmAction
     }
 
     private val editAlarmActions = Channel<EditAlarmAction>()
@@ -101,6 +104,7 @@ class EditAlarmViewModel @Inject constructor(
                 AlarmOrder.ALARM_TIME_ORDER -> {
                     //Not implemented yet
                 }
+
                 AlarmOrder.CUSTOM_ORDER -> {
                     getEditAlarmItemsCustomOrderUseCase(
                         alarmId,
@@ -140,11 +144,23 @@ class EditAlarmViewModel @Inject constructor(
         val selectedEditAlarms = getSelectedEditAlarms()
 
         selectedEditAlarms.forEach { editAlarm ->
-            turnOnAlarmUseCase(editAlarm.alarmItem.alarmId, this)
-            // TODO: set alarm manager after full db implementation
+            turnOnAlarmUseCase(
+                editAlarm.alarmItem.alarmId,
+                parentScope = this,
+                onScheduleCompleted = {
+                    this.launch completedLaunch@{
+                        if (!isActive) return@completedLaunch
+                        editAlarmActions.send(EditAlarmAction.NavigateBack)
+                    }
+                },
+                onScheduleDenied = {
+                    this.launch deniedLaunch@{
+                        if (!isActive) return@deniedLaunch
+                        editAlarmActions.send(EditAlarmAction.RequestSchedulePermission)
+                    }
+                })
         }
 
-        editAlarmActions.send(EditAlarmAction.NavigateBack)
     }
 
 

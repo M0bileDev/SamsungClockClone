@@ -292,6 +292,10 @@ class MainActivity : ComponentActivity() {
                                                 EditAlarmViewModel.EditAlarmAction.NavigateBack -> {
                                                     navController.navigateUp()
                                                 }
+
+                                                EditAlarmViewModel.EditAlarmAction.RequestSchedulePermission -> {
+                                                    startActionRequestScheduleExactAlarm(context)
+                                                }
                                             }
                                         }
                                     }
