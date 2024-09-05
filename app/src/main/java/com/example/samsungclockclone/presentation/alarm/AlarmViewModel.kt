@@ -151,7 +151,7 @@ class AlarmViewModel @Inject constructor(
             onScheduleDenied = {
                 this.launch {
 //                     TODO: refactor -> check if parent scope is still active
-                    // TODO: display permission alert
+                    // TODO: refactor -> display permission alert
                     alarmActions.send(AlarmAction.RequestSchedulePermission)
                 }
             })
