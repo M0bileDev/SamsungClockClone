@@ -54,10 +54,11 @@ class AlarmViewModel @Inject constructor(
     private val alarmItems = MutableStateFlow(emptyList<AlarmItem>())
     private val editModeEnable = MutableStateFlow(false)
     private val timeMillis = MutableStateFlow(0L)
+    private val displayPermissionRequire = MutableStateFlow(false)
 
     val uiState = combine(
-        alarmItems, editModeEnable, timeMillis
-    ) { alarmItems, editModeEnable, _ ->
+        alarmItems, editModeEnable, timeMillis, displayPermissionRequire
+    ) { alarmItems, editModeEnable, _, displayPermissionRequire ->
 
         val editAvailable = alarmItems.isNotEmpty()
         val sortAvailable = alarmItems.size > 1
@@ -74,7 +75,8 @@ class AlarmViewModel @Inject constructor(
             editAvailable,
             sortAvailable,
             editModeEnable,
-            alarmTitleString
+            alarmTitleString,
+            displayPermissionRequire
         )
     }.stateIn(
         viewModelScope,
@@ -148,13 +150,23 @@ class AlarmViewModel @Inject constructor(
         updateAlarmEnableSwitchUseCase(
             alarmId,
             parentScope = this,
-            onScheduleDenied = {
-                this.launch {
-//                     TODO: refactor -> check if parent scope is still active
-                    // TODO: refactor -> display permission alert
-                    alarmActions.send(AlarmAction.RequestSchedulePermission)
-                }
-            })
+            onScheduleDenied = ::onScheduleDenied
+        )
+    }
+
+    private fun onScheduleDenied() {
+        displayPermissionRequire.value = true
+    }
+
+    fun onRequestSchedulePermission() {
+        displayPermissionRequire.value = false
+        viewModelScope.launch {
+            alarmActions.send(AlarmAction.RequestSchedulePermission)
+        }
+    }
+
+    fun dismissSchedulePermission() {
+        displayPermissionRequire.value = false
     }
 
 

@@ -12,7 +12,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// TODO: Extract private method and create Manager?
 class UpdateAlarmMangersUseCase @Inject constructor(
     private val alarmDao: AlarmDao,
     private val ticker: TimeTicker

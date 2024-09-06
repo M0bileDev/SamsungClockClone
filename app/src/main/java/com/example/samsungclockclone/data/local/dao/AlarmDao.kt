@@ -104,9 +104,8 @@ interface AlarmDao {
     @Query("SELECT id FROM alarm_table WHERE enable == 0")
     suspend fun getDisabledAlarmIds(): List<AlarmId>
 
-//    todo: refactor -> function name is out of date, it should be getAlarmManagersOutOfDateById
     @Query("SELECT * FROM alarm_manager_table WHERE fireTime < :actualMillis AND parentId = :parentId")
-    suspend fun getAlarmManagersOutOfDate(
+    suspend fun getAlarmManagersOutOfDateById(
         parentId: AlarmId,
         actualMillis: Long
     ): List<AlarmManagerEntity>
@@ -117,7 +116,7 @@ interface AlarmDao {
         actualMillis: Long
     ): List<AlarmManagerEntity> {
         return parentIds.map { parentId ->
-            getAlarmManagersOutOfDate(
+            getAlarmManagersOutOfDateById(
                 parentId, actualMillis
             )
         }.flatten()

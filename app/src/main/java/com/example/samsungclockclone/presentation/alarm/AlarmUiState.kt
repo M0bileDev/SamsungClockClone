@@ -8,7 +8,8 @@ data class AlarmUiState(
     val editAvailable: Boolean = false,
     val sortAvailable: Boolean = false,
     val editModeEnable: Boolean = false,
-    val alarmTitleString: AlarmTitleString = AlarmTitleString.AlarmsOff
+    val alarmTitleString: AlarmTitleString = AlarmTitleString.AlarmsOff,
+    val displayPermissionRequire: Boolean = false
 ) {
     companion object {
         val alarmUiStatePreview = AlarmUiState(
