@@ -144,7 +144,6 @@ fun AddAlarmScreen(
                     )
                     HorizontalChipGroup(
                         modifier = Modifier.fillMaxWidth(),
-                        // TODO: Think about optimize solution
                         items = daysOfWeek.toNameResourceList(),
                         selectedItems = selectedDaysOfWeek.toNameResourceList(),
                         onSelected = { resource ->
@@ -202,7 +201,6 @@ fun AddAlarmScreen(
             }
         }
         if (displayPermissionRequire) {
-            // TODO: extract strings
             AlertDialog(
                 icon = {
                     Icon(
