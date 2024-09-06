@@ -17,6 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -66,7 +69,9 @@ fun AlarmScreen(
     onEdit: (EditAlarmMode) -> Unit,
     onSort: (AlarmOrder) -> Unit,
     onSettings: () -> Unit,
-    onAlarmEnableSwitch: (AlarmId) -> Unit
+    onAlarmEnableSwitch: (AlarmId) -> Unit,
+    onDismissRequest: () -> Unit,
+    onRequestSchedulePermission: () -> Unit,
 ) = with(uiState) {
 
     val topAppBarState = rememberTopAppBarState()
@@ -193,7 +198,33 @@ fun AlarmScreen(
                 }
             }
         }
-
+        if (displayPermissionRequire) {
+            AlertDialog(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null
+                    )
+                },
+                title = {
+                    Text(stringResource(R.string.permission_required))
+                },
+                text = {
+                    Text(stringResource(R.string.you_must_confirm_the_alarms_reminders_special_permission))
+                },
+                onDismissRequest = onDismissRequest,
+                dismissButton = {
+                    TextButton(onClick = onDismissRequest) {
+                        Text(text = stringResource(R.string.dismiss))
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = onRequestSchedulePermission) {
+                        Text(text = stringResource(R.string.settings))
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -292,6 +323,8 @@ private fun AlarmScreenPreview() {
             onSort = {},
             onSettings = {},
             onAlarmEnableSwitch = {},
+            onDismissRequest = {},
+            onRequestSchedulePermission = {}
         )
     }
 }
