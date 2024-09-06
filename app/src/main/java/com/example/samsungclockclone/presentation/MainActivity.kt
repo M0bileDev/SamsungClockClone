@@ -271,7 +271,9 @@ class MainActivity : ComponentActivity() {
                                     onEdit = alarmViewModel::onEdit,
                                     onSort = alarmViewModel::onSort,
                                     onSettings = {},
-                                    onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch
+                                    onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch,
+                                    onDismissRequest = alarmViewModel::dismissSchedulePermission,
+                                    onRequestSchedulePermission = alarmViewModel::onRequestSchedulePermission,
                                 )
                             }
 
