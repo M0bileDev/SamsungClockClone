@@ -6,3 +6,4 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 
 val Context.alarmDataStore: DataStore<Preferences> by preferencesDataStore(name = "alarm")
+val Context.userSelectionDataStore: DataStore<Preferences> by preferencesDataStore(name = "userSelection")
