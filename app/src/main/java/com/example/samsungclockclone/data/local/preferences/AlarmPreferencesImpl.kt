@@ -26,7 +26,7 @@ class AlarmPreferencesImpl @Inject constructor(
         }
     }
 
-    override suspend fun collectAlarmOrder(): Flow<AlarmOrder> {
+    override fun collectAlarmOrder(): Flow<AlarmOrder> {
         return context.alarmDataStore.data.map { alarmPref ->
             alarmPref[alarmDataStoreOrderKey]?.let { name ->
                 AlarmOrder.valueOf(name)
