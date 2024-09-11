@@ -1,13 +1,15 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.samsungclockclone.presentation
+package com.example.samsungclockclone.presentation.main
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -44,8 +46,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.samsungclockclone.data.receiver.TimeTickReceiver
+import com.example.samsungclockclone.domain.preferences.SelectionPreferences
 import com.example.samsungclockclone.domain.ticker.TimeTicker
-import com.example.samsungclockclone.navigation.NavigationUtils.navBottomItems
+import com.example.samsungclockclone.navigation.NavigationUtils
 import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
@@ -62,7 +65,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -72,6 +77,8 @@ class MainActivity : ComponentActivity() {
 
     private var job: Job? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var userSelectionJob: Job? = null
+    private val userSelectionCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     @Inject
     lateinit var timeTicker: TimeTicker
@@ -79,10 +86,27 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var updateAlarmMangersUseCase: UpdateAlarmMangersUseCase
 
+    @Inject
+    lateinit var selectionPreferences: SelectionPreferences
+
     private val timeTickReceiver = TimeTickReceiver()
 
     override fun onResume() {
         super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            userSelectionJob?.cancel()
+            userSelectionJob = userSelectionCoroutineScope.launch {
+                val notificationPermissionAskAgainEnabled =
+                    selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
+                withContext(Dispatchers.Main) {
+                    if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED && notificationPermissionAskAgainEnabled) {
+                        //todo: send action DISPLAY_POST_NOTIFICATIONS_DIALOG
+                    }
+
+                }
+            }
+
+        }
         job?.cancel()
         job = coroutineScope.launch {
             updateAlarmMangersUseCase(this)
@@ -99,6 +123,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         timeTicker.onDestroy()
         job?.cancel()
+        userSelectionJob?.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,7 +151,7 @@ class MainActivity : ComponentActivity() {
                             if (hideNavigationBar(currentDestination)) return@Scaffold
 
                             NavigationBar {
-                                navBottomItems.forEach { screen ->
+                                NavigationUtils.navBottomItems.forEach { screen ->
                                     val selected =
                                         currentDestination?.hierarchy?.any { it.route == screen.route } == true
                                     NavigationBarItem(
@@ -165,9 +190,12 @@ class MainActivity : ComponentActivity() {
                             startDestination = Screens.Alarm.route
                         ) {
 
+                            //todo globally receive DISPLAY_POST_NOTIFICATIONS_DIALOG and execute logic like "Suer why not" and "No way dude"
+                            // with do not show again, not option for skip
+                            val mainViewModel: MainViewModel by viewModels()
 
                             composable(
-                                "${Screens.AddAlarm.route}/{${ALARM_ID_KEY}}",
+                                "${Screens.AddAlarm.route}/{$ALARM_ID_KEY}",
                                 arguments = listOf(navArgument(ALARM_ID_KEY) {
                                     type = NavType.LongType
                                 })
@@ -219,6 +247,8 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 }
+
+//                                todo: Create view that display permission dialogs and passed content like screens and support dialog actions
 
                                 AddAlarmScreen(
                                     modifier = Modifier.fillMaxSize(),
@@ -278,7 +308,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(
-                                route = "${Screens.EditAlarm.route}/{${ALARM_ID_KEY}}",
+                                route = "${Screens.EditAlarm.route}/{$ALARM_ID_KEY}",
                                 arguments = listOf(navArgument(ALARM_ID_KEY) {
                                     type = NavType.LongType
                                 })
@@ -329,21 +359,21 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
-    return !navBottomItems.any { screen ->
-        currentDestination?.hierarchy?.any { destination -> screen.route == destination.route }
-            ?: false
+    private fun hideNavigationBar(currentDestination: NavDestination?): Boolean {
+        return !NavigationUtils.navBottomItems.any { screen ->
+            currentDestination?.hierarchy?.any { destination -> screen.route == destination.route }
+                ?: false
+        }
     }
-}
 
-private fun startActionRequestScheduleExactAlarm(context: Context) = with(context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        startActivity(
-            Intent(
-                ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+    private fun startActionRequestScheduleExactAlarm(context: Context) = with(context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            startActivity(
+                Intent(
+                    Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                )
             )
-        )
+        }
     }
 }
