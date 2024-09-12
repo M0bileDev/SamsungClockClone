@@ -12,7 +12,9 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,6 +48,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.samsungclockclone.data.receiver.TimeTickReceiver
+import com.example.samsungclockclone.domain.dialog.DialogListener
+import com.example.samsungclockclone.domain.permissions.PermissionsListener
 import com.example.samsungclockclone.domain.preferences.SelectionPreferences
 import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.navigation.NavigationUtils
@@ -75,10 +79,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var job: Job? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var updateAlarmMangersJob: Job? = null
+    private val updateAlarmMangersCoroutineScope = CoroutineScope(Dispatchers.Default)
+
     private var userSelectionJob: Job? = null
     private val userSelectionCoroutineScope = CoroutineScope(Dispatchers.Default)
+
+    private var permissionListenerJob: Job? = null
+    private val permissionListenerCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     @Inject
     lateinit var timeTicker: TimeTicker
@@ -89,10 +97,38 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var selectionPreferences: SelectionPreferences
 
+    @Inject
+    lateinit var dialogListener: DialogListener
+
+    @Inject
+    lateinit var permissionsListener: PermissionsListener
+
     private val timeTickReceiver = TimeTickReceiver()
+
+    private var onPermissionGranted: () -> Unit = {}
+    private var onPermissionDenied: () -> Unit = {}
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                onPermissionGranted()
+            } else {
+                onPermissionDenied()
+            }
+        }
+
+    private fun runPermission(onGranted: () -> Unit, onDenied: () -> Unit, permission: String) {
+        onPermissionGranted = onGranted
+        onPermissionDenied = onDenied
+        requestPermissionLauncher.launch(permission)
+    }
+
 
     override fun onResume() {
         super.onResume()
+
+        // TODO: clean up
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             userSelectionJob?.cancel()
             userSelectionJob = userSelectionCoroutineScope.launch {
@@ -100,15 +136,34 @@ class MainActivity : ComponentActivity() {
                     selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
                 withContext(Dispatchers.Main) {
                     if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED && notificationPermissionAskAgainEnabled) {
-                        //todo: send action DISPLAY_POST_NOTIFICATIONS_DIALOG
+                        withContext(Dispatchers.Default) {
+                            dialogListener.changedVisibilityPermissionPostNotificationDialog(true)
+                        }
                     }
 
                 }
             }
-
         }
-        job?.cancel()
-        job = coroutineScope.launch {
+
+        permissionListenerJob?.cancel()
+        permissionListenerJob = permissionListenerCoroutineScope.launch {
+            permissionsListener.collectPermissionPostNotification().collectLatest {
+                runPermission(
+                    onGranted = {
+                        // No-op
+                    },
+                    onDenied = {
+                        this.launch {
+                            dialogListener.changedVisibilityShortInfoDialog(true)
+                        }
+                    },
+                    permission = Manifest.permission.POST_NOTIFICATIONS
+                )
+            }
+        }
+
+        updateAlarmMangersJob?.cancel()
+        updateAlarmMangersJob = updateAlarmMangersCoroutineScope.launch {
             updateAlarmMangersUseCase(this)
         }
         registerReceiver(timeTickReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
@@ -122,7 +177,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         timeTicker.onDestroy()
-        job?.cancel()
+        updateAlarmMangersJob?.cancel()
         userSelectionJob?.cancel()
     }
 
@@ -145,215 +200,231 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(
-                        bottomBar = {
+                    Box(modifier = Modifier.fillMaxSize()) {
 
-                            if (hideNavigationBar(currentDestination)) return@Scaffold
+                        //todo globally receive DISPLAY_POST_NOTIFICATIONS_DIALOG and execute logic like "Suer why not" and "No way dude"
+                        // with do not show again, not option for skip
+                        val mainViewModel: MainViewModel by viewModels()
+                        val uiState by mainViewModel.uiState.collectAsState()
 
-                            NavigationBar {
-                                NavigationUtils.navBottomItems.forEach { screen ->
-                                    val selected =
-                                        currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                                    NavigationBarItem(
-                                        selected = selected,
-                                        onClick = {
-                                            navController.navigate(screen.route) {
-                                                popUpTo(
-                                                    navController.graph.findStartDestination().id
-                                                ) {
-                                                    saveState = true
+                        Scaffold(
+                            bottomBar = {
+
+                                if (hideNavigationBar(currentDestination)) return@Scaffold
+
+                                NavigationBar {
+                                    NavigationUtils.navBottomItems.forEach { screen ->
+                                        val selected =
+                                            currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                                        NavigationBarItem(
+                                            selected = selected,
+                                            onClick = {
+                                                navController.navigate(screen.route) {
+                                                    popUpTo(
+                                                        navController.graph.findStartDestination().id
+                                                    ) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
                                                 }
-                                                launchSingleTop = true
-                                                restoreState = true
+                                            },
+                                            icon = {
+                                                val color = MaterialTheme.colorScheme.onSurface
+                                                Text(
+                                                    modifier = Modifier.drawUnderline(
+                                                        selected,
+                                                        color = color
+                                                    ),
+                                                    text = resources.getString(screen.name),
+                                                    fontWeight = if (selected) FontWeight.Bold else null,
+                                                )
                                             }
-                                        },
-                                        icon = {
-                                            val color = MaterialTheme.colorScheme.onSurface
-                                            Text(
-                                                modifier = Modifier.drawUnderline(
-                                                    selected,
-                                                    color = color
-                                                ),
-                                                text = resources.getString(screen.name),
-                                                fontWeight = if (selected) FontWeight.Bold else null,
-                                            )
-                                        }
-                                    )
+                                        )
 
+                                    }
                                 }
                             }
-                        }
-                    ) { padding ->
-                        NavHost(
-                            modifier = Modifier.padding(padding),
-                            navController = navController,
-                            startDestination = Screens.Alarm.route
-                        ) {
-
-                            //todo globally receive DISPLAY_POST_NOTIFICATIONS_DIALOG and execute logic like "Suer why not" and "No way dude"
-                            // with do not show again, not option for skip
-                            val mainViewModel: MainViewModel by viewModels()
-
-                            composable(
-                                "${Screens.AddAlarm.route}/{$ALARM_ID_KEY}",
-                                arguments = listOf(navArgument(ALARM_ID_KEY) {
-                                    type = NavType.LongType
-                                })
+                        ) { padding ->
+                            NavHost(
+                                modifier = Modifier.padding(padding),
+                                navController = navController,
+                                startDestination = Screens.Alarm.route
                             ) {
-                                val addAlarmViewModel: AddAlarmViewModel = hiltViewModel()
-                                val uiState by addAlarmViewModel.uiState.collectAsState()
-                                val localDate by remember {
-                                    mutableStateOf(LocalDateTime.now())
-                                }
-                                val datePickerState = rememberDatePickerState(
-                                    yearRange = IntRange(
-                                        localDate.year,
-                                        localDate.year + 1
-                                    ),
-                                    initialSelectedDateMillis = localDate
-                                        .plusDays(1)
-                                        .atZone(ZoneId.systemDefault())
-                                        .toInstant()
-                                        .toEpochMilli(),
-                                    selectableDates = object : SelectableDates {
-                                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                                            return utcTimeMillis >= localDate
-                                                .plusDays(1)
-                                                .withHour(0)
-                                                .withMinute(0)
-                                                .atZone(ZoneId.systemDefault())
-                                                .toInstant()
-                                                .toEpochMilli()
-                                        }
+
+                                composable(
+                                    "${Screens.AddAlarm.route}/{$ALARM_ID_KEY}",
+                                    arguments = listOf(navArgument(ALARM_ID_KEY) {
+                                        type = NavType.LongType
                                     })
+                                ) {
+                                    val addAlarmViewModel: AddAlarmViewModel = hiltViewModel()
+                                    val uiState by addAlarmViewModel.uiState.collectAsState()
+                                    val localDate by remember {
+                                        mutableStateOf(LocalDateTime.now())
+                                    }
+                                    val datePickerState = rememberDatePickerState(
+                                        yearRange = IntRange(
+                                            localDate.year,
+                                            localDate.year + 1
+                                        ),
+                                        initialSelectedDateMillis = localDate
+                                            .plusDays(1)
+                                            .atZone(ZoneId.systemDefault())
+                                            .toInstant()
+                                            .toEpochMilli(),
+                                        selectableDates = object : SelectableDates {
+                                            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                                                return utcTimeMillis >= localDate
+                                                    .plusDays(1)
+                                                    .withHour(0)
+                                                    .withMinute(0)
+                                                    .atZone(ZoneId.systemDefault())
+                                                    .toInstant()
+                                                    .toEpochMilli()
+                                            }
+                                        })
 
-                                val lifecycle = LocalLifecycleOwner.current
-                                LaunchedEffect(key1 = lifecycle) {
-                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                        addAlarmViewModel.actions.collectLatest { action ->
-                                            when (action) {
-                                                AddAlarmViewModel.AddAlarmAction.ScheduleCompleted -> {
-                                                    navController.navigateUp()
-                                                }
+                                    val lifecycle = LocalLifecycleOwner.current
+                                    LaunchedEffect(key1 = lifecycle) {
+                                        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                            addAlarmViewModel.actions.collectLatest { action ->
+                                                when (action) {
+                                                    AddAlarmViewModel.AddAlarmAction.ScheduleCompleted -> {
+                                                        navController.navigateUp()
+                                                    }
 
-                                                AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
-                                                    startActionRequestScheduleExactAlarm(context)
-                                                }
+                                                    AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
+                                                        startActionRequestScheduleExactAlarm(context)
+                                                    }
 
-                                                AddAlarmViewModel.AddAlarmAction.NavigateBack -> {
-                                                    navController.navigateUp()
+                                                    AddAlarmViewModel.AddAlarmAction.NavigateBack -> {
+                                                        navController.navigateUp()
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+
+                                    AddAlarmScreen(
+                                        modifier = Modifier.fillMaxSize(),
+                                        uiState = uiState,
+                                        datePickerState = datePickerState,
+                                        onHourChanged = addAlarmViewModel::hourChanged,
+                                        onMoveToHour = addAlarmViewModel::onMoveToHour,
+                                        onMinuteChanged = addAlarmViewModel::minuteChanged,
+                                        onMoveToMinute = addAlarmViewModel::onMoveToMinute,
+                                        onDateChanged = addAlarmViewModel::onDateChanged,
+                                        onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
+                                        onNameChanged = addAlarmViewModel::nameChanged,
+                                        onCancel = navController::navigateUp,
+                                        onSave = addAlarmViewModel::onSave,
+                                        onDismissRequest = addAlarmViewModel::dismissSchedulePermission,
+                                        onRequestSchedulePermission = addAlarmViewModel::onRequestSchedulePermission,
+                                        onDisplayDatePicker = addAlarmViewModel::onDisplayDatePicker,
+                                        onDismissDatePicker = addAlarmViewModel::onDismissDatePicker
+                                    )
                                 }
 
-//                                todo: Create view that display permission dialogs and passed content like screens and support dialog actions
+                                composable(Screens.Alarm.route) {
+                                    val alarmViewModel: AlarmViewModel by viewModels()
+                                    val uiState by alarmViewModel.uiState.collectAsState()
 
-                                AddAlarmScreen(
-                                    modifier = Modifier.fillMaxSize(),
-                                    uiState = uiState,
-                                    datePickerState = datePickerState,
-                                    onHourChanged = addAlarmViewModel::hourChanged,
-                                    onMoveToHour = addAlarmViewModel::onMoveToHour,
-                                    onMinuteChanged = addAlarmViewModel::minuteChanged,
-                                    onMoveToMinute = addAlarmViewModel::onMoveToMinute,
-                                    onDateChanged = addAlarmViewModel::onDateChanged,
-                                    onDayOfWeekChanged = addAlarmViewModel::dayOfWeekChanged,
-                                    onNameChanged = addAlarmViewModel::nameChanged,
-                                    onCancel = navController::navigateUp,
-                                    onSave = addAlarmViewModel::onSave,
-                                    onDismissRequest = addAlarmViewModel::dismissSchedulePermission,
-                                    onRequestSchedulePermission = addAlarmViewModel::onRequestSchedulePermission,
-                                    onDisplayDatePicker = addAlarmViewModel::onDisplayDatePicker,
-                                    onDismissDatePicker = addAlarmViewModel::onDismissDatePicker
-                                )
-                            }
+                                    val lifecycle = LocalLifecycleOwner.current
+                                    LaunchedEffect(key1 = lifecycle) {
+                                        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                            alarmViewModel.actions.collectLatest { action ->
+                                                when (action) {
+                                                    is AlarmViewModel.AlarmAction.EditAlarm -> {
+                                                        navController.navigate("${Screens.EditAlarm.route}/${action.alarmId}")
+                                                    }
 
-                            composable(Screens.Alarm.route) {
-                                val alarmViewModel: AlarmViewModel by viewModels()
-                                val uiState by alarmViewModel.uiState.collectAsState()
+                                                    is AlarmViewModel.AlarmAction.AddAlarm -> {
+                                                        navController.navigate("${Screens.AddAlarm.route}/${action.alarmId}")
+                                                    }
 
-                                val lifecycle = LocalLifecycleOwner.current
-                                LaunchedEffect(key1 = lifecycle) {
-                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                        alarmViewModel.actions.collectLatest { action ->
-                                            when (action) {
-                                                is AlarmViewModel.AlarmAction.EditAlarm -> {
-                                                    navController.navigate("${Screens.EditAlarm.route}/${action.alarmId}")
-                                                }
-
-                                                is AlarmViewModel.AlarmAction.AddAlarm -> {
-                                                    navController.navigate("${Screens.AddAlarm.route}/${action.alarmId}")
-                                                }
-
-                                                is AlarmViewModel.AlarmAction.RequestSchedulePermission -> {
-                                                    startActionRequestScheduleExactAlarm(context)
+                                                    is AlarmViewModel.AlarmAction.RequestSchedulePermission -> {
+                                                        startActionRequestScheduleExactAlarm(context)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+                                    AlarmScreen(
+                                        uiState = uiState,
+                                        onAdd = alarmViewModel::onAdd,
+                                        onEdit = alarmViewModel::onEdit,
+                                        onSort = alarmViewModel::onSort,
+                                        onSettings = {},
+                                        onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch,
+                                        onDismissRequest = alarmViewModel::dismissSchedulePermission,
+                                        onRequestSchedulePermission = alarmViewModel::onRequestSchedulePermission,
+                                    )
                                 }
 
-                                AlarmScreen(
-                                    uiState = uiState,
-                                    onAdd = alarmViewModel::onAdd,
-                                    onEdit = alarmViewModel::onEdit,
-                                    onSort = alarmViewModel::onSort,
-                                    onSettings = {},
-                                    onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch,
-                                    onDismissRequest = alarmViewModel::dismissSchedulePermission,
-                                    onRequestSchedulePermission = alarmViewModel::onRequestSchedulePermission,
-                                )
-                            }
+                                composable(
+                                    route = "${Screens.EditAlarm.route}/{$ALARM_ID_KEY}",
+                                    arguments = listOf(navArgument(ALARM_ID_KEY) {
+                                        type = NavType.LongType
+                                    })
+                                ) {
+                                    val editAlarmViewModel: EditAlarmViewModel = hiltViewModel()
+                                    val uiState by editAlarmViewModel.uiState.collectAsState()
 
-                            composable(
-                                route = "${Screens.EditAlarm.route}/{$ALARM_ID_KEY}",
-                                arguments = listOf(navArgument(ALARM_ID_KEY) {
-                                    type = NavType.LongType
-                                })
-                            ) {
-                                val editAlarmViewModel: EditAlarmViewModel = hiltViewModel()
-                                val uiState by editAlarmViewModel.uiState.collectAsState()
+                                    val lifecycle = LocalLifecycleOwner.current
+                                    LaunchedEffect(key1 = lifecycle) {
+                                        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                                            editAlarmViewModel.actions.collectLatest { action ->
+                                                when (action) {
+                                                    EditAlarmViewModel.EditAlarmAction.NavigateBack -> {
+                                                        navController.navigateUp()
+                                                    }
 
-                                val lifecycle = LocalLifecycleOwner.current
-                                LaunchedEffect(key1 = lifecycle) {
-                                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                                        editAlarmViewModel.actions.collectLatest { action ->
-                                            when (action) {
-                                                EditAlarmViewModel.EditAlarmAction.NavigateBack -> {
-                                                    navController.navigateUp()
-                                                }
-
-                                                EditAlarmViewModel.EditAlarmAction.RequestSchedulePermission -> {
-                                                    startActionRequestScheduleExactAlarm(context)
+                                                    EditAlarmViewModel.EditAlarmAction.RequestSchedulePermission -> {
+                                                        startActionRequestScheduleExactAlarm(context)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+                                    EditAlarmScreen(
+                                        uiState = uiState,
+                                        onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
+                                        onSelectionChanged = editAlarmViewModel::onSelectionChanged,
+                                        onTurnOn = editAlarmViewModel::onTurnOn,
+                                        onTurnOff = editAlarmViewModel::onTurnOff,
+                                        onDelete = editAlarmViewModel::onDelete,
+                                        onDeleteAll = editAlarmViewModel::onDeleteAll,
+                                        onMove = editAlarmViewModel::onMove,
+                                        onMoveCompleted = editAlarmViewModel::onMoveCompleted
+                                    )
                                 }
 
-                                EditAlarmScreen(
-                                    uiState = uiState,
-                                    onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
-                                    onSelectionChanged = editAlarmViewModel::onSelectionChanged,
-                                    onTurnOn = editAlarmViewModel::onTurnOn,
-                                    onTurnOff = editAlarmViewModel::onTurnOff,
-                                    onDelete = editAlarmViewModel::onDelete,
-                                    onDeleteAll = editAlarmViewModel::onDeleteAll,
-                                    onMove = editAlarmViewModel::onMove,
-                                    onMoveCompleted = editAlarmViewModel::onMoveCompleted
-                                )
+                                composable(Screens.Stopwatch.route) {
+
+                                }
+                                composable(Screens.Timer.route) {
+
+                                }
+                            }
+                        }
+
+                        //todo: Create view that display permission dialogs and passed content like screens and support dialog actions
+                        with(uiState) {
+                            if (displayNotificationPermissionDialog) {
+                                // TODO: continue implementation '
                             }
 
-                            composable(Screens.Stopwatch.route) {
-
-                            }
-                            composable(Screens.Timer.route) {
+                            if (displaySystemSettingsDialog) {
 
                             }
                         }
+
                     }
+
 
                 }
             }
