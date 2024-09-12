@@ -92,7 +92,7 @@ private fun PermissionDialogPreview() {
 }
 
 @Composable
-fun PermissionDeniedDialog(
+fun ShortInfoDialog(
     dialogText: String,
     onDismiss: () -> Unit
 ) {
@@ -121,7 +121,7 @@ fun PermissionDeniedDialog(
 @Composable
 private fun PermissionDeniedDialogPreview() {
     SamsungClockCloneTheme {
-        PermissionDeniedDialog(
+        ShortInfoDialog(
             dialogText = "You can always change application permissions in system settings.",
             onDismiss = {}
         )
