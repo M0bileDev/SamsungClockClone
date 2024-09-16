@@ -28,7 +28,7 @@ class SelectionPreferencesImpl @Inject constructor(
 
     override fun collectNotificationPermissionAskAgainEnabled(): Flow<Boolean> {
         return context.userSelectionDataStore.data.map { selectPref ->
-            selectPref[notificationAskAgainKey] ?: false
+            selectPref[notificationAskAgainKey] ?: true
         }
     }
 }
