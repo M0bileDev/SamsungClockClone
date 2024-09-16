@@ -22,11 +22,11 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val displayNotificationPermissionDialog = MutableStateFlow(false)
-    private val displayShortINfoDialog = MutableStateFlow(false)
+    private val displayShortInfoDialog = MutableStateFlow(false)
 
     val uiState = combine(
         displayNotificationPermissionDialog,
-        displayShortINfoDialog
+        displayShortInfoDialog
     ) { displayNotificationPermissionDialog, displaySettingsDialog ->
 
         MainActivityUiState(
@@ -51,28 +51,24 @@ class MainViewModel @Inject constructor(
             dialogListener
                 .collectVisibilityDisplayShortInfoDialog()
                 .collectLatest {
-                    displayShortINfoDialog.value = it
+                    displayShortInfoDialog.value = it
                 }
         }
     }
 
-    fun onRequestNotificationPermission(neverAskAgainEnabled: Boolean) {
-        viewModelScope.launch {
-            permissionsListener.requestPermissionPostNotification(Unit)
-        }
+    fun onRequestNotificationPermission(neverAskAgainEnabled: Boolean) = viewModelScope.launch {
+        selectionPreferences.saveNotificationPermissionAskAgainEnabled(!neverAskAgainEnabled)
+        dialogListener.changedVisibilityPermissionPostNotificationDialog(false)
+        permissionsListener.requestPermissionPostNotification(Unit)
     }
 
-    fun onDismissNotificationPermission(neverAskAgainEnabled: Boolean) {
-        viewModelScope.launch {
-            dialogListener.changedVisibilityPermissionPostNotificationDialog(false)
-        }
+    fun onDismissNotificationPermission(neverAskAgainEnabled: Boolean) = viewModelScope.launch {
+        selectionPreferences.saveNotificationPermissionAskAgainEnabled(!neverAskAgainEnabled)
+        dialogListener.changedVisibilityPermissionPostNotificationDialog(false)
+        dialogListener.changedVisibilityShortInfoDialog(true)
     }
 
-    fun onDismissShortInfoDialog() {
-        viewModelScope.launch {
-            dialogListener.changedVisibilityShortInfoDialog(false)
-        }
-
+    fun onDismissShortInfoDialog() = viewModelScope.launch {
+        dialogListener.changedVisibilityShortInfoDialog(false)
     }
-
 }
