@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
 
         permissionListenerJob?.cancel()
         permissionListenerJob = permissionListenerCoroutineScope.launch {
-            permissionsListener.collectPermissionPostNotification().collect {
+            permissionsListener.collectPermissionPostNotification().collectLatest {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     runPermission(
                         onGranted = {
