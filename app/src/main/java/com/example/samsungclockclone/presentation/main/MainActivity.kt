@@ -3,10 +3,10 @@
 package com.example.samsungclockclone.presentation.main
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -32,9 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -62,7 +63,10 @@ import com.example.samsungclockclone.presentation.editAlarm.EditAlarmScreen
 import com.example.samsungclockclone.presentation.editAlarm.EditAlarmViewModel
 import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.customModifier.drawUnderline
+import com.example.samsungclockclone.ui.customViews.dialog.PermissionDialog
+import com.example.samsungclockclone.ui.customViews.dialog.ShortInfoDialog
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.ui.utils.strings
 import com.example.samsungclockclone.usecase.UpdateAlarmMangersUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -75,6 +79,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -118,50 +123,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    private fun runPermission(onGranted: () -> Unit, onDenied: () -> Unit, permission: String) {
-        onPermissionGranted = onGranted
-        onPermissionDenied = onDenied
-        requestPermissionLauncher.launch(permission)
-    }
-
-
     override fun onResume() {
         super.onResume()
-
-        // TODO: clean up
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            userSelectionJob?.cancel()
-            userSelectionJob = userSelectionCoroutineScope.launch {
-                val notificationPermissionAskAgainEnabled =
-                    selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
-                withContext(Dispatchers.Main) {
-                    if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED && notificationPermissionAskAgainEnabled) {
-                        withContext(Dispatchers.Default) {
-                            dialogListener.changedVisibilityPermissionPostNotificationDialog(true)
-                        }
-                    }
-
-                }
-            }
-        }
-
-        permissionListenerJob?.cancel()
-        permissionListenerJob = permissionListenerCoroutineScope.launch {
-            permissionsListener.collectPermissionPostNotification().collectLatest {
-                runPermission(
-                    onGranted = {
-                        // No-op
-                    },
-                    onDenied = {
-                        this.launch {
-                            dialogListener.changedVisibilityShortInfoDialog(true)
-                        }
-                    },
-                    permission = Manifest.permission.POST_NOTIFICATIONS
-                )
-            }
-        }
-
         updateAlarmMangersJob?.cancel()
         updateAlarmMangersJob = updateAlarmMangersCoroutineScope.launch {
             updateAlarmMangersUseCase(this)
@@ -179,20 +142,77 @@ class MainActivity : ComponentActivity() {
         timeTicker.onDestroy()
         updateAlarmMangersJob?.cancel()
         userSelectionJob?.cancel()
+        permissionListenerJob?.cancel()
+        requestPermissionLauncher.unregister()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SamsungClockCloneApplication()
+
+        permissionListenerJob?.cancel()
+        permissionListenerJob = permissionListenerCoroutineScope.launch {
+            permissionsListener.collectPermissionPostNotification().collect {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    runPermission(
+                        onGranted = {
+                            // No-op
+                        },
+                        onDenied = {
+                            this.launch {
+                                dialogListener.changedVisibilityShortInfoDialog(true)
+                            }
+                        },
+                        permission = Manifest.permission.POST_NOTIFICATIONS
+                    )
+                }
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            userSelectionJob?.cancel()
+            userSelectionJob = userSelectionCoroutineScope.launch {
+                println("LOGS userSelectionCoroutineScope LAUNCH")
+                val notificationPermissionAskAgainEnabled =
+                    selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
+                withContext(Dispatchers.Main) {
+
+                    if (notificationPermissionAskAgainEnabled) {
+                        when {
+                            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
+                                //no-op
+                            }
+
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                this@MainActivity, Manifest.permission.POST_NOTIFICATIONS
+                            ) -> {
+                                withContext(Dispatchers.Default) {
+                                    dialogListener.changedVisibilityPermissionPostNotificationDialog(
+                                        true
+                                    )
+                                }
+                            }
+
+                            else -> withContext(Dispatchers.Default) {
+                                dialogListener.changedVisibilityPermissionPostNotificationDialog(
+                                    true
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        runSamsungClockCloneApplication()
     }
 
-    private fun SamsungClockCloneApplication() {
+    private fun runSamsungClockCloneApplication() {
         setContent {
 
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val context = LocalContext.current
 
             SamsungClockCloneTheme {
                 // A surface container using the 'background' color from the theme
@@ -202,8 +222,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
 
-                        //todo globally receive DISPLAY_POST_NOTIFICATIONS_DIALOG and execute logic like "Suer why not" and "No way dude"
-                        // with do not show again, not option for skip
                         val mainViewModel: MainViewModel by viewModels()
                         val uiState by mainViewModel.uiState.collectAsState()
 
@@ -259,7 +277,7 @@ class MainActivity : ComponentActivity() {
                                     })
                                 ) {
                                     val addAlarmViewModel: AddAlarmViewModel = hiltViewModel()
-                                    val uiState by addAlarmViewModel.uiState.collectAsState()
+                                    val addAlarmUiState by addAlarmViewModel.uiState.collectAsState()
                                     val localDate by remember {
                                         mutableStateOf(LocalDateTime.now())
                                     }
@@ -295,7 +313,7 @@ class MainActivity : ComponentActivity() {
                                                     }
 
                                                     AddAlarmViewModel.AddAlarmAction.RequestSchedulePermission -> {
-                                                        startActionRequestScheduleExactAlarm(context)
+                                                        startActionRequestScheduleExactAlarm()
                                                     }
 
                                                     AddAlarmViewModel.AddAlarmAction.NavigateBack -> {
@@ -309,7 +327,7 @@ class MainActivity : ComponentActivity() {
 
                                     AddAlarmScreen(
                                         modifier = Modifier.fillMaxSize(),
-                                        uiState = uiState,
+                                        uiState = addAlarmUiState,
                                         datePickerState = datePickerState,
                                         onHourChanged = addAlarmViewModel::hourChanged,
                                         onMoveToHour = addAlarmViewModel::onMoveToHour,
@@ -329,7 +347,7 @@ class MainActivity : ComponentActivity() {
 
                                 composable(Screens.Alarm.route) {
                                     val alarmViewModel: AlarmViewModel by viewModels()
-                                    val uiState by alarmViewModel.uiState.collectAsState()
+                                    val alarmUiState by alarmViewModel.uiState.collectAsState()
 
                                     val lifecycle = LocalLifecycleOwner.current
                                     LaunchedEffect(key1 = lifecycle) {
@@ -345,7 +363,7 @@ class MainActivity : ComponentActivity() {
                                                     }
 
                                                     is AlarmViewModel.AlarmAction.RequestSchedulePermission -> {
-                                                        startActionRequestScheduleExactAlarm(context)
+                                                        startActionRequestScheduleExactAlarm()
                                                     }
                                                 }
                                             }
@@ -353,7 +371,7 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     AlarmScreen(
-                                        uiState = uiState,
+                                        uiState = alarmUiState,
                                         onAdd = alarmViewModel::onAdd,
                                         onEdit = alarmViewModel::onEdit,
                                         onSort = alarmViewModel::onSort,
@@ -371,7 +389,7 @@ class MainActivity : ComponentActivity() {
                                     })
                                 ) {
                                     val editAlarmViewModel: EditAlarmViewModel = hiltViewModel()
-                                    val uiState by editAlarmViewModel.uiState.collectAsState()
+                                    val editAlarmUiState by editAlarmViewModel.uiState.collectAsState()
 
                                     val lifecycle = LocalLifecycleOwner.current
                                     LaunchedEffect(key1 = lifecycle) {
@@ -383,7 +401,7 @@ class MainActivity : ComponentActivity() {
                                                     }
 
                                                     EditAlarmViewModel.EditAlarmAction.RequestSchedulePermission -> {
-                                                        startActionRequestScheduleExactAlarm(context)
+                                                        startActionRequestScheduleExactAlarm()
                                                     }
                                                 }
                                             }
@@ -391,7 +409,7 @@ class MainActivity : ComponentActivity() {
                                     }
 
                                     EditAlarmScreen(
-                                        uiState = uiState,
+                                        uiState = editAlarmUiState,
                                         onSelectionAllChanged = editAlarmViewModel::onSelectionAllChanged,
                                         onSelectionChanged = editAlarmViewModel::onSelectionChanged,
                                         onTurnOn = editAlarmViewModel::onTurnOn,
@@ -412,14 +430,25 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        //todo: Create view that display permission dialogs and passed content like screens and support dialog actions
                         with(uiState) {
                             if (displayNotificationPermissionDialog) {
-                                // TODO: continue implementation '
+                                PermissionDialog(
+                                    stringResource(strings.dialog_permission_post_notification),
+                                    onRequestPermission = mainViewModel::onRequestNotificationPermission,
+                                    onDismiss = mainViewModel::onDismissNotificationPermission
+                                )
                             }
 
                             if (displaySystemSettingsDialog) {
-
+                                ShortInfoDialog(
+                                    stringResource(strings.dialog_short_info_default),
+                                    stringResource(strings.open_app_settings),
+                                    onAction = {
+                                        mainViewModel.onDismissShortInfoDialog()
+                                        startActionApplicationSettings()
+                                    },
+                                    onDismiss = mainViewModel::onDismissShortInfoDialog
+                                )
                             }
                         }
 
@@ -438,7 +467,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startActionRequestScheduleExactAlarm(context: Context) = with(context) {
+    private fun startActionRequestScheduleExactAlarm() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             startActivity(
                 Intent(
@@ -447,4 +476,23 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
+    private fun startActionApplicationSettings() {
+        startActivity(
+            Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.fromParts("package", getPackageName(), null)
+            ).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        )
+    }
+
+    private fun runPermission(onGranted: () -> Unit, onDenied: () -> Unit, permission: String) {
+        onPermissionGranted = onGranted
+        onPermissionDenied = onDenied
+        requestPermissionLauncher.launch(permission)
+    }
+
+
 }
