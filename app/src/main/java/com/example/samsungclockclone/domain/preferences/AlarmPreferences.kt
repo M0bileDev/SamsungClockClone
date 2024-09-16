@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmPreferences {
 
     suspend fun saveAlarmOrder(alarmOrder: AlarmOrder)
-    suspend fun collectAlarmOrder(): Flow<AlarmOrder>
+    fun collectAlarmOrder(): Flow<AlarmOrder>
 }
