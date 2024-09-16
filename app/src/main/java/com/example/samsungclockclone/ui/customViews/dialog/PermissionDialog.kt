@@ -85,45 +85,8 @@ fun PermissionDialog(
 private fun PermissionDialogPreview() {
     SamsungClockCloneTheme {
         PermissionDialog(
-            dialogText = "Permission to display notification is mandatory for core functionality.\n\nIt will provide information of ongoing alarms.\n\nBy default this permission is denied.\nDo you want to grant this permission?",
+            dialogText = "Permission dialog text",
             onRequestPermission = {},
             onDismiss = {})
-    }
-}
-
-@Composable
-fun ShortInfoDialog(
-    dialogText: String,
-    onDismiss: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(16.dp)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(text = dialogText)
-                Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onClick = onDismiss
-                ) {
-                    Text(text = "OK")
-                }
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun PermissionDeniedDialogPreview() {
-    SamsungClockCloneTheme {
-        ShortInfoDialog(
-            dialogText = "You can always change application permissions in system settings.",
-            onDismiss = {}
-        )
     }
 }
