@@ -222,7 +222,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
 
-                        val mainViewModel: MainViewModel by viewModels()
+                        val mainViewModel: MainViewModel = hiltViewModel()
                         val uiState by mainViewModel.uiState.collectAsState()
 
                         Scaffold(
@@ -346,7 +346,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable(Screens.Alarm.route) {
-                                    val alarmViewModel: AlarmViewModel by viewModels()
+                                    val alarmViewModel: AlarmViewModel = hiltViewModel()
                                     val alarmUiState by alarmViewModel.uiState.collectAsState()
 
                                     val lifecycle = LocalLifecycleOwner.current
