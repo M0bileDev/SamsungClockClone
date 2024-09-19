@@ -4,6 +4,8 @@ import com.example.samsungclockclone.data.local.dialog.DialogListenerImpl
 import com.example.samsungclockclone.data.local.permissions.PermissionsListenerImpl
 import com.example.samsungclockclone.data.local.preferences.AlarmPreferencesImpl
 import com.example.samsungclockclone.data.local.preferences.SelectionPreferencesImpl
+import com.example.samsungclockclone.domain.notification.NotificationBuilder
+import com.example.samsungclockclone.data.notification.NotificationBuilderImpl
 import com.example.samsungclockclone.data.scheduler.AlarmSchedulerImpl
 import com.example.samsungclockclone.data.ticker.TimeTickerImpl
 import com.example.samsungclockclone.domain.dialog.DialogListener
@@ -38,4 +40,7 @@ abstract class ApplicationModuleBinder {
 
     @[Binds Singleton]
     abstract fun bindPermissionsListener(permissionsListener: PermissionsListenerImpl): PermissionsListener
+
+    @[Binds Singleton]
+    abstract fun bindNotificationBuilder(notificationBuilder: NotificationBuilderImpl): NotificationBuilder
 }
