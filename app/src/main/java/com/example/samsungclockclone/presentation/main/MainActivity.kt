@@ -2,18 +2,13 @@
 
 package com.example.samsungclockclone.presentation.main
 
-import android.Manifest
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -48,11 +42,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.samsungclockclone.data.receiver.TimeTickReceiver
-import com.example.samsungclockclone.domain.dialog.DialogListener
-import com.example.samsungclockclone.domain.permissions.PermissionsListener
-import com.example.samsungclockclone.domain.preferences.SelectionPreferences
-import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.navigation.NavigationUtils
 import com.example.samsungclockclone.navigation.Screens
 import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
@@ -67,143 +56,17 @@ import com.example.samsungclockclone.ui.customViews.dialog.PermissionDialog
 import com.example.samsungclockclone.ui.customViews.dialog.ShortInfoDialog
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.strings
-import com.example.samsungclockclone.usecase.UpdateAlarmMangersUseCase
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var updateAlarmMangersJob: Job? = null
-    private val updateAlarmMangersCoroutineScope = CoroutineScope(Dispatchers.Default)
-
-    private var userSelectionJob: Job? = null
-    private val userSelectionCoroutineScope = CoroutineScope(Dispatchers.Default)
-
-    private var permissionListenerJob: Job? = null
-    private val permissionListenerCoroutineScope = CoroutineScope(Dispatchers.Default)
-
-    @Inject
-    lateinit var timeTicker: TimeTicker
-
-    @Inject
-    lateinit var updateAlarmMangersUseCase: UpdateAlarmMangersUseCase
-
-    @Inject
-    lateinit var selectionPreferences: SelectionPreferences
-
-    @Inject
-    lateinit var dialogListener: DialogListener
-
-    @Inject
-    lateinit var permissionsListener: PermissionsListener
-
-    private val timeTickReceiver = TimeTickReceiver()
-
-    private var onPermissionGranted: () -> Unit = {}
-    private var onPermissionDenied: () -> Unit = {}
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                onPermissionGranted()
-            } else {
-                onPermissionDenied()
-            }
-        }
-
-    override fun onResume() {
-        super.onResume()
-        updateAlarmMangersJob?.cancel()
-        updateAlarmMangersJob = updateAlarmMangersCoroutineScope.launch {
-            updateAlarmMangersUseCase(this)
-        }
-        registerReceiver(timeTickReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unregisterReceiver(timeTickReceiver)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        timeTicker.onDestroy()
-        updateAlarmMangersJob?.cancel()
-        userSelectionJob?.cancel()
-        permissionListenerJob?.cancel()
-        requestPermissionLauncher.unregister()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        permissionListenerJob?.cancel()
-        permissionListenerJob = permissionListenerCoroutineScope.launch {
-            permissionsListener.collectPermissionPostNotification().collectLatest {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    runPermission(
-                        onGranted = {
-                            // No-op
-                        },
-                        onDenied = {
-                            this.launch {
-                                dialogListener.changedVisibilityShortInfoDialog(true)
-                            }
-                        },
-                        permission = Manifest.permission.POST_NOTIFICATIONS
-                    )
-                }
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            userSelectionJob?.cancel()
-            userSelectionJob = userSelectionCoroutineScope.launch {
-                println("LOGS userSelectionCoroutineScope LAUNCH")
-                val notificationPermissionAskAgainEnabled =
-                    selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
-                withContext(Dispatchers.Main) {
-
-                    if (notificationPermissionAskAgainEnabled) {
-                        when {
-                            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> {
-                                //no-op
-                            }
-
-                            ActivityCompat.shouldShowRequestPermissionRationale(
-                                this@MainActivity, Manifest.permission.POST_NOTIFICATIONS
-                            ) -> {
-                                withContext(Dispatchers.Default) {
-                                    dialogListener.changedVisibilityPermissionPostNotificationDialog(
-                                        true
-                                    )
-                                }
-                            }
-
-                            else -> withContext(Dispatchers.Default) {
-                                dialogListener.changedVisibilityPermissionPostNotificationDialog(
-                                    true
-                                )
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-
         runSamsungClockCloneApplication()
     }
 
@@ -222,7 +85,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
 
-                        val mainViewModel: MainViewModel by viewModels()
+                        val mainViewModel: MainViewModel = hiltViewModel()
                         val uiState by mainViewModel.uiState.collectAsState()
 
                         Scaffold(
@@ -346,7 +209,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable(Screens.Alarm.route) {
-                                    val alarmViewModel: AlarmViewModel by viewModels()
+                                    val alarmViewModel: AlarmViewModel = hiltViewModel()
                                     val alarmUiState by alarmViewModel.uiState.collectAsState()
 
                                     val lifecycle = LocalLifecycleOwner.current
@@ -486,12 +349,6 @@ class MainActivity : ComponentActivity() {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
         )
-    }
-
-    private fun runPermission(onGranted: () -> Unit, onDenied: () -> Unit, permission: String) {
-        onPermissionGranted = onGranted
-        onPermissionDenied = onDenied
-        requestPermissionLauncher.launch(permission)
     }
 
 
