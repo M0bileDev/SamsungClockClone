@@ -3,13 +3,24 @@ package com.example.samsungclockclone.data.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.samsungclockclone.domain.notification.NotificationBuilder
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-const val ALARM_ID_KEY = "ALARM_ID"
-
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
+    @Inject
+    lateinit var notificationBuilder: NotificationBuilder
+
     override fun onReceive(context: Context?, intent: Intent?) {
-        println("LOGS alarm received")
-//        TODO("Not yet implemented")
+        val alarmId = intent?.getLongExtra(ALARM_ID, -1L) ?: -1L
+        if (alarmId == -1L) return
+
+        notificationBuilder.sendAlarmNotification(alarmId)
+    }
+
+    companion object {
+        const val ALARM_ID = "ALARM_ID"
     }
 }
