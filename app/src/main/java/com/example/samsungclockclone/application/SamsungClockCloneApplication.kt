@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import com.example.samsungclockclone.data.receiver.TimeTickReceiver
 import com.example.samsungclockclone.domain.dialog.DialogListener
+import com.example.samsungclockclone.domain.notification.NotificationBuilder
 import com.example.samsungclockclone.domain.permissions.PermissionsListener
 import com.example.samsungclockclone.domain.preferences.SelectionPreferences
 import com.example.samsungclockclone.domain.ticker.TimeTicker
@@ -46,6 +47,9 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
 
     @Inject
     lateinit var permissionsListener: PermissionsListener
+
+    @Inject
+    lateinit var notificationBuilder: NotificationBuilder
 
     private val timeTickReceiver = TimeTickReceiver()
 
@@ -81,6 +85,7 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
 
         startPostNotificationPermissionListener()
         startPostNotificationPermissionManager(activity)
+        notificationBuilder.createAlarmNotificationChannel()
     }
 
     private fun startPostNotificationPermissionListener() {
