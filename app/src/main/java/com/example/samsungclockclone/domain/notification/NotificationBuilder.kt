@@ -1,11 +1,12 @@
 package com.example.samsungclockclone.domain.notification
 
-import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.utils.NotificationId
+
 
 interface NotificationBuilder {
     fun createAlarmNotificationChannel()
 
-    fun sendAlarmNotification(id: AlarmId, description: String = "")
+    fun sendAlarmNotification(id: NotificationId, description: String = "")
 
-    fun cancelAlarmNotification(id: AlarmId)
+    fun cancelAlarmNotification(id: NotificationId)
 }
