@@ -26,7 +26,6 @@ class NotificationBuilderImpl @Inject constructor(
 
     companion object {
         const val ALARM_CHANNEL_ID = "ALARM_CHANNEL_ID"
-        const val DISMISS_ALARM_REQUEST_CODE = 0
     }
 
     override fun createAlarmNotificationChannel() = with(context) {
@@ -48,7 +47,8 @@ class NotificationBuilderImpl @Inject constructor(
         val pendingIntentDismissAlarm =
             PendingIntent.getBroadcast(
                 this,
-                DISMISS_ALARM_REQUEST_CODE,
+                //unique notification id
+                id.toInt(),
                 intentDismissAlarm,
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -59,6 +59,8 @@ class NotificationBuilderImpl @Inject constructor(
             .setContentText(description)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setOngoing(true)
+            .setAutoCancel(false)
             .addAction(
                 drawables.ic_alarm_off,
                 getString(strings.dismiss),
@@ -70,7 +72,8 @@ class NotificationBuilderImpl @Inject constructor(
 
     override fun cancelAlarmNotification(id: AlarmId) = notificationManager.cancel(id.toInt())
 
-    //TODO create notification channel during app startup
     //TODO start an activity from notification
+    //TODO playing ringtone or vibration
+    //todo add logic to cancel alarm and notification when user dismiss notification
     //TODO create notification group
 }
