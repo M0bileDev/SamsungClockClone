@@ -31,6 +31,8 @@
 
         <receiver android:name=".data.receiver.AlarmReceiver" />
 
+        <receiver android:name=".data.receiver.AlarmDismissReceiver"/>
+
         <!-- This broadcast receiver should be updated in MainActivity but there is a bug
         (Intent.ACTION_TIME_CHANGED) which causes event is not received -->
         <receiver
