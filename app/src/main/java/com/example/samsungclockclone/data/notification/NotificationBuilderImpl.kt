@@ -11,6 +11,7 @@ import com.example.samsungclockclone.data.receiver.AlarmDismissReceiver
 import com.example.samsungclockclone.data.receiver.AlarmDismissReceiver.Companion.NOTIFICATION_ID
 import com.example.samsungclockclone.domain.notification.NotificationBuilder
 import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.utils.NotificationId
 import com.example.samsungclockclone.ui.utils.drawables
 import com.example.samsungclockclone.ui.utils.strings
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -38,7 +39,7 @@ class NotificationBuilderImpl @Inject constructor(
         notificationManager.createNotificationChannel(alarmChannel)
     }
 
-    override fun sendAlarmNotification(id: AlarmId, description: String) = with(context) {
+    override fun sendAlarmNotification(id: NotificationId, description: String) = with(context) {
 
         val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
             putExtra(NOTIFICATION_ID, id)
@@ -69,7 +70,7 @@ class NotificationBuilderImpl @Inject constructor(
 
     override fun cancelAlarmNotification(id: AlarmId) = notificationManager.cancel(id.toInt())
 
-    //TODO start an activity from notification
     //TODO create notification channel during app startup
+    //TODO start an activity from notification
     //TODO create notification group
 }
