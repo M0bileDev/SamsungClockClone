@@ -42,8 +42,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.samsungclockclone.navigation.NavigationUtils
-import com.example.samsungclockclone.navigation.Screens
+import com.example.samsungclockclone.framework.utils.NavigationUtils
+import com.example.samsungclockclone.framework.utils.Screens
 import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.screens.alarm.AlarmScreen
@@ -344,7 +344,7 @@ class MainActivity : ComponentActivity() {
         startActivity(
             Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", getPackageName(), null)
+                Uri.fromParts("package", packageName, null)
             ).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
