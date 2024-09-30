@@ -4,8 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.samsungclockclone.data.receiver.ALARM_ID_KEY
 import com.example.samsungclockclone.data.receiver.AlarmReceiver
+import com.example.samsungclockclone.data.receiver.AlarmReceiver.Companion.ALARM_ID
 import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
@@ -27,9 +27,9 @@ class AlarmSchedulerImpl @Inject constructor(
             onPermissionGranted = {
                 alarmIdMillisecondsPairs.forEach { alarm ->
                     val intent = Intent(context, AlarmReceiver::class.java).apply {
-                        putExtra(ALARM_ID_KEY, alarm.first)
+                        putExtra(ALARM_ID, alarm.first)
                     }
-                    val broadcastReceiver = PendingIntent.getBroadcast(
+                    val pendingIntentAlarm = PendingIntent.getBroadcast(
                         context,
                         //unique alarm entity id
                         alarm.first.toInt(),
@@ -38,11 +38,11 @@ class AlarmSchedulerImpl @Inject constructor(
                     )
                     val alarmClockInfo = AlarmManager.AlarmClockInfo(
                         alarm.second,
-                        broadcastReceiver
+                        pendingIntentAlarm
                     )
                     alarmManager.setAlarmClock(
                         alarmClockInfo,
-                        broadcastReceiver
+                        pendingIntentAlarm
                     )
                 }.run {
                     onScheduleCompleted()

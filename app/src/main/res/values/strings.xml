@@ -90,4 +90,6 @@
     <string name="dialog_short_info_default">You can always change permissions in app settings.</string>
     <string name="open_app_settings">Open app settings</string>
 
+    <string name="notification_name_alarm_and_timer">Alarm and timer alerts</string>
+    <string name="notification_description_name_alarm_and_timer">Provide notifications for ongoing alerts.</string>
 </resources>
