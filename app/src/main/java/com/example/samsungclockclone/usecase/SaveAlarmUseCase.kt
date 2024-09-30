@@ -1,6 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SaveAlarmUseCase @Inject constructor(
-    private val alarmDao: AlarmDao,
+    private val databaseSource: DatabaseSource,
     private val alarmScheduler: AlarmScheduler,
     private val alarmManager: AlarmManager
 ) {
@@ -44,7 +45,7 @@ class SaveAlarmUseCase @Inject constructor(
                         name = alarmName,
                         enable = true
                     )
-                    val alarmId = alarmDao.insertAlarmUpdateOrder(alarmEntity)
+                    val alarmId = databaseSource.insertAlarmUpdateOrder(alarmEntity)
 
                     val alarmRepeat = alarmMode.toAlarmRepeat()
                     val entities: List<AlarmManagerEntity> =
@@ -72,7 +73,7 @@ class SaveAlarmUseCase @Inject constructor(
                             }
                         }
 
-                    val idMillisecondsPairs = alarmDao.insertAlarmMangers(entities)
+                    val idMillisecondsPairs = databaseSource.insertAlarmMangers(entities)
 
                     alarmScheduler.schedule(
                         idMillisecondsPairs,

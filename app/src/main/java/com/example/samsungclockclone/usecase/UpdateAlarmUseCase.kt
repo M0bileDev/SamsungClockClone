@@ -1,14 +1,14 @@
 package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
-import com.example.samsungclockclone.data.local.dao.AlarmDao
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.domain.ext.toAlarmRepeat
-import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
-import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.framework.ext.suspendCheckPermission
+import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UpdateAlarmUseCase @Inject constructor(
-    private val alarmDao: AlarmDao,
+    private val databaseSource: DatabaseSource,
     private val alarmScheduler: AlarmScheduler,
     private val alarmManager: AlarmManager
 ) {
@@ -40,14 +40,14 @@ class UpdateAlarmUseCase @Inject constructor(
                 this,
                 onPermissionGranted = {
 
-                    alarmDao.updateAlarmMode(alarmId, alarmMode)
+                    databaseSource.updateAlarmMode(alarmId, alarmMode)
 
-                    val alarmManagers = alarmDao.getAlarmManagersById(alarmId)
+                    val alarmManagers = databaseSource.getAlarmManagersById(alarmId)
                     alarmManagers.forEach { alarmManager ->
                         alarmScheduler.cancel(alarmManager.uniqueId)
                     }
 
-                    alarmDao.deleteAlarmManagerById(alarmId)
+                    databaseSource.deleteAlarmManagerById(alarmId)
 
                     val alarmRepeat = alarmMode.toAlarmRepeat()
                     val entities: List<AlarmManagerEntity> =
@@ -75,7 +75,7 @@ class UpdateAlarmUseCase @Inject constructor(
                             }
                         }
 
-                    val idMillisecondsPairs = alarmDao.insertAlarmMangers(entities)
+                    val idMillisecondsPairs = databaseSource.insertAlarmMangers(entities)
                     alarmScheduler.schedule(
                         idMillisecondsPairs,
                         onScheduleCompleted = onScheduleCompleted,

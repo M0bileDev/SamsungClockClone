@@ -1,6 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TurnOnAlarmUseCase @Inject constructor(
-    private val alarmDao: AlarmDao,
+    private val databaseSource: DatabaseSource,
     private val alarmScheduler: AlarmScheduler,
     private val alarmManager: AlarmManager
 ) {
@@ -31,9 +32,9 @@ class TurnOnAlarmUseCase @Inject constructor(
             alarmManager.suspendCheckPermission(
                 this,
                 onPermissionGranted = {
-                    val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
+                    val (alarm, alarmManagers) = databaseSource.getAlarmAndAlarmManagersById(alarmId)
                     val updatedAlarm = alarm.copy(enable = true)
-                    alarmDao.updateAlarm(updatedAlarm)
+                    databaseSource.updateAlarm(updatedAlarm)
 
                     val idMillisecondsPairs =
                         alarmManagers.map { it.uniqueId to it.fireTime }

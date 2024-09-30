@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.usecase
 
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.AlarmMode
@@ -15,7 +16,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class GetAlarmItemsUseCase @Inject constructor(
-    private val alarmDao: AlarmDao
+    private val databaseSource: DatabaseSource
 ) {
 
     private val calendar = Calendar.getInstance()
@@ -28,7 +29,7 @@ class GetAlarmItemsUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            alarmDao.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
+            databaseSource.collectAllAlarmAndAlarmManagers().collectLatest { alarms ->
                 val mappedAlarms = alarms.map { alarmWithAlarmManager ->
                     val firstFireTime = if (alarmWithAlarmManager.alarmMangerEntityList.isEmpty()) {
                         0L

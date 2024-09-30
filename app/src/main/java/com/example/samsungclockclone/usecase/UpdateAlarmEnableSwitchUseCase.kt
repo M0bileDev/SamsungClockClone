@@ -1,6 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UpdateAlarmEnableSwitchUseCase @Inject constructor(
-    private val alarmDao: AlarmDao,
+    private val databaseSource: DatabaseSource,
     private val alarmScheduler: AlarmScheduler,
     private val alarmManager: AlarmManager
 ) {
@@ -30,7 +31,7 @@ class UpdateAlarmEnableSwitchUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
+            val (alarm, alarmManagers) = databaseSource.getAlarmAndAlarmManagersById(alarmId)
             val enableAlarm = !alarm.enable
 
             when (enableAlarm) {
@@ -47,7 +48,7 @@ class UpdateAlarmEnableSwitchUseCase @Inject constructor(
                             )
 
                             val updatedAlarm = alarm.copy(enable = true)
-                            alarmDao.updateAlarm(updatedAlarm)
+                            databaseSource.updateAlarm(updatedAlarm)
                         },
                         onPermissionDenied = onScheduleDenied
                     )
@@ -61,7 +62,7 @@ class UpdateAlarmEnableSwitchUseCase @Inject constructor(
                         }
 
                     val updatedAlarm = alarm.copy(enable = false)
-                    alarmDao.updateAlarm(updatedAlarm)
+                    databaseSource.updateAlarm(updatedAlarm)
                 }
             }
         }

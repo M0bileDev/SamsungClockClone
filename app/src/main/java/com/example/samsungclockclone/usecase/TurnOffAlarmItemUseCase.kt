@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.usecase
 
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TurnOffAlarmItemUseCase @Inject constructor(
-    private val alarmDao: AlarmDao,
+    private val databaseSource: DatabaseSource,
     private val alarmScheduler: AlarmScheduler
 ) {
 
@@ -24,9 +25,9 @@ class TurnOffAlarmItemUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            val (alarm, alarmManagers) = alarmDao.getAlarmAndAlarmManagersById(alarmId)
+            val (alarm, alarmManagers) = databaseSource.getAlarmAndAlarmManagersById(alarmId)
             val updatedAlarm = alarm.copy(enable = false)
-            alarmDao.updateAlarm(updatedAlarm)
+            databaseSource.updateAlarm(updatedAlarm)
 
             alarmManagers
                 .map { it.uniqueId }
