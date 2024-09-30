@@ -4,7 +4,7 @@ import com.google.common.truth.Truth
 import org.junit.Assert
 import org.junit.Test
 
-class TimeUtilsKtTest {
+class TimeKtTest {
 
     @Test
     fun `given hour value 0, when time format is HOUR, then value is 01`() {
