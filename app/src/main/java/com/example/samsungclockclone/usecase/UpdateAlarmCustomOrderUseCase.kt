@@ -1,8 +1,9 @@
 package com.example.samsungclockclone.usecase
 
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.presentation.customs.dragAndDrop.Index
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,8 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UpdateAlarmCustomOrderUseCase @Inject constructor(
-    private val alarmDao: AlarmDao
-) {
+    private val databaseSource: DatabaseSource
+    ) {
 
     suspend operator fun invoke(
         pairAlarmIdCustomOrderList: List<Pair<AlarmId, Index>>,
@@ -23,7 +24,7 @@ class UpdateAlarmCustomOrderUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            alarmDao.updateAlarmCustomOrderList(pairAlarmIdCustomOrderList)
+            databaseSource.updateAlarmCustomOrderList(pairAlarmIdCustomOrderList)
         }
     }
 }

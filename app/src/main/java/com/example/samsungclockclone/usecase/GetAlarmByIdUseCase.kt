@@ -1,8 +1,9 @@
 package com.example.samsungclockclone.usecase
 
+import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
-import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GetAlarmByIdUseCase @Inject constructor(
-    private val alarmDao: AlarmDao
+    private val databaseSource: DatabaseSource
 ) {
 
     suspend operator fun invoke(
@@ -24,7 +25,7 @@ class GetAlarmByIdUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            val data = alarmDao.getAlarmAndAlarmManagersById(alarmId)
+            val data = databaseSource.getAlarmAndAlarmManagersById(alarmId)
             onDataCompleted(data)
         }
     }

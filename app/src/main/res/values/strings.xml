@@ -92,4 +92,5 @@
 
     <string name="notification_name_alarm_and_timer">Alarm and timer alerts</string>
     <string name="notification_description_name_alarm_and_timer">Provide notifications for ongoing alerts.</string>
+    <string name="unknownname">unknownName</string>
 </resources>

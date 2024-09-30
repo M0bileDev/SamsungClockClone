@@ -42,20 +42,20 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.samsungclockclone.navigation.NavigationUtils
-import com.example.samsungclockclone.navigation.Screens
-import com.example.samsungclockclone.presentation.addAlarm.AddAlarmScreen
-import com.example.samsungclockclone.presentation.addAlarm.AddAlarmViewModel
-import com.example.samsungclockclone.presentation.alarm.AlarmScreen
-import com.example.samsungclockclone.presentation.alarm.AlarmViewModel
-import com.example.samsungclockclone.presentation.editAlarm.EditAlarmScreen
-import com.example.samsungclockclone.presentation.editAlarm.EditAlarmViewModel
-import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
-import com.example.samsungclockclone.ui.customModifier.drawUnderline
-import com.example.samsungclockclone.ui.customViews.dialog.PermissionDialog
-import com.example.samsungclockclone.ui.customViews.dialog.ShortInfoDialog
-import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
-import com.example.samsungclockclone.ui.utils.strings
+import com.example.samsungclockclone.framework.utils.NavigationUtils
+import com.example.samsungclockclone.framework.utils.Screens
+import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmScreen
+import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmViewModel
+import com.example.samsungclockclone.presentation.screens.alarm.AlarmScreen
+import com.example.samsungclockclone.presentation.screens.alarm.AlarmViewModel
+import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmScreen
+import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmViewModel
+import com.example.samsungclockclone.presentation.screens.editAlarm.utils.ALARM_ID_KEY
+import com.example.samsungclockclone.presentation.utils.drawUnderline
+import com.example.samsungclockclone.presentation.dialog.PermissionDialog
+import com.example.samsungclockclone.presentation.dialog.ShortInfoDialog
+import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.framework.utils.strings
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDateTime
@@ -344,7 +344,7 @@ class MainActivity : ComponentActivity() {
         startActivity(
             Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", getPackageName(), null)
+                Uri.fromParts("package", packageName, null)
             ).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

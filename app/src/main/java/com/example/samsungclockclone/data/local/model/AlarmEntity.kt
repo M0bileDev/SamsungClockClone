@@ -2,7 +2,7 @@ package com.example.samsungclockclone.data.local.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.samsungclockclone.domain.utils.AlarmMode
+import com.example.samsungclockclone.domain.model.AlarmMode
 
 @Entity(tableName = "alarm_table")
 data class AlarmEntity(

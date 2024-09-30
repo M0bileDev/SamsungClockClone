@@ -9,10 +9,10 @@ import androidx.room.Update
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
-import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.domain.utils.AlarmMilliseconds
-import com.example.samsungclockclone.domain.utils.AlarmMode
-import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmMilliseconds
+import com.example.samsungclockclone.domain.model.AlarmMode
+import com.example.samsungclockclone.presentation.customs.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
 
 @Dao
