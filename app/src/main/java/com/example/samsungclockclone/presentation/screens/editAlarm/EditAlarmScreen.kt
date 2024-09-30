@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.samsungclockclone.presentation.editAlarm
+package com.example.samsungclockclone.presentation.screens.editAlarm
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,9 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.R
 import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview
-import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
-import com.example.samsungclockclone.presentation.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview3
+import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview
+import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview2
+import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmUiState.Companion.editAlarmUiStatePreview3
 import com.example.samsungclockclone.ui.customViews.EditAlarmItemCard
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.DragAndDropLazyColumn
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index

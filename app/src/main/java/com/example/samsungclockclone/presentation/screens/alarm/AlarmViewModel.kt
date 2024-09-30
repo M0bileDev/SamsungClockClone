@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.alarm
+package com.example.samsungclockclone.presentation.screens.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,8 +10,8 @@ import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.ticker.TimeTicker
 import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.presentation.alarm.utils.AddAlarmMode
-import com.example.samsungclockclone.presentation.alarm.utils.EditAlarmMode
+import com.example.samsungclockclone.presentation.screens.alarm.utils.AddAlarmMode
+import com.example.samsungclockclone.presentation.screens.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
 import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmEnableSwitchUseCase

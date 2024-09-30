@@ -56,10 +56,10 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
     private var updateAlarmMangersJob: Job? = null
     private val updateAlarmMangersCoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private var userSelectionJob: Job? = null
+    private var postNotificationPermissionManagerJob: Job? = null
     private val userSelectionCoroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private var permissionListenerJob: Job? = null
+    private var postNotificationPermissionJob: Job? = null
     private val permissionListenerCoroutineScope = CoroutineScope(Dispatchers.Default)
 
     private var onPermissionGranted: () -> Unit = {}
@@ -89,8 +89,8 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     private fun startPostNotificationPermissionListener() {
-        permissionListenerJob?.cancel()
-        permissionListenerJob = permissionListenerCoroutineScope.launch {
+        postNotificationPermissionJob?.cancel()
+        postNotificationPermissionJob = permissionListenerCoroutineScope.launch {
             permissionsListener.collectPermissionPostNotification().collectLatest {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     runPermission(
@@ -117,8 +117,8 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
 
     private fun startPostNotificationPermissionManager(activity: Activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            userSelectionJob?.cancel()
-            userSelectionJob = userSelectionCoroutineScope.launch {
+            postNotificationPermissionManagerJob?.cancel()
+            postNotificationPermissionManagerJob = userSelectionCoroutineScope.launch {
                 val notificationPermissionAskAgainEnabled =
                     selectionPreferences.collectNotificationPermissionAskAgainEnabled().first()
                 withContext(Dispatchers.Main) {
@@ -177,8 +177,8 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        userSelectionJob?.cancel()
-        permissionListenerJob?.cancel()
+        postNotificationPermissionManagerJob?.cancel()
+        postNotificationPermissionJob?.cancel()
         updateAlarmMangersJob?.cancel()
         timeTicker.onDestroy()
         requestPermissionLauncher.unregister()

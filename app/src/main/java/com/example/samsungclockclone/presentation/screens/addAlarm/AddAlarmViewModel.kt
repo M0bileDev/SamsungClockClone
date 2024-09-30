@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.addAlarm
+package com.example.samsungclockclone.presentation.screens.addAlarm
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,8 +10,8 @@ import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.domain.utils.DayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.convertCalendarDayOfWeekToDayOfWeek
 import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.differenceBetweenPresentAndAlarmDay
-import com.example.samsungclockclone.presentation.addAlarm.utils.AddAlarmStringType
-import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AddAlarmStringType
+import com.example.samsungclockclone.presentation.screens.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
 import com.example.samsungclockclone.usecase.GetAlarmByIdUseCase
 import com.example.samsungclockclone.usecase.SaveAlarmUseCase

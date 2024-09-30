@@ -29,7 +29,7 @@ import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
 import com.example.samsungclockclone.domain.utils.AlarmId
 import com.example.samsungclockclone.domain.utils.AlarmMode
 import com.example.samsungclockclone.ext.toDate
-import com.example.samsungclockclone.presentation.addAlarm.utils.toNameResourceList
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toNameResourceList
 import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.ui.utils.HOURS_MINUTES
 import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH

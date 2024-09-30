@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.editAlarm
+package com.example.samsungclockclone.presentation.screens.editAlarm
 
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem

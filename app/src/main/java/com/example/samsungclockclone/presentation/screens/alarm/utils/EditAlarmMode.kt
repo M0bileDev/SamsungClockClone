@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.alarm.utils
+package com.example.samsungclockclone.presentation.screens.alarm.utils
 
 import com.example.samsungclockclone.domain.utils.AlarmId
 

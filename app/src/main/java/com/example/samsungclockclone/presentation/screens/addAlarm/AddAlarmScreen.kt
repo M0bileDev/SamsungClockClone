@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.samsungclockclone.presentation.addAlarm
+package com.example.samsungclockclone.presentation.screens.addAlarm
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -45,10 +45,10 @@ import androidx.compose.ui.unit.sp
 import com.example.samsungclockclone.R
 import com.example.samsungclockclone.data.utils.TimeFormat
 import com.example.samsungclockclone.domain.utils.DayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.addAlarmUiStatePreview
-import com.example.samsungclockclone.presentation.addAlarm.utils.toDayOfWeek
-import com.example.samsungclockclone.presentation.addAlarm.utils.toNameResourceList
-import com.example.samsungclockclone.presentation.addAlarm.utils.toStringResource
+import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.addAlarmUiStatePreview
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toDayOfWeek
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toNameResourceList
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toStringResource
 import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
 import com.example.samsungclockclone.ui.customViews.SectionSwitch
 import com.example.samsungclockclone.ui.customViews.SwipeableClock

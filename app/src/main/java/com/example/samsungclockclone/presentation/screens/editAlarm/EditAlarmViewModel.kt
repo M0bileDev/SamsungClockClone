@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.editAlarm
+package com.example.samsungclockclone.presentation.screens.editAlarm
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,7 +7,7 @@ import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.EditAlarmItem
 import com.example.samsungclockclone.domain.preferences.AlarmPreferences
 import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.presentation.editAlarm.utils.ALARM_ID_KEY
+import com.example.samsungclockclone.presentation.screens.editAlarm.utils.ALARM_ID_KEY
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
 import com.example.samsungclockclone.ui.customViews.dragAndDrop.ext.move
 import com.example.samsungclockclone.usecase.DeleteAlarmUseCase

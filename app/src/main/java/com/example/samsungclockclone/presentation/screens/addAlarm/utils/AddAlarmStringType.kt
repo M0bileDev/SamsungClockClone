@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.addAlarm.utils
+package com.example.samsungclockclone.presentation.screens.addAlarm.utils
 
 enum class AddAlarmStringType {
     TodayX,

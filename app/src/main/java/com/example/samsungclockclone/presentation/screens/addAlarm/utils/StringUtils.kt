@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.addAlarm.utils
+package com.example.samsungclockclone.presentation.screens.addAlarm.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
