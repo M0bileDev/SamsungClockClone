@@ -52,7 +52,7 @@ import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.ext.toDate
-import com.example.samsungclockclone.domain.ext.toStringRes
+import com.example.samsungclockclone.framework.ext.toStringRes
 import com.example.samsungclockclone.presentation.screens.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.screens.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.presentation.customs.AlarmItemCard

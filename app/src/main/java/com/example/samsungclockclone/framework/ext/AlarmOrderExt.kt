@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.domain.ext
+package com.example.samsungclockclone.framework.ext
 
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.framework.utils.strings
