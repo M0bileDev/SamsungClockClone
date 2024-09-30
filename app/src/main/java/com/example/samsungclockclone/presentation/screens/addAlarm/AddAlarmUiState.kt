@@ -1,8 +1,8 @@
 package com.example.samsungclockclone.presentation.screens.addAlarm
 
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
-import com.example.samsungclockclone.domain.utils.DayOfWeek
-import com.example.samsungclockclone.domain.utils.DayOfWeek.DayOfWeekHelper.standardWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek.DayOfWeekHelper.standardWeek
 import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AddAlarmStringType
 
 // TODO: Addd Immutable or Stable annotation, test performance

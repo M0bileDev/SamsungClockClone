@@ -50,16 +50,16 @@ import com.example.samsungclockclone.R
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
-import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.ext.toDate
-import com.example.samsungclockclone.ext.toStringRes
+import com.example.samsungclockclone.domain.ext.toStringRes
 import com.example.samsungclockclone.presentation.screens.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.screens.alarm.utils.EditAlarmMode
-import com.example.samsungclockclone.ui.customViews.AlarmItemCard
-import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
-import com.example.samsungclockclone.ui.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
-import com.example.samsungclockclone.ui.utils.plurals
-import com.example.samsungclockclone.ui.utils.strings
+import com.example.samsungclockclone.presentation.customs.AlarmItemCard
+import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.presentation.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH_HOUR_MINUTE
+import com.example.samsungclockclone.framework.utils.plurals
+import com.example.samsungclockclone.framework.utils.strings
 
 @Composable
 fun AlarmScreen(

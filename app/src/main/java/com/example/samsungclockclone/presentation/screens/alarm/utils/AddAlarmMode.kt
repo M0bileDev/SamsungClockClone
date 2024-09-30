@@ -1,6 +1,6 @@
 package com.example.samsungclockclone.presentation.screens.alarm.utils
 
-import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 
 
 interface AddAlarmMode {

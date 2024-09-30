@@ -44,16 +44,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.samsungclockclone.R
 import com.example.samsungclockclone.data.utils.TimeFormat
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmUiState.AddAlarmUiStateHelper.addAlarmUiStatePreview
 import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toDayOfWeek
 import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toNameResourceList
 import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toStringResource
-import com.example.samsungclockclone.ui.customViews.HorizontalChipGroup
-import com.example.samsungclockclone.ui.customViews.SectionSwitch
-import com.example.samsungclockclone.ui.customViews.SwipeableClock
-import com.example.samsungclockclone.ui.theme.SamsungClockCloneTheme
-import com.example.samsungclockclone.ui.utils.strings
+import com.example.samsungclockclone.presentation.customs.HorizontalChipGroup
+import com.example.samsungclockclone.presentation.customs.SectionSwitch
+import com.example.samsungclockclone.presentation.customs.SwipeableClock
+import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
+import com.example.samsungclockclone.framework.utils.strings
 
 @Composable
 fun AddAlarmScreen(

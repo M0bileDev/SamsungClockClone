@@ -4,11 +4,11 @@ import android.app.AlarmManager
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
-import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
-import com.example.samsungclockclone.domain.utils.AlarmMode
-import com.example.samsungclockclone.domain.utils.DayOfWeek
-import com.example.samsungclockclone.domain.utils.toAlarmRepeat
-import com.example.samsungclockclone.ext.suspendCheckPermission
+import com.example.samsungclockclone.domain.ext.toAlarmRepeat
+import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.domain.model.AlarmMode
+import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.framework.ext.suspendCheckPermission
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

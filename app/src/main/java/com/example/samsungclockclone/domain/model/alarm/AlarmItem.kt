@@ -1,8 +1,8 @@
 package com.example.samsungclockclone.domain.model.alarm
 
-import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.domain.utils.AlarmMode
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.domain.model.AlarmMode
+import com.example.samsungclockclone.domain.model.DayOfWeek
 
 data class AlarmItem(
     val alarmId: AlarmId = 0L,

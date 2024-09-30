@@ -1,8 +1,8 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.ui.customViews.dragAndDrop.Index
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.presentation.customs.dragAndDrop.Index
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

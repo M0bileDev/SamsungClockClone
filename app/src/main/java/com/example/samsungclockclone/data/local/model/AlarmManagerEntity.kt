@@ -3,8 +3,8 @@ package com.example.samsungclockclone.data.local.model
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.samsungclockclone.domain.utils.AlarmRepeat
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.model.AlarmRepeat
+import com.example.samsungclockclone.domain.model.DayOfWeek
 
 @Entity(
     tableName = "alarm_manager_table",

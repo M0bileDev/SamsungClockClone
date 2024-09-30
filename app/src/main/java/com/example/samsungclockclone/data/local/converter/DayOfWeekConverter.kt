@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.data.local.converter
 
 import androidx.room.TypeConverter
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.model.DayOfWeek
 
 class DayOfWeekConverter {
 

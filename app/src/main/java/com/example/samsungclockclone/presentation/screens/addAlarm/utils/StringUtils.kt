@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
 import com.example.samsungclockclone.domain.model.addAlarm.NameResource
-import com.example.samsungclockclone.domain.utils.DayOfWeek
-import com.example.samsungclockclone.ui.utils.strings
+import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.framework.utils.strings
 
 @Composable
 fun AddAlarmString.toStringResource(): String = when (type) {

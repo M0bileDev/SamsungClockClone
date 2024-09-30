@@ -7,9 +7,9 @@ import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
-import com.example.samsungclockclone.domain.preferences.AlarmPreferences
-import com.example.samsungclockclone.domain.ticker.TimeTicker
-import com.example.samsungclockclone.domain.utils.AlarmId
+import com.example.samsungclockclone.framework.preferences.AlarmPreferences
+import com.example.samsungclockclone.framework.ticker.TimeTicker
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.presentation.screens.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.screens.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase

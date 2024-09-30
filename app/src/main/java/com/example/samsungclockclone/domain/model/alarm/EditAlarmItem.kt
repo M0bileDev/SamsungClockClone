@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.domain.model.alarm
 
-import com.example.samsungclockclone.domain.utils.AlarmMode
-import com.example.samsungclockclone.domain.utils.DayOfWeek
+import com.example.samsungclockclone.domain.model.AlarmMode
+import com.example.samsungclockclone.domain.model.DayOfWeek
 
 data class EditAlarmItem(
     val selected: Boolean = false,

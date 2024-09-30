@@ -2,9 +2,9 @@ package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
 import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.domain.scheduler.AlarmScheduler
-import com.example.samsungclockclone.domain.utils.AlarmId
-import com.example.samsungclockclone.ext.suspendCheckPermission
+import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.framework.ext.suspendCheckPermission
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
