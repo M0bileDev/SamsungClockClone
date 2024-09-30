@@ -1,7 +1,6 @@
-package com.example.samsungclockclone.navigation
+package com.example.samsungclockclone.framework.utils
 
 import androidx.annotation.StringRes
-import com.example.samsungclockclone.framework.utils.strings
 
 sealed class Screens(val route: String, @StringRes val name: Int) {
     data object Alarm : Screens("alarm", strings.alarm)
