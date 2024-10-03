@@ -58,7 +58,7 @@ class AlarmSchedulerImpl @Inject constructor(
             context,
             alarmId.toInt(),
             intent,
-            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(
             broadcastReceiver
