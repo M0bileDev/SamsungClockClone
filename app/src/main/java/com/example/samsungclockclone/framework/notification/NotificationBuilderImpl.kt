@@ -7,12 +7,13 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver
-import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver.Companion.NOTIFICATION_ID
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.NotificationId
+import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver
+import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver.Companion.NOTIFICATION_ID
 import com.example.samsungclockclone.framework.utils.drawables
 import com.example.samsungclockclone.framework.utils.strings
+import com.example.samsungclockclone.presentation.main.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class NotificationBuilderImpl @Inject constructor(
 
     companion object {
         const val ALARM_CHANNEL_ID = "ALARM_CHANNEL_ID"
+        const val OPEN_MAIN_ACTIVITY_REQUEST_CODE = 0
     }
 
     override fun createAlarmNotificationChannel() = with(context) {
@@ -42,7 +44,6 @@ class NotificationBuilderImpl @Inject constructor(
         val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
             putExtra(NOTIFICATION_ID, id)
         }
-
         val pendingIntentDismissAlarm =
             PendingIntent.getBroadcast(
                 this,
@@ -52,6 +53,14 @@ class NotificationBuilderImpl @Inject constructor(
                 PendingIntent.FLAG_IMMUTABLE
             )
 
+        val intentOpenMainActivity = Intent(this, MainActivity::class.java)
+        val pendingIntentOpenMainActivity = PendingIntent.getActivity(
+            this,
+            OPEN_MAIN_ACTIVITY_REQUEST_CODE,
+            intentOpenMainActivity,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notificationBuilder = NotificationCompat.Builder(this, ALARM_CHANNEL_ID)
             .setSmallIcon(drawables.ic_launcher_foreground)
             .setContentTitle(getString(strings.app_name))
@@ -60,6 +69,7 @@ class NotificationBuilderImpl @Inject constructor(
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setOngoing(true)
             .setAutoCancel(false)
+            .setContentIntent(pendingIntentOpenMainActivity)
             .addAction(
                 drawables.ic_alarm_off,
                 getString(strings.dismiss),
@@ -71,7 +81,6 @@ class NotificationBuilderImpl @Inject constructor(
 
     override fun cancelAlarmNotification(id: AlarmId) = notificationManager.cancel(id.toInt())
 
-    //TODO start an activity from notification
     //TODO playing ringtone or vibration
     //todo add logic to cancel alarm and notification when user dismiss notification
     //TODO create notification group
