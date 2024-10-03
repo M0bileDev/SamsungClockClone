@@ -14,6 +14,7 @@ import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver.Com
 import com.example.samsungclockclone.framework.utils.drawables
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.main.MainActivity
+import com.example.samsungclockclone.presentation.screens.dismissAlarm.DismissAlarmActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -27,6 +28,7 @@ class NotificationBuilderImpl @Inject constructor(
     companion object {
         const val ALARM_CHANNEL_ID = "ALARM_CHANNEL_ID"
         const val OPEN_MAIN_ACTIVITY_REQUEST_CODE = 0
+        const val OPEN_DISMISS_ALARM_ACTIVITY_REQUEST_CODE = 1
     }
 
     override fun createAlarmNotificationChannel() = with(context) {
@@ -61,6 +63,14 @@ class NotificationBuilderImpl @Inject constructor(
             PendingIntent.FLAG_IMMUTABLE
         )
 
+        val intentFullScreen = Intent(this, DismissAlarmActivity::class.java)
+        val pendingIntentFullScreen = PendingIntent.getActivity(
+            this,
+            OPEN_DISMISS_ALARM_ACTIVITY_REQUEST_CODE,
+            intentFullScreen,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notificationBuilder = NotificationCompat.Builder(this, ALARM_CHANNEL_ID)
             .setSmallIcon(drawables.ic_launcher_foreground)
             .setContentTitle(getString(strings.app_name))
@@ -70,6 +80,8 @@ class NotificationBuilderImpl @Inject constructor(
             .setOngoing(true)
             .setAutoCancel(false)
             .setContentIntent(pendingIntentOpenMainActivity)
+            .setFullScreenIntent(pendingIntentFullScreen, true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(
                 drawables.ic_alarm_off,
                 getString(strings.dismiss),
