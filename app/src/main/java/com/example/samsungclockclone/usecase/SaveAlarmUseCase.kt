@@ -75,6 +75,7 @@ class SaveAlarmUseCase @Inject constructor(
                     val idMillisecondsPairs = databaseSource.insertAlarmMangers(entities)
 
                     alarmScheduler.schedule(
+                        alarmId,
                         idMillisecondsPairs,
                         onScheduleCompleted = onScheduleCompleted,
                         onScheduleDenied = onScheduleDenied
