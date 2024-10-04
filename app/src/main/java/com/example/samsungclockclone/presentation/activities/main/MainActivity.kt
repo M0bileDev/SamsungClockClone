@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.samsungclockclone.presentation.main
+package com.example.samsungclockclone.presentation.activities.main
 
 import android.content.Intent
 import android.net.Uri
