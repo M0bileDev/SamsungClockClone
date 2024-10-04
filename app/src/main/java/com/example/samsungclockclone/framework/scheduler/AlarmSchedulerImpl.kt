@@ -5,8 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver
-import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_ID
+import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.domain.`typealias`.AlarmMilliseconds
 import com.example.samsungclockclone.framework.ext.checkPermission
 import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
@@ -19,28 +20,30 @@ class AlarmSchedulerImpl @Inject constructor(
 ) : AlarmScheduler {
 
     override fun schedule(
-        alarmIdMillisecondsPairs: List<Pair<AlarmId, AlarmMilliseconds>>,
+        alarmId: AlarmId,
+        alarmManagerIdMillisecondsPairs: List<Pair<AlarmManagerId, AlarmMilliseconds>>,
         onScheduleCompleted: () -> Unit,
         onScheduleDenied: () -> Unit
     ) {
         alarmManager.checkPermission(
             onPermissionGranted = {
-                alarmIdMillisecondsPairs.forEach { alarm ->
+                alarmManagerIdMillisecondsPairs.forEach { alarmManager ->
                     val intent = Intent(context, AlarmReceiver::class.java).apply {
-                        putExtra(ALARM_ID, alarm.first)
+                        putExtra(ALARM_MANAGER_ID, alarmManager.first)
+                        putExtra(ALARM_MANAGER_ID, alarmManager.first)
                     }
                     val pendingIntentAlarm = PendingIntent.getBroadcast(
                         context,
-                        //unique alarm entity id
-                        alarm.first.toInt(),
+                        //unique alarmManager entity id
+                        alarmManager.first.toInt(),
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     val alarmClockInfo = AlarmManager.AlarmClockInfo(
-                        alarm.second,
+                        alarmManager.second,
                         pendingIntentAlarm
                     )
-                    alarmManager.setAlarmClock(
+                    this.alarmManager.setAlarmClock(
                         alarmClockInfo,
                         pendingIntentAlarm
                     )
