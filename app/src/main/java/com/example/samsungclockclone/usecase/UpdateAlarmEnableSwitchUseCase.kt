@@ -41,6 +41,7 @@ class UpdateAlarmEnableSwitchUseCase @Inject constructor(
                             val idMillisecondsPairs =
                                 alarmManagers.map { it.uniqueId to it.fireTime }
                             alarmScheduler.schedule(
+                                alarmId,
                                 idMillisecondsPairs,
                                 onScheduleCompleted,
                                 onScheduleDenied
