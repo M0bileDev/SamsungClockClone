@@ -18,7 +18,7 @@ import com.example.samsungclockclone.usecase.permissions.PermissionsListener
 import com.example.samsungclockclone.usecase.preferences.SelectionPreferences
 import com.example.samsungclockclone.framework.receiver.TimeTickReceiver
 import com.example.samsungclockclone.usecase.ticker.TimeTicker
-import com.example.samsungclockclone.presentation.main.MainActivity
+import com.example.samsungclockclone.presentation.activities.main.MainActivity
 import com.example.samsungclockclone.usecase.UpdateAlarmMangersUseCase
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
