@@ -2,19 +2,19 @@ package com.example.samsungclockclone.di
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.framework.dataSource.DatabaseSourceImpl
-import com.example.samsungclockclone.framework.dialog.DialogListener
+import com.example.samsungclockclone.usecase.dialog.DialogListener
 import com.example.samsungclockclone.framework.dialog.DialogListenerImpl
-import com.example.samsungclockclone.framework.notification.NotificationBuilder
+import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import com.example.samsungclockclone.framework.notification.NotificationBuilderImpl
-import com.example.samsungclockclone.framework.permissions.PermissionsListener
+import com.example.samsungclockclone.usecase.permissions.PermissionsListener
 import com.example.samsungclockclone.framework.permissions.PermissionsListenerImpl
-import com.example.samsungclockclone.framework.preferences.AlarmPreferences
+import com.example.samsungclockclone.usecase.preferences.AlarmPreferences
 import com.example.samsungclockclone.framework.preferences.AlarmPreferencesImpl
-import com.example.samsungclockclone.framework.preferences.SelectionPreferences
+import com.example.samsungclockclone.usecase.preferences.SelectionPreferences
 import com.example.samsungclockclone.framework.preferences.SelectionPreferencesImpl
-import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
 import com.example.samsungclockclone.framework.scheduler.AlarmSchedulerImpl
-import com.example.samsungclockclone.framework.ticker.TimeTicker
+import com.example.samsungclockclone.usecase.ticker.TimeTicker
 import com.example.samsungclockclone.framework.ticker.TimeTickerImpl
 import dagger.Binds
 import dagger.Module

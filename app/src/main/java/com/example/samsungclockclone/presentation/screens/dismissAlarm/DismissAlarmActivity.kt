@@ -15,15 +15,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 // TODO: display alarm time
 // TODO: dismiss alarm after onclick button action
+@AndroidEntryPoint
 class DismissAlarmActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var notificationBuilder: NotificationBuilder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        savedInstanceState.
         createDismissScreen()
     }
 

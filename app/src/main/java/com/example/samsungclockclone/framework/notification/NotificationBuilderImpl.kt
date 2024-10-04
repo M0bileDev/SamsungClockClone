@@ -15,6 +15,7 @@ import com.example.samsungclockclone.framework.utils.drawables
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.main.MainActivity
 import com.example.samsungclockclone.presentation.screens.dismissAlarm.DismissAlarmActivity
+import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -63,7 +64,9 @@ class NotificationBuilderImpl @Inject constructor(
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val intentFullScreen = Intent(this, DismissAlarmActivity::class.java)
+        val intentFullScreen = Intent(this, DismissAlarmActivity::class.java).apply {
+            putExtra(NOTIFICATION_ID, id)
+        }
         val pendingIntentFullScreen = PendingIntent.getActivity(
             this,
             OPEN_DISMISS_ALARM_ACTIVITY_REQUEST_CODE,

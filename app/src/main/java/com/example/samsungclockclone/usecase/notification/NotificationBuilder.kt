@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.framework.notification
+package com.example.samsungclockclone.usecase.notification
 
 import com.example.samsungclockclone.domain.`typealias`.NotificationId
 

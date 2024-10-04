@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
-import com.example.samsungclockclone.framework.ticker.TimeTicker
+import com.example.samsungclockclone.usecase.ticker.TimeTicker
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek

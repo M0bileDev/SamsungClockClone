@@ -2,11 +2,10 @@ package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.domain.ext.toAlarmRepeat
-import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.framework.ext.suspendCheckPermission
