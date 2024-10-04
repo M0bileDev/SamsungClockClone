@@ -14,13 +14,15 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var notificationBuilder: NotificationBuilder
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
         val alarmId = intent?.getLongExtra(ALARM_ID, -1L) ?: -1L
-        if (alarmId == -1L) return
+        if (alarmId == -1L || alarmManagerId == -1L) return
 
-        notificationBuilder.sendAlarmNotification(alarmId)
+        notificationBuilder.sendAlarmNotification(alarmManagerId, alarmId)
     }
 
     companion object {
+        const val ALARM_MANAGER_ID = "ALARM_MANAGER_ID"
         const val ALARM_ID = "ALARM_ID"
     }
 }
