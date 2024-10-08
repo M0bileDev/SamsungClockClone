@@ -15,9 +15,9 @@ class AlarmDismissReceiver : BroadcastReceiver() {
     lateinit var notificationBuilder: NotificationBuilder
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val notificationId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
-        if (notificationId == -1L) return
+        val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
+        if (alarmManagerId == -1L) return
 
-        notificationBuilder.cancelAlarmNotification(notificationId)
+        notificationBuilder.cancelAlarmNotification(alarmManagerId)
     }
 }
