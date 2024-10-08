@@ -29,8 +29,6 @@ class NotificationBuilderImpl @Inject constructor(
 
     companion object {
         const val ALARM_CHANNEL_ID = "ALARM_CHANNEL_ID"
-        const val OPEN_MAIN_ACTIVITY_REQUEST_CODE = 0
-        const val OPEN_DISMISS_ALARM_ACTIVITY_REQUEST_CODE = 1
     }
 
     override fun createAlarmNotificationChannel() = with(context) {
@@ -43,7 +41,11 @@ class NotificationBuilderImpl @Inject constructor(
         notificationManager.createNotificationChannel(alarmChannel)
     }
 
-    override fun sendAlarmNotification(alarmManagerId: AlarmManagerId, alarmId: AlarmId, description: String) =
+    override fun sendAlarmNotification(
+        alarmManagerId: AlarmManagerId,
+        alarmId: AlarmId,
+        description: String
+    ) =
         with(context) {
 
             val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
@@ -61,18 +63,18 @@ class NotificationBuilderImpl @Inject constructor(
             val intentOpenMainActivity = Intent(this, MainActivity::class.java)
             val pendingIntentOpenMainActivity = PendingIntent.getActivity(
                 this,
-                OPEN_MAIN_ACTIVITY_REQUEST_CODE,
+                alarmManagerId.toInt(),
                 intentOpenMainActivity,
                 PendingIntent.FLAG_IMMUTABLE
             )
 
             val intentFullScreen = Intent(this, DismissAlarmActivity::class.java).apply {
-                putExtra(ALARM_ID, alarmManagerId)
+                putExtra(ALARM_ID, alarmId)
                 putExtra(ALARM_MANAGER_ID, alarmManagerId)
             }
             val pendingIntentFullScreen = PendingIntent.getActivity(
                 this,
-                OPEN_DISMISS_ALARM_ACTIVITY_REQUEST_CODE,
+                alarmManagerId.toInt(),
                 intentFullScreen,
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -86,18 +88,21 @@ class NotificationBuilderImpl @Inject constructor(
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setContentIntent(pendingIntentOpenMainActivity)
-                .setFullScreenIntent(pendingIntentFullScreen, true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setFullScreenIntent(pendingIntentFullScreen, true)
                 .addAction(
                     drawables.ic_alarm_off,
                     getString(strings.dismiss),
                     pendingIntentDismissAlarm
                 )
 
-            notificationManager.notify(alarmManagerId.toInt(), notificationBuilder.build())
+            val notification = notificationBuilder.build()
+            notificationManager.notify(alarmManagerId.toInt(), notification)
+
         }
 
-    override fun cancelAlarmNotification(alarmManagerId: AlarmManagerId) = notificationManager.cancel(alarmManagerId.toInt())
+    override fun cancelAlarmNotification(alarmManagerId: AlarmManagerId) =
+        notificationManager.cancel(alarmManagerId.toInt())
 
     //TODO playing ringtone or vibration
     //todo add logic to cancel alarm and notification when user dismiss notification
