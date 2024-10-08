@@ -7,7 +7,7 @@ import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 interface NotificationBuilder {
     fun createAlarmNotificationChannel()
 
-    fun sendAlarmNotification(id: AlarmManagerId, alarmId: AlarmId, description: String = "")
+    fun sendAlarmNotification(alarmManagerId: AlarmManagerId, alarmId: AlarmId, description: String = "")
 
-    fun cancelAlarmNotification(id: AlarmManagerId)
+    fun cancelAlarmNotification(alarmManagerId: AlarmManagerId)
 }
