@@ -179,6 +179,9 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     override fun onActivityDestroyed(activity: Activity) {
+
+        if (activity !is MainActivity) return
+
         postNotificationPermissionManagerJob?.cancel()
         postNotificationPermissionJob?.cancel()
         updateAlarmMangersJob?.cancel()
