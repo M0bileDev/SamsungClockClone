@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.framework.preferences
+package com.example.samsungclockclone.usecase.preferences
 
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import kotlinx.coroutines.flow.Flow

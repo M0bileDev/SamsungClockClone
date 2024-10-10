@@ -1,8 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

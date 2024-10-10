@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.presentation.main
+package com.example.samsungclockclone.presentation.activities.main
 
 data class MainActivityUiState(
     val displayNotificationPermissionDialog: Boolean = false,

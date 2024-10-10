@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.framework.ticker
 
+import com.example.samsungclockclone.usecase.ticker.TimeTicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

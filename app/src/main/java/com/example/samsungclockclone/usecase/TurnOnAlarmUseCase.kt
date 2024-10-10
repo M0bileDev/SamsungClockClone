@@ -2,8 +2,7 @@ package com.example.samsungclockclone.usecase
 
 import android.app.AlarmManager
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.framework.scheduler.AlarmScheduler
+import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.framework.ext.suspendCheckPermission
 import kotlinx.coroutines.CoroutineDispatcher
@@ -39,6 +38,7 @@ class TurnOnAlarmUseCase @Inject constructor(
                     val idMillisecondsPairs =
                         alarmManagers.map { it.uniqueId to it.fireTime }
                     alarmScheduler.schedule(
+                        alarmId,
                         idMillisecondsPairs,
                         onScheduleCompleted,
                         onScheduleDenied

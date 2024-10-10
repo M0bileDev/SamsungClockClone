@@ -12,13 +12,13 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import com.example.samsungclockclone.usecase.dialog.DialogListener
+import com.example.samsungclockclone.usecase.notification.NotificationBuilder
+import com.example.samsungclockclone.usecase.permissions.PermissionsListener
+import com.example.samsungclockclone.usecase.preferences.SelectionPreferences
 import com.example.samsungclockclone.framework.receiver.TimeTickReceiver
-import com.example.samsungclockclone.framework.dialog.DialogListener
-import com.example.samsungclockclone.framework.notification.NotificationBuilder
-import com.example.samsungclockclone.framework.permissions.PermissionsListener
-import com.example.samsungclockclone.framework.preferences.SelectionPreferences
-import com.example.samsungclockclone.framework.ticker.TimeTicker
-import com.example.samsungclockclone.presentation.main.MainActivity
+import com.example.samsungclockclone.usecase.ticker.TimeTicker
+import com.example.samsungclockclone.presentation.activities.main.MainActivity
 import com.example.samsungclockclone.usecase.UpdateAlarmMangersUseCase
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -73,7 +73,9 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
 
-        requestPermissionLauncher = (activity as MainActivity).registerForActivityResult(
+        if (activity !is MainActivity) return
+
+        requestPermissionLauncher = activity.registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             if (isGranted) {
@@ -177,6 +179,9 @@ class SamsungClockCloneApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     override fun onActivityDestroyed(activity: Activity) {
+
+        if (activity !is MainActivity) return
+
         postNotificationPermissionManagerJob?.cancel()
         postNotificationPermissionJob?.cancel()
         updateAlarmMangersJob?.cancel()

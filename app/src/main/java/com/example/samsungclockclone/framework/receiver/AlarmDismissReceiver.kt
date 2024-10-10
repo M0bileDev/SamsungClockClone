@@ -3,7 +3,8 @@ package com.example.samsungclockclone.framework.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.samsungclockclone.framework.notification.NotificationBuilder
+import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
+import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -14,14 +15,9 @@ class AlarmDismissReceiver : BroadcastReceiver() {
     lateinit var notificationBuilder: NotificationBuilder
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val notificationId = intent?.getLongExtra(NOTIFICATION_ID, -1L) ?: -1L
-        if (notificationId == -1L) return
+        val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
+        if (alarmManagerId == -1L) return
 
-        notificationBuilder.cancelAlarmNotification(notificationId)
+        notificationBuilder.cancelAlarmNotification(alarmManagerId)
     }
-
-    companion object {
-        const val NOTIFICATION_ID = "NOTIFICATION_ID"
-    }
-
 }

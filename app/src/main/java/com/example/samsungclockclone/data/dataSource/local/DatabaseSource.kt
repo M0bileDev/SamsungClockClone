@@ -3,8 +3,10 @@ package com.example.samsungclockclone.data.dataSource.local
 import com.example.samsungclockclone.data.local.model.AlarmEntity
 import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
 import com.example.samsungclockclone.data.local.model.AlarmWithAlarmManagerEntity
+import com.example.samsungclockclone.data.local.model.NotificationAlarm
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.domain.`typealias`.AlarmMilliseconds
 import com.example.samsungclockclone.presentation.customs.dragAndDrop.Index
 import kotlinx.coroutines.flow.Flow
@@ -104,5 +106,7 @@ interface DatabaseSource {
             updateAlarmManagerOutOfDate(managerId, newMillis)
         }
     }
+
+    suspend fun getNotificationAlarm(alarmId: AlarmId, alarmManagerId: AlarmManagerId): NotificationAlarm
 
 }

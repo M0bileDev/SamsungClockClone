@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.framework.dialog
+package com.example.samsungclockclone.usecase.dialog
 
 import kotlinx.coroutines.flow.Flow
 

@@ -1,8 +1,9 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
+import com.example.samsungclockclone.data.local.model.NotificationAlarm
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,28 +12,22 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TurnOffAlarmItemUseCase @Inject constructor(
-    private val databaseSource: DatabaseSource,
-    private val alarmScheduler: AlarmScheduler
+class GetNotificationAlarmUseCase @Inject constructor(
+    private val databaseSource: DatabaseSource
 ) {
 
     suspend operator fun invoke(
         alarmId: AlarmId,
+        alarmManagerId: AlarmManagerId,
+        onDataCompleted: (NotificationAlarm) -> Unit,
         parentScope: CoroutineScope,
         dispatcher: CoroutineDispatcher = Dispatchers.Default
     ): Job {
         return parentScope.launch(dispatcher) {
             if (!isActive) return@launch
 
-            val (alarm, alarmManagers) = databaseSource.getAlarmAndAlarmManagersById(alarmId)
-            val updatedAlarm = alarm.copy(enable = false)
-            databaseSource.updateAlarm(updatedAlarm)
-
-            alarmManagers
-                .map { it.uniqueId }
-                .forEach { alarmId ->
-                    alarmScheduler.cancel(alarmId)
-                }
+            val data = databaseSource.getNotificationAlarm(alarmId, alarmManagerId)
+            onDataCompleted(data)
         }
     }
 }

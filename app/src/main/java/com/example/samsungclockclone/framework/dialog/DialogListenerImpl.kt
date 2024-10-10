@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.framework.dialog
 
+import com.example.samsungclockclone.usecase.dialog.DialogListener
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
