@@ -5,11 +5,15 @@ import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
 import com.example.samsungclockclone.usecase.notification.NotificationBuilder
+import com.example.samsungclockclone.usecase.ringtone.RingtoneController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AlarmDismissReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var ringtoneController: RingtoneController
 
     @Inject
     lateinit var notificationBuilder: NotificationBuilder
@@ -18,6 +22,7 @@ class AlarmDismissReceiver : BroadcastReceiver() {
         val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
         if (alarmManagerId == -1L) return
 
+        ringtoneController.stop()
         notificationBuilder.cancelAlarmNotification(alarmManagerId)
     }
 }
