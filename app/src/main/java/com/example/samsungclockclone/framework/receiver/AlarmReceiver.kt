@@ -4,11 +4,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.usecase.notification.NotificationBuilder
+import com.example.samsungclockclone.usecase.ringtone.RingtoneController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var ringtoneController: RingtoneController
 
     @Inject
     lateinit var notificationBuilder: NotificationBuilder
@@ -18,6 +22,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmId = intent?.getLongExtra(ALARM_ID, -1L) ?: -1L
         if (alarmId == -1L || alarmManagerId == -1L) return
 
+        ringtoneController.play()
         notificationBuilder.sendAlarmNotification(alarmManagerId, alarmId)
     }
 
