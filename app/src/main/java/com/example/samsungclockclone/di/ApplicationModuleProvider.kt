@@ -2,10 +2,11 @@ package com.example.samsungclockclone.di
 
 import android.app.AlarmManager
 import android.content.Context
+import android.media.Ringtone
+import android.media.RingtoneManager
 import androidx.room.Room
 import com.example.samsungclockclone.data.local.dao.AlarmDao
 import com.example.samsungclockclone.data.local.db.AlarmDatabase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,6 +40,14 @@ object ApplicationModuleProvider {
         alarmDatabase: AlarmDatabase
     ): AlarmDao {
         return alarmDatabase.alarmDao()
+    }
+
+    @[Provides Singleton]
+    fun provideRingtone(
+        @ApplicationContext context: Context
+    ): Ringtone {
+        val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        return RingtoneManager.getRingtone(context, alarmUri)
     }
 
 }
