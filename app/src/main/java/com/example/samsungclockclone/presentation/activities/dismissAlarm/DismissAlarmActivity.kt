@@ -91,7 +91,7 @@ class DismissAlarmActivity : ComponentActivity() {
                     DismissAlarmScreen(
                         dismissAlarmState = dismissAlarmState,
                         onDismiss = {
-                            dismissAlarmViewModel.onDismiss(getAlarmManagerId())
+                            dismissAlarmViewModel.onDismiss(getAlarmId(), getAlarmManagerId())
                         }
                     )
                 }
