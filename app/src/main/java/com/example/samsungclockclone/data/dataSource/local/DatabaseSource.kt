@@ -94,6 +94,10 @@ interface DatabaseSource {
         }.flatten()
     }
 
+    suspend fun getAlarmManagerById(
+        alarmManagerId: AlarmManagerId
+    ): AlarmManagerEntity
+
     suspend fun getAlarmManagersById(
         parentId: AlarmId
     ): List<AlarmManagerEntity>
