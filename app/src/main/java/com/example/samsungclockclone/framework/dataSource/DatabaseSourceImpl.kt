@@ -67,6 +67,9 @@ class DatabaseSourceImpl @Inject constructor(
         actualMillis: Long
     ): List<AlarmManagerEntity> = alarmDao.getAlarmManagersOutOfDateById(parentId, actualMillis)
 
+    override suspend fun getAlarmManagerById(alarmManagerId: AlarmManagerId): AlarmManagerEntity =
+        alarmDao.getAlarmManagerById(alarmManagerId)
+
     override suspend fun getAlarmManagersById(parentId: AlarmId): List<AlarmManagerEntity> =
         alarmDao.getAlarmManagersById(parentId)
 
