@@ -76,6 +76,9 @@ class DatabaseSourceImpl @Inject constructor(
     override suspend fun updateAlarmManagerOutOfDate(managerId: Long, newMillis: Long) =
         alarmDao.updateAlarmManagerOutOfDate(managerId, newMillis)
 
+    override suspend fun updateAlarmOngoingById(alarmId: AlarmId, ongoing: Boolean) =
+        alarmDao.updateAlarmOngoingById(alarmId, ongoing)
+
     override suspend fun getNotificationAlarm(
         alarmId: AlarmId,
         alarmManagerId: AlarmManagerId
