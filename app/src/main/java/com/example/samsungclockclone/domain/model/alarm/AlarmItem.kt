@@ -1,8 +1,8 @@
 package com.example.samsungclockclone.domain.model.alarm
 
-import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.`typealias`.AlarmId
 
 data class AlarmItem(
     val alarmId: AlarmId = 0L,
@@ -13,6 +13,7 @@ data class AlarmItem(
     val enable: Boolean = false,
     val daysOfWeek: List<DayOfWeek> = DayOfWeek.DayOfWeekHelper.standardWeek(),
     val selectedDaysOfWeek: List<DayOfWeek> = emptyList(),
+    val ongoing: Boolean = false
 ) {
     companion object {
         val alarmItemPreview = AlarmItem(
