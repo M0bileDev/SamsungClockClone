@@ -49,6 +49,7 @@ class NotificationBuilderImpl @Inject constructor(
         with(context) {
 
             val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
+                putExtra(ALARM_ID, alarmId)
                 putExtra(ALARM_MANAGER_ID, alarmManagerId)
             }
             val pendingIntentDismissAlarm =
