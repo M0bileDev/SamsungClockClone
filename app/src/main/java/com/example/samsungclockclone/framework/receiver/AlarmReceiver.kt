@@ -32,7 +32,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val coroutineScope = CoroutineScope(Dispatchers.Default)
 
         coroutineScope.launch {
-            rescheduleAlarmManagerUseCase(alarmManagerId, this)
+            rescheduleAlarmManagerUseCase(alarmId, alarmManagerId, parentScope = this)
         }
         ringtoneController.play()
         notificationBuilder.sendAlarmNotification(alarmManagerId, alarmId)
