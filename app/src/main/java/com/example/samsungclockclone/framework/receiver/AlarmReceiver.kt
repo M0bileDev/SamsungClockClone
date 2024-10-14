@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.usecase.RescheduleAlarmManagerUseCase
+import com.example.samsungclockclone.usecase.UpdateAlarmOngoingUseCase
 import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import com.example.samsungclockclone.usecase.ringtone.RingtoneController
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
     @Inject
     lateinit var ringtoneController: RingtoneController
 
@@ -24,15 +27,17 @@ class AlarmReceiver : BroadcastReceiver() {
     @Inject
     lateinit var rescheduleAlarmManagerUseCase: RescheduleAlarmManagerUseCase
 
+    @Inject
+    lateinit var updateAlarmOngoingUseCase: UpdateAlarmOngoingUseCase
+
     override fun onReceive(context: Context?, intent: Intent?) {
         val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
         val alarmId = intent?.getLongExtra(ALARM_ID, -1L) ?: -1L
         if (alarmId == -1L || alarmManagerId == -1L) return
 
-        val coroutineScope = CoroutineScope(Dispatchers.Default)
-
         coroutineScope.launch {
             rescheduleAlarmManagerUseCase(alarmId, alarmManagerId, parentScope = this)
+            updateAlarmOngoingUseCase(alarmId, parentScope = this)
         }
         ringtoneController.play()
         notificationBuilder.sendAlarmNotification(alarmManagerId, alarmId)
