@@ -149,4 +149,9 @@ interface AlarmDao {
             updateAlarmManagerOutOfDate(managerId, newMillis)
         }
     }
+
+    @Query("SELECT * FROM alarm_manager_table WHERE uniqueId = :alarmManagerId LIMIT 1")
+    suspend fun getAlarmManagerById(
+        alarmManagerId: AlarmManagerId
+    ): AlarmManagerEntity
 }
