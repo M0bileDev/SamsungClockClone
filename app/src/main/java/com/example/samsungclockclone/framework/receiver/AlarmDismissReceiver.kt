@@ -3,11 +3,10 @@ package com.example.samsungclockclone.framework.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_ID
-import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
-import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
 import com.example.samsungclockclone.abstraction.ringtone.RingtoneController
+import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_ID
+import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,16 +28,15 @@ class AlarmDismissReceiver : BroadcastReceiver() {
     lateinit var updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
         val alarmId = intent?.getLongExtra(ALARM_ID, -1L) ?: -1L
 
-        if (alarmId == -1L || alarmManagerId == -1L) return
+        if (alarmId == -1L) return
 
         coroutineScope.launch {
             updateOngoingAlarmUseCase(alarmId, parentScope = this)
         }
 
         ringtoneController.stop()
-        notificationBuilder.cancelAlarmNotification(alarmManagerId)
+        notificationBuilder.cancelAlarmNotification(alarmId)
     }
 }
