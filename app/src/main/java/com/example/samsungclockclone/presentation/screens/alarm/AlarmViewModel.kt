@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
-import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.usecase.preferences.AlarmPreferences
 import com.example.samsungclockclone.usecase.ticker.TimeTicker
