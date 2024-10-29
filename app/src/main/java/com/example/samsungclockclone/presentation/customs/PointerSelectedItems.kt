@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.samsungclockclone.domain.model.addAlarm.NameResource
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.NameResource
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.utils.drawPointerAbove
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
