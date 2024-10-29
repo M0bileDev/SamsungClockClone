@@ -2,9 +2,9 @@ package com.example.samsungclockclone.presentation.activities.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.samsungclockclone.usecase.dialog.DialogListener
-import com.example.samsungclockclone.usecase.permissions.PermissionsListener
-import com.example.samsungclockclone.usecase.preferences.SelectionPreferences
+import com.example.samsungclockclone.abstraction.dialog.DialogListener
+import com.example.samsungclockclone.abstraction.permissions.PermissionsListener
+import com.example.samsungclockclone.abstraction.preferences.SelectionPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

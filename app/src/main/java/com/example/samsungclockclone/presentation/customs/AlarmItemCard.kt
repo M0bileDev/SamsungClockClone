@@ -5,14 +5,17 @@ package com.example.samsungclockclone.presentation.customs
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -24,15 +27,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
-import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.ext.toDate
+import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.screens.addAlarm.utils.toNameResourceList
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
 import com.example.samsungclockclone.presentation.utils.HOURS_MINUTES
 import com.example.samsungclockclone.presentation.utils.SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH
-import com.example.samsungclockclone.framework.utils.strings
 
 @Composable
 fun AlarmItemCard(
@@ -40,7 +43,8 @@ fun AlarmItemCard(
     alarmItem: AlarmItem,
     onCheckedChange: (AlarmId) -> Unit,
     onClick: () -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    onUpdateOngoingAlarm: (AlarmId) -> Unit
 ) = with(alarmItem) {
     Card(
         modifier = modifier
@@ -81,32 +85,66 @@ fun AlarmItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                when (mode) {
-                    AlarmMode.OnlyTime, AlarmMode.CalendarDateAndTime -> {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = fireTime.toDate(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
-                        )
-                    }
 
-                    AlarmMode.DayOfWeekAndTime -> if (selectedDaysOfWeek.size < 7) {
-                        PointerSelectedItems(
-                            modifier = Modifier.weight(1f),
-                            items = daysOfWeek.toNameResourceList(),
-                            selectedItems = selectedDaysOfWeek.toNameResourceList()
-                        )
-                    } else {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = stringResource(id = strings.everyday)
-                        )
-                    }
+                if (ongoing) {
+                    DismissAlarmContainer(
+                        alarmId = this@with.alarmId,
+                        onDismissAlarm = onUpdateOngoingAlarm
+                    )
+                } else {
+                    AlarmModeContainer(alarmItem = this@with, onCheckedChange = onCheckedChange)
                 }
-                Spacer(modifier = Modifier.size(8.dp))
-                Switch(checked = enable, onCheckedChange = { onCheckedChange(alarmId) })
             }
         }
     }
+}
+
+@Composable
+fun DismissAlarmContainer(
+    modifier: Modifier = Modifier,
+    alarmId: AlarmId,
+    onDismissAlarm: (AlarmId) -> Unit
+) = Box(
+    modifier = modifier.fillMaxSize(),
+    contentAlignment = Alignment.Center
+) {
+    Button(
+        onClick = { onDismissAlarm(alarmId) }
+    ) {
+        Text(text = stringResource(strings.dismiss))
+    }
+}
+
+
+@Composable
+private fun RowScope.AlarmModeContainer(
+    modifier: Modifier = Modifier,
+    alarmItem: AlarmItem,
+    onCheckedChange: (AlarmId) -> Unit
+) = with(alarmItem) {
+    when (mode) {
+        AlarmMode.OnlyTime, AlarmMode.CalendarDateAndTime -> {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = fireTime.toDate(SHORT_DAY_OF_WEEK_DAY_OF_MONTH_SHORT_MONTH)
+            )
+        }
+
+        AlarmMode.DayOfWeekAndTime -> if (selectedDaysOfWeek.size < 7) {
+            PointerSelectedItems(
+                modifier = Modifier.weight(1f),
+                items = daysOfWeek.toNameResourceList(),
+                selectedItems = selectedDaysOfWeek.toNameResourceList()
+            )
+        } else {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = strings.everyday)
+            )
+        }
+    }
+    Spacer(modifier = Modifier.size(8.dp))
+    Switch(checked = enable, onCheckedChange = { onCheckedChange(alarmId) })
 }
 
 @Preview
@@ -117,7 +155,8 @@ private fun AlarmItemCardPreview() {
             alarmItem = AlarmItem.alarmItemPreview,
             onCheckedChange = {},
             onClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            onUpdateOngoingAlarm = {}
         )
     }
 }
@@ -130,7 +169,8 @@ private fun AlarmItemCardPreview2() {
             alarmItem = AlarmItem.alarmItemPreview2,
             onCheckedChange = {},
             onClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            onUpdateOngoingAlarm = {}
         )
     }
 }
@@ -143,7 +183,8 @@ private fun AlarmItemCardPreview3() {
             alarmItem = AlarmItem.alarmItemPreview3,
             onCheckedChange = {},
             onClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            onUpdateOngoingAlarm = {}
         )
     }
 }
@@ -156,7 +197,22 @@ private fun AlarmItemCardPreview4() {
             alarmItem = AlarmItem.alarmItemPreview4,
             onCheckedChange = {},
             onClick = {},
-            onLongClick = {}
+            onLongClick = {},
+            onUpdateOngoingAlarm = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AlarmItemCardPreview5() {
+    SamsungClockCloneTheme {
+        AlarmItemCard(
+            alarmItem = AlarmItem.alarmItemPreview5,
+            onCheckedChange = {},
+            onClick = {},
+            onLongClick = {},
+            onUpdateOngoingAlarm = {}
         )
     }
 }

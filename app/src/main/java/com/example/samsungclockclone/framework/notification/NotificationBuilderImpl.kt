@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.framework.receiver.AlarmDismissReceiver
@@ -16,7 +17,6 @@ import com.example.samsungclockclone.framework.utils.drawables
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.activities.dismissAlarm.DismissAlarmActivity
 import com.example.samsungclockclone.presentation.activities.main.MainActivity
-import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -45,61 +45,60 @@ class NotificationBuilderImpl @Inject constructor(
         alarmManagerId: AlarmManagerId,
         alarmId: AlarmId,
         description: String
-    ) =
-        with(context) {
+    ) = with(context) {
 
-            val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
-                putExtra(ALARM_MANAGER_ID, alarmManagerId)
-            }
-            val pendingIntentDismissAlarm =
-                PendingIntent.getBroadcast(
-                    this,
-                    //unique notification id
-                    alarmManagerId.toInt(),
-                    intentDismissAlarm,
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-
-            val intentOpenMainActivity = Intent(this, MainActivity::class.java)
-            val pendingIntentOpenMainActivity = PendingIntent.getActivity(
-                this,
-                alarmManagerId.toInt(),
-                intentOpenMainActivity,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-
-            val intentFullScreen = Intent(this, DismissAlarmActivity::class.java).apply {
-                putExtra(ALARM_ID, alarmId)
-                putExtra(ALARM_MANAGER_ID, alarmManagerId)
-            }
-            val pendingIntentFullScreen = PendingIntent.getActivity(
-                this,
-                alarmManagerId.toInt(),
-                intentFullScreen,
-                PendingIntent.FLAG_IMMUTABLE
-            )
-
-            val notificationBuilder = NotificationCompat.Builder(this, ALARM_CHANNEL_ID)
-                .setSmallIcon(drawables.ic_launcher_foreground)
-                .setContentTitle(getString(strings.app_name))
-                .setContentText(description)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
-                .setOngoing(true)
-                .setAutoCancel(false)
-                .setContentIntent(pendingIntentOpenMainActivity)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setFullScreenIntent(pendingIntentFullScreen, true)
-                .addAction(
-                    drawables.ic_alarm_off,
-                    getString(strings.dismiss),
-                    pendingIntentDismissAlarm
-                )
-
-            val notification = notificationBuilder.build()
-            notificationManager.notify(alarmManagerId.toInt(), notification)
-
+        val intentDismissAlarm = Intent(this, AlarmDismissReceiver::class.java).apply {
+            putExtra(ALARM_ID, alarmId)
         }
+        val pendingIntentDismissAlarm =
+            PendingIntent.getBroadcast(
+                this,
+                //unique notification id
+                alarmManagerId.toInt(),
+                intentDismissAlarm,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+
+        val intentOpenMainActivity = Intent(this, MainActivity::class.java)
+        val pendingIntentOpenMainActivity = PendingIntent.getActivity(
+            this,
+            alarmManagerId.toInt(),
+            intentOpenMainActivity,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val intentFullScreen = Intent(this, DismissAlarmActivity::class.java).apply {
+            putExtra(ALARM_ID, alarmId)
+            putExtra(ALARM_MANAGER_ID, alarmManagerId)
+        }
+        val pendingIntentFullScreen = PendingIntent.getActivity(
+            this,
+            alarmManagerId.toInt(),
+            intentFullScreen,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationBuilder = NotificationCompat.Builder(this, ALARM_CHANNEL_ID)
+            .setSmallIcon(drawables.ic_launcher_foreground)
+            .setContentTitle(getString(strings.app_name))
+            .setContentText(description)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setContentIntent(pendingIntentOpenMainActivity)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setFullScreenIntent(pendingIntentFullScreen, true)
+            .addAction(
+                drawables.ic_alarm_off,
+                getString(strings.dismiss),
+                pendingIntentDismissAlarm
+            )
+
+        val notification = notificationBuilder.build()
+        notificationManager.notify(alarmId.toInt(), notification)
+
+    }
 
     override fun cancelAlarmNotification(alarmManagerId: AlarmManagerId) =
         notificationManager.cancel(alarmManagerId.toInt())

@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.framework.ringtone
 
 import android.media.Ringtone
-import com.example.samsungclockclone.usecase.ringtone.RingtoneController
+import com.example.samsungclockclone.abstraction.ringtone.RingtoneController
 import javax.inject.Inject
 
 

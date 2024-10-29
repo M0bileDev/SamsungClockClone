@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.samsungclockclone.domain.model.addAlarm.NameResource
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.NameResource
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
 

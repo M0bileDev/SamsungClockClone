@@ -11,5 +11,6 @@ data class AlarmEntity(
     val customOrder:Long = 0L,
     val mode: AlarmMode,
     val name: String,
-    val enable: Boolean
+    val enable: Boolean = false,
+    val ongoing: Boolean = false
 )

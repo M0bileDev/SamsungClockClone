@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.permissions
+package com.example.samsungclockclone.abstraction.permissions
 
 import kotlinx.coroutines.flow.Flow
 

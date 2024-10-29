@@ -1,6 +1,6 @@
 package com.example.samsungclockclone.framework.permissions
 
-import com.example.samsungclockclone.usecase.permissions.PermissionsListener
+import com.example.samsungclockclone.abstraction.permissions.PermissionsListener
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow

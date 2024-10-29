@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.ringtone
+package com.example.samsungclockclone.abstraction.ringtone
 
 interface RingtoneController {
     fun play()

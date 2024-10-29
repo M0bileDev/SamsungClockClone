@@ -113,4 +113,6 @@ interface DatabaseSource {
 
     suspend fun getNotificationAlarm(alarmId: AlarmId, alarmManagerId: AlarmManagerId): NotificationAlarm
 
+    suspend fun updateOngoingAlarmById(alarmId: AlarmId, ongoing: Boolean)
+
 }

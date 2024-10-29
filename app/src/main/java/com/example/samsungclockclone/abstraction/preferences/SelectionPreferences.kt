@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.preferences
+package com.example.samsungclockclone.abstraction.preferences
 
 import kotlinx.coroutines.flow.Flow
 

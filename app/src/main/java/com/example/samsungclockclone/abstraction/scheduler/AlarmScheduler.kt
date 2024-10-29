@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.scheduler
+package com.example.samsungclockclone.abstraction.scheduler
 
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId

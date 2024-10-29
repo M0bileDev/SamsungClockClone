@@ -59,7 +59,9 @@ class GetAlarmItemsUseCase @Inject constructor(
                             firstFireTime,
                             mode,
                             enable,
-                            selectedDaysOfWeek = selectedDaysOfWeek
+                            selectedDaysOfWeek = selectedDaysOfWeek,
+                            //todo reflect ongoing on the screen
+                            ongoing = ongoing
                         )
                     }
                 }

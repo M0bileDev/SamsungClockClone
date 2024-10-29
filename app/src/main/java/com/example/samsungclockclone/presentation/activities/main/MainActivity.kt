@@ -44,6 +44,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.samsungclockclone.framework.utils.NavigationUtils
 import com.example.samsungclockclone.framework.utils.Screens
+import com.example.samsungclockclone.framework.utils.strings
+import com.example.samsungclockclone.presentation.dialog.PermissionDialog
+import com.example.samsungclockclone.presentation.dialog.ShortInfoDialog
 import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmScreen
 import com.example.samsungclockclone.presentation.screens.addAlarm.AddAlarmViewModel
 import com.example.samsungclockclone.presentation.screens.alarm.AlarmScreen
@@ -51,11 +54,8 @@ import com.example.samsungclockclone.presentation.screens.alarm.AlarmViewModel
 import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmScreen
 import com.example.samsungclockclone.presentation.screens.editAlarm.EditAlarmViewModel
 import com.example.samsungclockclone.presentation.screens.editAlarm.utils.ALARM_ID_KEY
-import com.example.samsungclockclone.presentation.utils.drawUnderline
-import com.example.samsungclockclone.presentation.dialog.PermissionDialog
-import com.example.samsungclockclone.presentation.dialog.ShortInfoDialog
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
-import com.example.samsungclockclone.framework.utils.strings
+import com.example.samsungclockclone.presentation.utils.drawUnderline
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDateTime
@@ -242,6 +242,7 @@ class MainActivity : ComponentActivity() {
                                         onAlarmEnableSwitch = alarmViewModel::onAlarmEnableSwitch,
                                         onDismissRequest = alarmViewModel::dismissSchedulePermission,
                                         onRequestSchedulePermission = alarmViewModel::onRequestSchedulePermission,
+                                        onUpdateOngoingAlarm = alarmViewModel::onUpdateOngoingAlarm
                                     )
                                 }
 

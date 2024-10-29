@@ -154,4 +154,7 @@ interface AlarmDao {
     suspend fun getAlarmManagerById(
         alarmManagerId: AlarmManagerId
     ): AlarmManagerEntity
+
+    @Query("UPDATE alarm_table SET ongoing =:ongoing WHERE id=:alarmId")
+    suspend fun updateOngoingAlarmById(alarmId: AlarmId, ongoing: Boolean)
 }

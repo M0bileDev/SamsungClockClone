@@ -1,4 +1,6 @@
-package com.example.samsungclockclone.domain.model.alarm
+package com.example.samsungclockclone.presentation.screens.addAlarm.utils
+
+import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
 
 sealed interface AlarmTitleString {
     data object AlarmsOff : AlarmTitleString

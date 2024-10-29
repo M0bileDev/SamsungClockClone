@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.presentation.screens.alarm
 
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
-import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AlarmTitleString
 
 data class AlarmUiState(
     val alarmItems: List<AlarmItem> = emptyList(),

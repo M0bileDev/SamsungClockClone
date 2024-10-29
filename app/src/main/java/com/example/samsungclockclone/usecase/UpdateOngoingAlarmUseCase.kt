@@ -2,7 +2,6 @@ package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
-import com.example.samsungclockclone.abstraction.scheduler.AlarmScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,9 +10,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class DeleteAlarmUseCase @Inject constructor(
+class UpdateOngoingAlarmUseCase @Inject constructor(
     private val databaseSource: DatabaseSource,
-    private val alarmScheduler: AlarmScheduler
+    private val getAlarmByIdUseCase: GetAlarmByIdUseCase
 ) {
 
     suspend operator fun invoke(
@@ -22,15 +21,24 @@ class DeleteAlarmUseCase @Inject constructor(
         dispatcher: CoroutineDispatcher = Dispatchers.Default
     ): Job {
         return parentScope.launch(dispatcher) {
-            if (!isActive) return@launch
+            if (!parentScope.isActive) return@launch
 
-            val (alarm, alarmManagers) = databaseSource.getAlarmAndAlarmManagersById(alarmId)
-
-            alarmManagers.forEach { alarmManager ->
-                alarmScheduler.cancel(alarmManager.uniqueId)
+            val updateOngoingAlarm: (Long, Boolean) -> Unit = { id, ongoing ->
+                this.launch {
+                    databaseSource.updateOngoingAlarmById(id, !ongoing)
+                }
             }
 
-            databaseSource.deleteAlarm(alarm)
+            getAlarmByIdUseCase(
+                alarmId,
+                onDataCompleted = { data ->
+                    val alarm = data.alarmEntity
+                    with(alarm) {
+                        updateOngoingAlarm(id, ongoing)
+                    }
+                },
+                parentScope = this
+            )
         }
     }
 }

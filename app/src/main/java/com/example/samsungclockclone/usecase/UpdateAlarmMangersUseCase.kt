@@ -1,7 +1,7 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.usecase.ticker.TimeTicker
+import com.example.samsungclockclone.abstraction.ticker.TimeTicker
 import com.example.samsungclockclone.domain.model.AlarmRepeat.Companion.createRepeatMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
