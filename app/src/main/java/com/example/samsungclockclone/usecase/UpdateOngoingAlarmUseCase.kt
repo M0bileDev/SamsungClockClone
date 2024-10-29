@@ -25,7 +25,7 @@ class UpdateOngoingAlarmUseCase @Inject constructor(
 
             val updateOngoingAlarm: (Long, Boolean) -> Unit = { id, ongoing ->
                 this.launch {
-                    databaseSource.updateAlarmOngoingById(id, !ongoing)
+                    databaseSource.updateOngoingAlarmById(id, !ongoing)
                 }
             }
 
