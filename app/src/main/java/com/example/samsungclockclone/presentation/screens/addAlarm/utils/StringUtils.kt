@@ -3,7 +3,6 @@ package com.example.samsungclockclone.presentation.screens.addAlarm.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.samsungclockclone.domain.model.addAlarm.AddAlarmString
-import com.example.samsungclockclone.domain.model.addAlarm.NameResource
 import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.framework.utils.strings
 
