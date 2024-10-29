@@ -10,7 +10,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class UpdateAlarmOngoingUseCase @Inject constructor(
+class UpdateOngoingAlarmUseCase @Inject constructor(
     private val databaseSource: DatabaseSource,
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase
 ) {
@@ -23,7 +23,7 @@ class UpdateAlarmOngoingUseCase @Inject constructor(
         return parentScope.launch(dispatcher) {
             if (!parentScope.isActive) return@launch
 
-            val updateAlarmOngoing: (Long, Boolean) -> Unit = { id, ongoing ->
+            val updateOngoingAlarm: (Long, Boolean) -> Unit = { id, ongoing ->
                 this.launch {
                     databaseSource.updateAlarmOngoingById(id, !ongoing)
                 }
@@ -34,7 +34,7 @@ class UpdateAlarmOngoingUseCase @Inject constructor(
                 onDataCompleted = { data ->
                     val alarm = data.alarmEntity
                     with(alarm) {
-                        updateAlarmOngoing(id, ongoing)
+                        updateOngoingAlarm(id, ongoing)
                     }
                 },
                 parentScope = this
