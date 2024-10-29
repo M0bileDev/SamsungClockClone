@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_ID
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
-import com.example.samsungclockclone.usecase.UpdateAlarmOngoingUseCase
+import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import com.example.samsungclockclone.usecase.ringtone.RingtoneController
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +26,7 @@ class AlarmDismissReceiver : BroadcastReceiver() {
     lateinit var notificationBuilder: NotificationBuilder
 
     @Inject
-    lateinit var updateAlarmOngoingUseCase: UpdateAlarmOngoingUseCase
+    lateinit var updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val alarmManagerId = intent?.getLongExtra(ALARM_MANAGER_ID, -1L) ?: -1L
@@ -35,7 +35,7 @@ class AlarmDismissReceiver : BroadcastReceiver() {
         if (alarmId == -1L || alarmManagerId == -1L) return
 
         coroutineScope.launch {
-            updateAlarmOngoingUseCase(alarmId, parentScope = this)
+            updateOngoingAlarmUseCase(alarmId, parentScope = this)
         }
 
         ringtoneController.stop()
