@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.usecase.GetNotificationAlarmUseCase
-import com.example.samsungclockclone.usecase.UpdateAlarmOngoingUseCase
+import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import com.example.samsungclockclone.usecase.notification.NotificationBuilder
 import com.example.samsungclockclone.usecase.ringtone.RingtoneController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class DismissAlarmViewModel @Inject constructor(
     private val notificationBuilder: NotificationBuilder,
     private val getNotificationAlarmUseCase: GetNotificationAlarmUseCase,
     private val ringtoneController: RingtoneController,
-    private val updateAlarmOngoingUseCase: UpdateAlarmOngoingUseCase
+    private val updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase
 ) : ViewModel() {
 
     private val _dismissAlarmState = Channel<DismissAlarmState>()
@@ -71,7 +71,7 @@ class DismissAlarmViewModel @Inject constructor(
     fun onDismiss(alarmId: AlarmId, id: AlarmManagerId) =
         viewModelScope.launch(Dispatchers.Default) {
             ringtoneController.stop()
-            updateAlarmOngoingUseCase(alarmId, parentScope = this)
+            updateOngoingAlarmUseCase(alarmId, parentScope = this)
             notificationBuilder.cancelAlarmNotification(id)
             _dismissAlarmAction.send(DismissAlarmAction.Finish)
         }
