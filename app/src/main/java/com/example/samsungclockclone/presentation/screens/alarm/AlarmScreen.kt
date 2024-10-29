@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.samsungclockclone.R
 import com.example.samsungclockclone.domain.model.AlarmOrder
-import com.example.samsungclockclone.domain.model.alarm.AlarmTitleString
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.ext.toDate
