@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import com.example.samsungclockclone.usecase.RescheduleAlarmManagerUseCase
 import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
-import com.example.samsungclockclone.usecase.notification.NotificationBuilder
-import com.example.samsungclockclone.usecase.ringtone.RingtoneController
+import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
+import com.example.samsungclockclone.abstraction.ringtone.RingtoneController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

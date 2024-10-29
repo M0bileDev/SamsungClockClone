@@ -11,7 +11,7 @@ import com.example.samsungclockclone.framework.ext.checkPermission
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_ID
 import com.example.samsungclockclone.framework.receiver.AlarmReceiver.Companion.ALARM_MANAGER_ID
-import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
+import com.example.samsungclockclone.abstraction.scheduler.AlarmScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

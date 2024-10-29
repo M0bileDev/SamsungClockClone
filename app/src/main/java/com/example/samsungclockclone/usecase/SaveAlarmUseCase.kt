@@ -8,7 +8,7 @@ import com.example.samsungclockclone.domain.ext.toAlarmRepeat
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek
 import com.example.samsungclockclone.framework.ext.suspendCheckPermission
-import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
+import com.example.samsungclockclone.abstraction.scheduler.AlarmScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

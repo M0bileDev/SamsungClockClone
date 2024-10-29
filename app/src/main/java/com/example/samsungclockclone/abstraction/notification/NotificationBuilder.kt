@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.notification
+package com.example.samsungclockclone.abstraction.notification
 
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId

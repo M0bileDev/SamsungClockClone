@@ -6,7 +6,7 @@ import com.example.samsungclockclone.domain.model.AlarmRepeat.Companion.createRe
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.framework.ext.suspendCheckPermission
-import com.example.samsungclockclone.usecase.scheduler.AlarmScheduler
+import com.example.samsungclockclone.abstraction.scheduler.AlarmScheduler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.example.samsungclockclone.usecase.ticker
+package com.example.samsungclockclone.abstraction.ticker
 
 import kotlinx.coroutines.flow.Flow
 

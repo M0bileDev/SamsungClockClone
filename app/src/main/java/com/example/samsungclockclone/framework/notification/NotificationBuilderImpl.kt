@@ -16,7 +16,7 @@ import com.example.samsungclockclone.framework.utils.drawables
 import com.example.samsungclockclone.framework.utils.strings
 import com.example.samsungclockclone.presentation.activities.dismissAlarm.DismissAlarmActivity
 import com.example.samsungclockclone.presentation.activities.main.MainActivity
-import com.example.samsungclockclone.usecase.notification.NotificationBuilder
+import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

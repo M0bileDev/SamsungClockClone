@@ -6,8 +6,8 @@ import com.example.samsungclockclone.domain.`typealias`.AlarmId
 import com.example.samsungclockclone.domain.`typealias`.AlarmManagerId
 import com.example.samsungclockclone.usecase.GetNotificationAlarmUseCase
 import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
-import com.example.samsungclockclone.usecase.notification.NotificationBuilder
-import com.example.samsungclockclone.usecase.ringtone.RingtoneController
+import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
+import com.example.samsungclockclone.abstraction.ringtone.RingtoneController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
