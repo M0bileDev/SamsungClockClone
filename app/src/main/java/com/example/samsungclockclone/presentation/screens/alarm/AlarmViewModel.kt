@@ -2,20 +2,22 @@ package com.example.samsungclockclone.presentation.screens.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.samsungclockclone.abstraction.preferences.AlarmPreferences
+import com.example.samsungclockclone.abstraction.ticker.TimeTicker
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
 import com.example.samsungclockclone.domain.model.alarm.AlarmItem
-import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AlarmTitleString
 import com.example.samsungclockclone.domain.model.alarm.DifferenceType
-import com.example.samsungclockclone.abstraction.preferences.AlarmPreferences
-import com.example.samsungclockclone.abstraction.ticker.TimeTicker
 import com.example.samsungclockclone.domain.`typealias`.AlarmId
+import com.example.samsungclockclone.presentation.screens.addAlarm.utils.AlarmTitleString
 import com.example.samsungclockclone.presentation.screens.alarm.utils.AddAlarmMode
 import com.example.samsungclockclone.presentation.screens.alarm.utils.EditAlarmMode
 import com.example.samsungclockclone.usecase.GetAlarmItemsCustomOrderUseCase
 import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmEnableSwitchUseCase
+import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -35,7 +37,8 @@ class AlarmViewModel @Inject constructor(
     private val getAlarmItemsUseCase: GetAlarmItemsUseCase,
     private val getAlarmItemsCustomOrderUseCase: GetAlarmItemsCustomOrderUseCase,
     private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase,
-    private val timeTicker: TimeTicker
+    private val timeTicker: TimeTicker,
+    private val updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase
 ) : ViewModel() {
 
     private var getAlarmItemsJob: Job? = null
@@ -197,6 +200,10 @@ class AlarmViewModel @Inject constructor(
                 alarmActions.send(AlarmAction.AddAlarm())
             }
         }
+    }
+
+    fun onUpdateOngoingAlarm(alarmId: AlarmId) = viewModelScope.launch {
+        updateOngoingAlarmUseCase(alarmId, parentScope = this)
     }
 
 }
