@@ -2,7 +2,9 @@ package com.example.samsungclockclone.presentation.screens.alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.samsungclockclone.abstraction.notification.NotificationBuilder
 import com.example.samsungclockclone.abstraction.preferences.AlarmPreferences
+import com.example.samsungclockclone.abstraction.ringtone.RingtoneController
 import com.example.samsungclockclone.abstraction.ticker.TimeTicker
 import com.example.samsungclockclone.domain.model.AlarmOrder
 import com.example.samsungclockclone.domain.model.alarm.AlarmDifference
@@ -17,7 +19,6 @@ import com.example.samsungclockclone.usecase.GetAlarmItemsUseCase
 import com.example.samsungclockclone.usecase.UpdateAlarmEnableSwitchUseCase
 import com.example.samsungclockclone.usecase.UpdateOngoingAlarmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -38,7 +39,9 @@ class AlarmViewModel @Inject constructor(
     private val getAlarmItemsCustomOrderUseCase: GetAlarmItemsCustomOrderUseCase,
     private val updateAlarmEnableSwitchUseCase: UpdateAlarmEnableSwitchUseCase,
     private val timeTicker: TimeTicker,
-    private val updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase
+    private val updateOngoingAlarmUseCase: UpdateOngoingAlarmUseCase,
+    private val notificationBuilder: NotificationBuilder,
+    private val ringtoneController: RingtoneController
 ) : ViewModel() {
 
     private var getAlarmItemsJob: Job? = null
@@ -204,6 +207,8 @@ class AlarmViewModel @Inject constructor(
 
     fun onUpdateOngoingAlarm(alarmId: AlarmId) = viewModelScope.launch {
         updateOngoingAlarmUseCase(alarmId, parentScope = this)
+        ringtoneController.stop()
+        notificationBuilder.cancelAlarmNotification(alarmId)
     }
 
 }
