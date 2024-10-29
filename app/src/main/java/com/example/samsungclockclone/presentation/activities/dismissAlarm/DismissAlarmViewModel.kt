@@ -68,11 +68,11 @@ class DismissAlarmViewModel @Inject constructor(
 
         }
 
-    fun onDismiss(alarmId: AlarmId, id: AlarmManagerId) =
+    fun onDismiss(alarmId: AlarmId, alarmManagerId: AlarmManagerId) =
         viewModelScope.launch(Dispatchers.Default) {
             ringtoneController.stop()
             updateOngoingAlarmUseCase(alarmId, parentScope = this)
-            notificationBuilder.cancelAlarmNotification(id)
+            notificationBuilder.cancelAlarmNotification(alarmManagerId)
             _dismissAlarmAction.send(DismissAlarmAction.Finish)
         }
 
