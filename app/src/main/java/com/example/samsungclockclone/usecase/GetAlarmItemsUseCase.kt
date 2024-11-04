@@ -60,7 +60,6 @@ class GetAlarmItemsUseCase @Inject constructor(
                             mode,
                             enable,
                             selectedDaysOfWeek = selectedDaysOfWeek,
-                            //todo reflect ongoing on the screen
                             ongoing = ongoing
                         )
                     }
