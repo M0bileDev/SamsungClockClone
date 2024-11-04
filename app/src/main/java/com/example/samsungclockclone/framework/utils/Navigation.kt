@@ -13,7 +13,8 @@ sealed class Screens(val route: String, @StringRes val name: Int) {
 object NavigationUtils {
     val navBottomItems = listOf(
         Screens.Alarm,
-        Screens.Stopwatch,
-        Screens.Timer
+        // TODO: implement destinations
+//        Screens.Stopwatch,
+//        Screens.Timer
     )
 }
