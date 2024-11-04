@@ -172,31 +172,32 @@ fun AddAlarmScreen(
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    SectionSwitch(
-                        header = stringResource(R.string.alarm_sound),
-                        body = soundName,
-                        checked = soundEnabled,
-                        onCheckedChange = {}
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-                    SectionSwitch(
-                        header = stringResource(R.string.vibration),
-                        body = vibrationName,
-                        checked = vibrationEnabled,
-                        onCheckedChange = {}
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-                    SectionSwitch(
-                        header = stringResource(R.string.snooze),
-                        body = stringResource(
-                            id = strings.x_separator_y_values,
-                            snoozeIntervalName,
-                            ",",
-                            snoozeRepeatName
-                        ),
-                        checked = soundEnabled,
-                        onCheckedChange = {}
-                    )
+                    // TODO: implementation will be added in future
+//                    SectionSwitch(
+//                        header = stringResource(R.string.alarm_sound),
+//                        body = soundName,
+//                        checked = soundEnabled,
+//                        onCheckedChange = {}
+//                    )
+//                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+//                    SectionSwitch(
+//                        header = stringResource(R.string.vibration),
+//                        body = vibrationName,
+//                        checked = vibrationEnabled,
+//                        onCheckedChange = {}
+//                    )
+//                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+//                    SectionSwitch(
+//                        header = stringResource(R.string.snooze),
+//                        body = stringResource(
+//                            id = strings.x_separator_y_values,
+//                            snoozeIntervalName,
+//                            ",",
+//                            snoozeRepeatName
+//                        ),
+//                        checked = soundEnabled,
+//                        onCheckedChange = {}
+//                    )
                 }
             }
         }

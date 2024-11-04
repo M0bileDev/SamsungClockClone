@@ -89,43 +89,45 @@ class MainActivity : ComponentActivity() {
                         val uiState by mainViewModel.uiState.collectAsState()
 
                         Scaffold(
-                            bottomBar = {
+                            //TODO: unlock when more screens will be provided
 
-                                if (hideNavigationBar(currentDestination)) return@Scaffold
-
-                                NavigationBar {
-                                    NavigationUtils.navBottomItems.forEach { screen ->
-                                        val selected =
-                                            currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                                        NavigationBarItem(
-                                            selected = selected,
-                                            onClick = {
-                                                navController.navigate(screen.route) {
-                                                    popUpTo(
-                                                        navController.graph.findStartDestination().id
-                                                    ) {
-                                                        saveState = true
-                                                    }
-                                                    launchSingleTop = true
-                                                    restoreState = true
-                                                }
-                                            },
-                                            icon = {
-                                                val color = MaterialTheme.colorScheme.onSurface
-                                                Text(
-                                                    modifier = Modifier.drawUnderline(
-                                                        selected,
-                                                        color = color
-                                                    ),
-                                                    text = resources.getString(screen.name),
-                                                    fontWeight = if (selected) FontWeight.Bold else null,
-                                                )
-                                            }
-                                        )
-
-                                    }
-                                }
-                            }
+//                            bottomBar = {
+//
+//                                if (hideNavigationBar(currentDestination)) return@Scaffold
+//
+//                                NavigationBar {
+//                                    NavigationUtils.navBottomItems.forEach { screen ->
+//                                        val selected =
+//                                            currentDestination?.hierarchy?.any { it.route == screen.route } == true
+//                                        NavigationBarItem(
+//                                            selected = selected,
+//                                            onClick = {
+//                                                navController.navigate(screen.route) {
+//                                                    popUpTo(
+//                                                        navController.graph.findStartDestination().id
+//                                                    ) {
+//                                                        saveState = true
+//                                                    }
+//                                                    launchSingleTop = true
+//                                                    restoreState = true
+//                                                }
+//                                            },
+//                                            icon = {
+//                                                val color = MaterialTheme.colorScheme.onSurface
+//                                                Text(
+//                                                    modifier = Modifier.drawUnderline(
+//                                                        selected,
+//                                                        color = color
+//                                                    ),
+//                                                    text = resources.getString(screen.name),
+//                                                    fontWeight = if (selected) FontWeight.Bold else null,
+//                                                )
+//                                            }
+//                                        )
+//
+//                                    }
+//                                }
+//                            }
                         ) { padding ->
                             NavHost(
                                 modifier = Modifier.padding(padding),

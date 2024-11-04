@@ -104,6 +104,6 @@ class NotificationBuilderImpl @Inject constructor(
         notificationManager.cancel(alarmManagerId.toInt())
 
     //TODO playing ringtone or vibration
-    //todo add logic to cancel alarm and notification when user dismiss notification
+    //TODO add logic to cancel alarm and notification when user dismiss notification
     //TODO create notification group
 }
