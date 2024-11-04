@@ -1,61 +1,63 @@
 [versions]
-agp = "8.6.1"
-kotlin = "2.0.0"
-coreKtx = "1.13.1"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.3"
-activityCompose = "1.9.0"
-composeBom = "2024.06.00"
-androidNavigation = "2.7.7"
-truth = "1.4.3"
-androidHilt = "2.51"
-hiltNavigationCompose = "1.2.0"
-ksp = "2.0.0-1.0.23"
-room = "2.6.1"
-datastore = "1.1.1"
+agpVersion = "8.6.1"
+kotlinVersion = "2.0.0"
+coreKtxVersion = "1.13.1"
+junitVersion = "4.13.2"
+androidxJunitVersion = "1.2.1"
+espressoCoreVersion = "3.6.1"
+lifecycleRuntimeKtxVersion = "2.8.3"
+activityComposeVersion = "1.9.0"
+composeBomVersion = "2024.06.00"
+androidNavigationVersion = "2.7.7"
+truthVersion = "1.4.3"
+androidHiltVersion = "2.51"
+hiltNavigationComposeVersion = "1.2.0"
+kspVersion = "2.0.0-1.0.23"
+roomVersion = "2.6.1"
+datastoreVersion = "1.1.1"
+mockkVersion = "1.13.13"
+uiTestJunit4Version = "1.7.5"
 
 [libraries]
-
-#Core
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+#------------------------------------Core------------------------------------
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityComposeVersion" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBomVersion" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidNavigation" }
+androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidNavigationVersion" }
 
-#Room
-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+#------------------------------------Room----------------------------------------------------------
+room = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 
-#DataStore
-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+#------------------------------------DataStore-----------------------------------------------------
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastoreVersion" }
 
-#Hilt
-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "androidHilt" }
-hilt-compliler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "androidHilt" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+#------------------------------------Hilt----------------------------------------------------------
+hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "androidHiltVersion" }
+hilt-compliler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "androidHiltVersion" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
 
-#Testing
-google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
+#------------------------------------Testing-------------------------------------------------------
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "truthVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCoreVersion" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "uiTestJunit4Version" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockkVersion" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-android-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "androidHilt" }
+android-application = { id = "com.android.application", version.ref = "agpVersion" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
+android-ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
+android-hilt = { id = "com.google.dagger.hilt.android", version.ref = "androidHiltVersion" }
 
 
