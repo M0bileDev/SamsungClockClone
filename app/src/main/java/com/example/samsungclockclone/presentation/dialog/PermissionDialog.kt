@@ -23,8 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.samsungclockclone.presentation.theme.SamsungClockCloneTheme
 
-// TODO: extract strings
-
 @Composable
 fun PermissionDialog(
     dialogText: String,
