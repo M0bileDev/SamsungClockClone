@@ -1,10 +1,9 @@
 package com.example.samsungclockclone.usecase
 
 import com.example.samsungclockclone.data.dataSource.local.DatabaseSource
-import com.example.samsungclockclone.data.local.dao.AlarmDao
-import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import com.example.samsungclockclone.domain.model.AlarmMode
 import com.example.samsungclockclone.domain.model.DayOfWeek
+import com.example.samsungclockclone.domain.model.alarm.AlarmItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,13 +29,17 @@ class GetAlarmItemsCustomOrderUseCase @Inject constructor(
             if (!isActive) return@launch
 
             databaseSource.collectAllAlarmAndAlarmManagersCustomOrder().collectLatest { alarms ->
-                val mappedAlarms = alarms.map { alarmWithAlarmManager ->
+
+                val mappedAlarms = alarms.map { alarmWithAlarmManagerEntity ->
+
                     val firstFireTime =
-                        alarmWithAlarmManager.alarmMangerEntityList.minOf { it.fireTime }
+                        if (alarmWithAlarmManagerEntity.alarmMangerEntityList.isNotEmpty()) {
+                            alarmWithAlarmManagerEntity.alarmMangerEntityList.minOf { it.fireTime }
+                        } else 0
 
                     val selectedDaysOfWeek =
-                        if (alarmWithAlarmManager.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
-                            alarmWithAlarmManager.alarmMangerEntityList.map { alarmManager ->
+                        if (alarmWithAlarmManagerEntity.alarmEntity.mode == AlarmMode.DayOfWeekAndTime) {
+                            alarmWithAlarmManagerEntity.alarmMangerEntityList.map { alarmManager ->
                                 val tmpCalendar = calendar.apply {
                                     timeInMillis = alarmManager.fireTime
                                 }
@@ -48,7 +51,7 @@ class GetAlarmItemsCustomOrderUseCase @Inject constructor(
                         } else emptyList()
 
 
-                    with(alarmWithAlarmManager.alarmEntity) {
+                    with(alarmWithAlarmManagerEntity.alarmEntity) {
                         AlarmItem(
                             id,
                             customOrder,
@@ -61,7 +64,8 @@ class GetAlarmItemsCustomOrderUseCase @Inject constructor(
                     }
                 }
 
-                onMappedAlarms(mappedAlarms)
+                val filteredAlarms = mappedAlarms.filter { it.fireTime != 0L }
+                onMappedAlarms(filteredAlarms)
             }
         }
     }
