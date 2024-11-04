@@ -1,5 +1,6 @@
 package com.example.samsungclockclone.data.local.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -20,6 +21,7 @@ import com.example.samsungclockclone.domain.model.DayOfWeek
 data class AlarmManagerEntity(
     @PrimaryKey(autoGenerate = true)
     val uniqueId: Long = 0L,
+    @ColumnInfo(index = true)
     val parentId: Long,
     val fireTime: Long,
     val dayOfWeek: DayOfWeek? = null,
