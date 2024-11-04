@@ -21,22 +21,27 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmDao {
 
     @Query("SELECT * FROM alarm_table WHERE id = :alarmId LIMIT 1")
+    @Transaction
     suspend fun getAlarmAndAlarmManagersById(
         alarmId: Long
     ): AlarmWithAlarmManagerEntity
 
     @Query("SELECT * FROM alarm_table WHERE id = :alarmId LIMIT 1")
+    @Transaction
     fun collectAlarmAndAlarmManagersById(
         alarmId: Long
     ): Flow<AlarmWithAlarmManagerEntity>
 
     @Query("SELECT * FROM alarm_table")
+    @Transaction
     suspend fun getAllAlarmAndAlarmManagers(): List<AlarmWithAlarmManagerEntity>
 
     @Query("SELECT * FROM alarm_table")
+    @Transaction
     fun collectAllAlarmAndAlarmManagers(): Flow<List<AlarmWithAlarmManagerEntity>>
 
     @Query("SELECT * FROM alarm_table ORDER BY customOrder ASC")
+    @Transaction
     fun collectAllAlarmAndAlarmManagersCustomOrder(): Flow<List<AlarmWithAlarmManagerEntity>>
 
     @Query("SELECT * FROM alarm_table")

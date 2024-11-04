@@ -15,7 +15,8 @@ import com.example.samsungclockclone.data.local.model.AlarmManagerEntity
         AlarmEntity::class,
         AlarmManagerEntity::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(
     AlarmModeConverter::class,
