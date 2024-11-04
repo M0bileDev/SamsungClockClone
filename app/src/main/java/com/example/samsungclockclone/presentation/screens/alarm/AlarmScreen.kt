@@ -146,14 +146,15 @@ fun AlarmScreen(
                                 }
                             )
                         }
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.settings)
-                                )
-                            },
-                            onClick = onSettings
-                        )
+                        // TODO: implement settings menu
+//                        DropdownMenuItem(
+//                            text = {
+//                                Text(
+//                                    text = stringResource(R.string.settings)
+//                                )
+//                            },
+//                            onClick = onSettings
+//                        )
                     }
                     DropdownMenu(
                         expanded = sortMenuExpanded,
